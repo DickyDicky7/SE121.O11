@@ -1,8 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
+@*
 <MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
 
 <MudLayout>
 	<Navigation />
 	<MudMainContent>@Body</MudMainContent>
 </MudLayout>
+ *@
+
+<Layout Body="@Body" />

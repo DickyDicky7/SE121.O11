@@ -1,0 +1,13 @@
+﻿<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+
+<MudLayout>
+	<Navigation />
+	<MudMainContent>@Body</MudMainContent>
+</MudLayout>
+
+@code {
+
+	[Parameter]
+	public RenderFragment? Body { get; set; }
+
+}
