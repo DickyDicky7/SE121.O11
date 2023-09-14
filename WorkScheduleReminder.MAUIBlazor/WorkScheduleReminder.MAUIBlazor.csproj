@@ -50,7 +50,13 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Maui" Version="5.3.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+        <PackageReference Include="MudBlazor" Version="6.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WorkScheduleReminder.SharedBlazorComponents\WorkScheduleReminder.SharedBlazorComponents.csproj" />
     </ItemGroup>
 
 </Project>
