@@ -6,11 +6,11 @@
             <Color x:Key="PageBackgroundColor">White</Color>
             <Style TargetType="Label">
                 <Setter Property="FontFamily" Value="OpenSansRegular" />
-                <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+                <Setter Property="TextColor"  Value="{DynamicResource PrimaryTextColor}" />
             </Style>
             <Style TargetType="Button">
                 <Setter Property="FontFamily" Value="OpenSansRegular" />
-                <Setter Property="TextColor" Value="{DynamicResource PrimaryTextColor}" />
+                <Setter Property="TextColor"  Value="{DynamicResource PrimaryTextColor}" />
                 <Setter Property="Padding" Value="14,10" />
                 <Setter Property="BackgroundColor" Value="White" />
             </Style>
