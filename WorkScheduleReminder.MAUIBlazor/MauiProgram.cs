@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using MudBlazor.Services;
 using CommunityToolkit.Maui;
+using MudBlazor.Services;
+using MudExtensions.Services;
 
 namespace WorkScheduleReminder.MAUIBlazor
 {
@@ -19,6 +20,7 @@ namespace WorkScheduleReminder.MAUIBlazor
 
 			builder.Services.AddMauiBlazorWebView();
 			builder.Services.AddMudServices();
+			builder.Services.AddMudExtensions();
 
 #if DEBUG
 			builder.Services.AddBlazorWebViewDeveloperTools(); builder.Logging.AddDebug();

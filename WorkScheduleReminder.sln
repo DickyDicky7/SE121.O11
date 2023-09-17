@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkScheduleReminder.MAUIBl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkScheduleReminder.SharedBlazorComponents", "WorkScheduleReminder.SharedBlazorComponents\WorkScheduleReminder.SharedBlazorComponents.csproj", "{57A390C1-FF62-4A4F-A8A1-2E44B6BFF2C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkScheduleReminder.SharedBusinessLogic", "WorkScheduleReminder.SharedBusinessLogic\WorkScheduleReminder.SharedBusinessLogic.csproj", "{4A3C004E-96C7-4734-B4A9-FDD3998682D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{57A390C1-FF62-4A4F-A8A1-2E44B6BFF2C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57A390C1-FF62-4A4F-A8A1-2E44B6BFF2C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57A390C1-FF62-4A4F-A8A1-2E44B6BFF2C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A3C004E-96C7-4734-B4A9-FDD3998682D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A3C004E-96C7-4734-B4A9-FDD3998682D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A3C004E-96C7-4734-B4A9-FDD3998682D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A3C004E-96C7-4734-B4A9-FDD3998682D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
