@@ -4,7 +4,7 @@ namespace WorkScheduleReminder.Testing
 	/// These tests are written entirely in C#.
 	/// Learn more at https://bunit.dev/docs/getting-started/writing-tests.html#creating-basic-tests-in-cs-files
 	/// </summary>
-	public class CounterCSharpTests : BunitTestContext
+	public class CounterCSharpTests : WorkScheduleReminder.Testing.Core.BunitTestContext
 	{
 		[Test]
 		public void CounterStartsAtZero()
