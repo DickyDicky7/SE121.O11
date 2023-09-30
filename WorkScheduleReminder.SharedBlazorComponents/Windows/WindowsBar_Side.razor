@@ -1,0 +1,37 @@
+﻿<MudPaper Class="d-flex flex-row gap-3 align-center"
+		  Elevation="0">
+	<MudAvatar>
+		<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+	</MudAvatar>
+	<MudText>
+		-Name-
+	</MudText>
+</MudPaper>
+<MudNavMenu Class="pa-2">
+	<MudNavLink Href="/home">
+		My day
+	</MudNavLink>
+	<MudNavLink Href="/list">
+		Next 7 days
+	</MudNavLink>
+	<MudNavLink Href="/list">
+		All my task
+	</MudNavLink>
+	<MudNavGroup Title="Custom views"
+				 Expanded="true"
+				 MaxHeight="100">
+		@*for go here*@
+		<MudButton Class=""
+				   Size="Size.Small"
+				   StartIcon="@Icons.Material.Filled.Add">
+			Create a view
+		</MudButton>
+	</MudNavGroup>
+	<MudExpansionPanel>
+
+	</MudExpansionPanel>
+</MudNavMenu>
+
+@code {
+
+}

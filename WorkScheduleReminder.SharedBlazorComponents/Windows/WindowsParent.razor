@@ -1,0 +1,38 @@
+﻿
+<MudPaper Class="d-flex flex-row"
+		  Elevation="0"
+		  Height="100vh" Width="100vw" MinHeight="400px" MinWidth="600px">
+	@* Sidebar *@
+	<MudPaper Class="d-flex flex-column gap-2 pa-2
+					border-solid border-1"
+			  Elevation="0"
+			  Height="100%"
+			  Width="200px">
+		<WindowsBar_Side/>
+	</MudPaper>
+	@*Top bar & mainscreen*@
+	<MudPaper Class="d-flex flex-column flex-grow-1"
+			  Elevation="0"
+			  Height="100%">
+		@* Topbar *@
+		<MudPaper Class="d-flex flex-row flex-wrap
+						align-center pa-2
+						border-solid border-1"
+				  Elevation="0"
+				  Width="100%">
+			<WindowsBar_Top/>
+		</MudPaper>
+		@*MainScreen*@
+		<MudPaper Class="d-flex flex-grow-1 pa-2
+						align-self-center"
+				  Elevation="0"
+				  Width="100%">
+			@MainChildContent
+		</MudPaper>
+	</MudPaper>
+</MudPaper>
+
+@code {
+	[Parameter]
+	public RenderFragment? MainChildContent { get; set; }
+}
