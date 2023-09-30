@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/index"
 
 <Hello />
 
@@ -8,4 +8,9 @@
 			AnimationType="MudExtensions.Enums.AnimationType.Rotate" AnimationTiming="MudExtensions.Enums.AnimationTiming.EaseInOut" />
 
 <MudText Class="id1">Hello</MudText>
+@code
+{
+	[Parameter]
+	public string currentPage { get; set; }
+}
 

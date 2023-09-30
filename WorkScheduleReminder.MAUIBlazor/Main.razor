@@ -1,4 +1,4 @@
-﻿<Router AppAssembly="@typeof(Main).Assembly">
+﻿<Router AppAssembly="@typeof(Main).Assembly" AdditionalAssemblies="@Helper.LibraryAdditionalAssemblies">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -9,3 +9,4 @@
         </LayoutView>
     </NotFound>
 </Router>
+

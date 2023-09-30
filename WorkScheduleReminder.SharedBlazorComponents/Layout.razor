@@ -1,13 +1,12 @@
-﻿<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+﻿<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-<MudLayout>
-	<Navigation />
-	<MudMainContent>@Body</MudMainContent>
-</MudLayout>
-
+@* <MobileParent ChildContent="@ChildContent"/> *@
+<WindowsParent MainChildContent="@ChildContent"/>
 @code {
 
 	[Parameter]
-	public RenderFragment? Body { get; set; }
+	public RenderFragment? ChildContent { get; set; }
 
 }
