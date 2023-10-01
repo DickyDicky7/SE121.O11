@@ -3,13 +3,26 @@
 
 <MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
 
-@*<MobileParent ChildContent="@ChildContent"/>*@
-<DesktopParent MainChildContent="@ChildContent" />
+@switch (DeviceType)
+{
+	case Helper.DeviceType.Mobile:
+		<MobileParent  MainChildContent="@ChildContent" />
+		 break;
+
+	case Helper.DeviceType.Desktop: 
+		<DesktopParent MainChildContent="@ChildContent" />
+		 break;
+
+	case Helper.DeviceType.Unknown:
+		 break;
+}
 
 @code
 {
 
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public Helper.DeviceType DeviceType { get; set; }
 
 }

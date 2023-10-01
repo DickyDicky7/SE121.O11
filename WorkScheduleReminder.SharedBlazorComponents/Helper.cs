@@ -9,11 +9,17 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 {
 	public class Helper
 	{
-		public static Assembly[] LibraryAdditionalAssemblies = new[] { Assembly.GetExecutingAssembly()};
+		public static Assembly[] LibraryAdditionalAssemblies { get; set; } = new[] { Assembly.GetExecutingAssembly() };
+		
 		public static string GetResource(string path)
 		{
 			StringBuilder stringBuilder = new("_content/WorkScheduleReminder.SharedBlazorComponents");
-			return stringBuilder.Append(path).ToString();
+			return        stringBuilder.Append(path).ToString();
+		}
+
+		public enum DeviceType
+		{
+			Desktop, Mobile, Unknown
 		}
 	}
 }

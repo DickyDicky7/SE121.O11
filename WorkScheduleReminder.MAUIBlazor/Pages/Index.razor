@@ -1,6 +1,6 @@
 ﻿@page "/index"
 
-<Hello />
+@* <Hello /> *@
 
 <MudAnimate Value="360" Duration="5"
 			Selector=".id1"
@@ -8,9 +8,12 @@
 			AnimationType="MudExtensions.Enums.AnimationType.Rotate" AnimationTiming="MudExtensions.Enums.AnimationTiming.EaseInOut" />
 
 <MudText Class="id1">Hello</MudText>
+
 @code
 {
+
 	[Parameter]
 	public string currentPage { get; set; }
+
 }
 
