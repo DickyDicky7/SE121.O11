@@ -1,12 +1,13 @@
-﻿<MudThemeProvider />
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop
+@using WorkScheduleReminder.SharedBlazorComponents.Mobile
+<MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-@* <MobileParent ChildContent="@ChildContent"/> *@
-<WindowsParent MainChildContent="@ChildContent"/>
+@*<MobileParent ChildContent="@ChildContent"/>*@
+<DesktopParent MainChildContent="@ChildContent"/>
 @code {
 
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
-
 }
