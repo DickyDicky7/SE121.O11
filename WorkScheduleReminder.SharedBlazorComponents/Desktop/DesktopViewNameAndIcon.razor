@@ -1,0 +1,13 @@
+﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
+		  Elevation="0">
+	<MudIcon Class="rounded-cycle"
+			 Icon=""
+			 Size="Size.Small" />
+	<MudText>@Name</MudText>
+</MudPaper>
+
+@code
+{
+	[Parameter]
+	public string Name{ get; set; }
+}

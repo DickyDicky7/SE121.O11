@@ -1,0 +1,27 @@
+﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
+		  Elevation="0">
+	@if (Type == Helper.ViewType.DefaultView)
+	{
+		<MudTabs PanelClass="rounded-pill">
+			<MudTabPanel Class="d-flex flex-wrap" Text="My lists" />
+			<MudTabPanel Class="d-flex flex-wrap" Text="Workspace" />
+		</MudTabs>
+	}
+	else if (Type == Helper.ViewType.CustomView)
+	{
+		<MudText>Private view</MudText>
+	}
+	else if (Type == Helper.ViewType.WorkspaceView)
+	{
+		<MudButton Class=""
+				   StartIcon="@Icons.Material.Filled.Share"
+				   Size="Size.Small">
+			Share
+		</MudButton>
+	}
+</MudPaper>
+
+@code {
+	[Parameter]
+	public Helper.ViewType Type { get; set; }
+}

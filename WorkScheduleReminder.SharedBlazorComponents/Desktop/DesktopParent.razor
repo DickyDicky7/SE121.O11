@@ -8,7 +8,7 @@
 			  Elevation="0"
 			  Height="100%"
 			  Width="200px">
-		<DesktopBarSide/>
+		<DesktopBarSide @bind-Name="ActiveName" @bind-Type="Type"/>
 	</MudPaper>
 	@*Top bar & mainscreen*@
 	<MudPaper Class="d-flex flex-column flex-grow-1"
@@ -20,7 +20,7 @@
 						border-solid border-1"
 				  Elevation="0"
 				  Width="100%">
-			<DesktopBarTop/>
+			<DesktopBarTop ActiveName="@ActiveName" Type="@Type"/>
 		</MudPaper>
 		@*MainScreen*@
 		<MudPaper Class="d-flex flex-grow-1 pa-2
@@ -35,4 +35,7 @@
 @code {
 	[Parameter]
 	public RenderFragment? MainChildContent { get; set; }
+
+	public string ActiveName { get; set; }
+	public Helper.ViewType Type { get; set; }
 }

@@ -9,6 +9,10 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 {
 	public class Helper
 	{
+		public enum ViewType
+		{
+			DefaultView, CustomView, WorkspaceView
+		}
 		public static Assembly[] LibraryAdditionalAssemblies = new[] { Assembly.GetExecutingAssembly()};
 		public static string GetResource(string path)
 		{

@@ -1,15 +1,17 @@
 ﻿@* Toolbar1 *@
-<MudPaper Class="d-flex flex-wrap rounded-pill"
+<MudPaper Class="d-flex flex-row flex-wrap rounded-pill"
 		  Elevation="0">
-	<MudToolBar Class="d-flex flex-wrap gap-2 pa-1 rounded-pill">
-		<MudIcon Class="rounded-cycle"
-				 Size="Size.Small"
-				 Icon="@Icons.Material.Filled.Today" />
-		<MudText>
-			Today
-		</MudText>
-
-	</MudToolBar>
+	<DesktopViewNameAndIcon Name="@ActiveName" />
+	<DesktopButtonShare Type="@Type"/>
+	@if (Type == Helper.ViewType.WorkspaceView)
+	{
+		<DesktopButtonView />
+	}
+	@if (Type == Helper.ViewType.CustomView || Type == Helper.ViewType.WorkspaceView)
+	{
+		<DesktopButtonFilter />
+	}
+	<DesktopButtonMore />
 </MudPaper>
 <MudPaper Class="d-flex flex-row flex-grow-1" />
 @* Toolbar2 *@
@@ -28,6 +30,10 @@
 	</MudToolBar>
 </MudPaper>
 
-@code {
-
+@code
+{
+	[Parameter]
+	public string ActiveName { get; set; }
+	[Parameter]
+	public Helper.ViewType Type { get; set; }
 }
