@@ -1,0 +1,53 @@
+﻿@using System.Diagnostics;
+
+<MudPaper Class="absolute z-10 d-flex"
+		  Style="inset: auto 0 0 0;" Width="auto" Height="auto" Square="true"
+		  Elevation="00">
+	<MudPaper Class=@($"absolute   {customClass_} z-10 rounded-t-xl blue") Style=@($"top: -{chosenHeight};left: 0;right: 0;bottom: auto;")
+			  tabindex="1" Square="true"
+			  Width="auto" Height="@customHeight" Elevation="00">
+	</MudPaper>
+	<MudTextField @bind-Value="AddTaskValue"
+				  Class="relative mt-2 ml-2 mb-2"
+				  Label="AddTask"
+				  Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.SubdirectoryArrowLeft"
+				  AdornmentAriaLabel="Enter" Clearable="true"          AdornmentColor="Color.Info"
+				  InputMode="InputMode.text"
+				  InputType="InputType.Text">
+	</MudTextField>
+	<MudIconButton Class="relative ma-auto"
+				   Color="Color.Info"
+				   Size="Size.Medium"
+				   Icon="@Icons.Material.Filled.Segment" OnClick=@OnClick>
+	</MudIconButton>
+</MudPaper>
+
+@code
+{
+
+	[Parameter]
+	public string AddTaskValue { get; set; } = null!;
+
+	private string customClass_ = "    ";
+	private string customHeight = "auto";
+	private string chosenHeight = "90px";
+
+	private bool open = false;
+	private Task OnClick(MouseEventArgs mouseEventArgs)
+	{
+		    open = 
+		   !open;
+		if (open)
+		{
+			customClass_ = "scale-ver-bottom--in";
+			customHeight = chosenHeight;
+		}
+		else
+		{
+			customClass_ = "scale-ver-bottom-out";
+			customHeight = chosenHeight;
+		}
+		return Task.CompletedTask;
+	}
+
+}
