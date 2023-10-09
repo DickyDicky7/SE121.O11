@@ -38,9 +38,8 @@
 	<MudPaper Class="flex-grow-1"
 			  Width="100%"
 			  MaxWidth="300px"
-			  Elevation="0"
-			  >
-			  @ChildContent
+			  Elevation="0">
+		@MainChildContent
 	</MudPaper>
 	<MudPaper Class=""
 			  Width="100%"
@@ -50,23 +49,26 @@
 			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
 						   Icon="@Icons.Material.Rounded.Home"
 						   Size="Size.Small"
-						   Color="Color.Tertiary" 
-						   Href="/home"/>
+						   Color="Color.Tertiary"
+						   Href="/home" />
 			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
 						   Icon="@Icons.Material.Rounded.List"
 						   Size="Size.Small"
 						   Color="Color.Tertiary"
-						   Href="/list"/>
+						   Href="/list" />
 			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
 						   Icon="@Icons.Material.Rounded.EditCalendar"
 						   Size="Size.Small"
-						   Color="Color.Tertiary" 
-						   Href="/calendar"/>
+						   Color="Color.Tertiary"
+						   Href="/calendar" />
 		</MudToolBar>
 	</MudPaper>
 </MudPaper>
 
-@code {
+@code
+{
+
 	[Parameter]
-	public RenderFragment? ChildContent { get; set; }
+	public RenderFragment? MainChildContent { get; set; }
+
 }

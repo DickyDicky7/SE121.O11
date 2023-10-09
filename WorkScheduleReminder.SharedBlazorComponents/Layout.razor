@@ -1,13 +1,29 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop
-@using WorkScheduleReminder.SharedBlazorComponents.Mobile
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Mobile
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop
 
-@*<MobileParent ChildContent="@ChildContent"/>*@
-<DesktopParent MainChildContent="@ChildContent"/>
-@code {
+<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+
+@switch (DeviceType)
+{
+	case Helper.DeviceType.Mobile:
+		<MobileParent  MainChildContent="@ChildContent" />
+		 break;
+
+	case Helper.DeviceType.Desktop: 
+		@* <AddTask/> *@
+		<DesktopParent MainChildContent="@ChildContent" />
+		 break;
+
+	case Helper.DeviceType.Unknown:
+		 break;
+}
+
+@code
+{
 
 	[Parameter]
 	public RenderFragment? ChildContent { get; set; }
+	[Parameter]
+	public Helper.DeviceType DeviceType { get; set; }
+
 }

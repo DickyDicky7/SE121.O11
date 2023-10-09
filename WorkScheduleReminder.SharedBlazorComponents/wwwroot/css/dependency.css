@@ -1,17 +1,5 @@
-﻿@font-face {
-    font-family: 'Mooli-Regular';
-    src: url('fonts/Mooli/Mooli-Regular.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Montserrat-Regular';
-    src: url('fonts/Montserrat/Montserrat-Regular.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'DancingScript-Regular';
-    src: url('fonts/DancingScript/DancingScript-Regular.ttf') format('truetype');
-}
+﻿@import url('fonts.css');
+@import url('animations.css');
 
 * {
     font-family: 'Mooli-Regular';
