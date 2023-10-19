@@ -18,21 +18,21 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			PrimaryKeyPropertyName8 = "";
 		}
 
-		[PrimaryKey(columnName: "group_id")]
+		[PrimaryKey(columnName: "group___id")]
 		public Guid   GroupId { get; set; }
 
 		[PrimaryKey(columnName: "profile_id")]
 		public Guid ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:        typeof(Group  ),
-			       columnName:   nameof(GroupId),
-			       foreignKey: "members_group_id_fkey")]
+			       model:      typeof(Group  ),
+			       columnName: nameof(GroupId),
+			       foreignKey: "members_group___id_fkey")]
 		public   Group   Group { get; set; } = null!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:        typeof(Profile  ),
-			       columnName:   nameof(ProfileId),
+			       model:      typeof(Profile  ),
+			       columnName: nameof(ProfileId),
 			       foreignKey: "members_profile_id_fkey")]
 		public Profile Profile { get; set; } = null!;
 

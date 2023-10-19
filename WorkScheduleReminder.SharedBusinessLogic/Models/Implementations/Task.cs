@@ -39,7 +39,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Column(columnName: "attachments")]
 		public string Attachments { get; set; } = null!;
 
-		[Column(columnName:   "group_id")]
+		[Column(columnName: "group___id")]
 		public Guid?   GroupId { get; set; }
 
 		[Column(columnName: "profile_id")]
@@ -48,7 +48,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 				   model:      typeof(Group  ),
 				   columnName: nameof(GroupId),
-				   foreignKey: "tasks_group_id_fkey")]
+				   foreignKey: "tasks_group___id_fkey")]
 		public   Group?   Group { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,

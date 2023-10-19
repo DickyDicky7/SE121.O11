@@ -8,9 +8,9 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	{
 	public       TaggingByGroup() : base()
 		{
-			PrimaryKeyPropertyName1 = nameof(GroupId);
-			PrimaryKeyPropertyName2 = nameof( TaskId);
-			PrimaryKeyPropertyName3 = nameof(Name);
+			PrimaryKeyPropertyName1 = nameof(TagByGroupId);
+			PrimaryKeyPropertyName2 = nameof(      TaskId);
+			PrimaryKeyPropertyName3 = "";
 			PrimaryKeyPropertyName4 = "";
 			PrimaryKeyPropertyName5 = "";
 			PrimaryKeyPropertyName6 = "";
@@ -18,25 +18,22 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			PrimaryKeyPropertyName8 = "";
 		}
 
-		[PrimaryKey(columnName: "group_id")]
-		public Guid  GroupId { get; set; }
-
-		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:            typeof(Group  ),
-			       columnName:       nameof(GroupId),
-			       foreignKey: "taggings_by_groups___group_id_fkey")]
-		public Group Group { get; set; } = null!;
-
-		[PrimaryKey(columnName: "name")]
-		public string Name { get; set; } = null!;
-
 		[PrimaryKey(columnName: "task_id")]
 		public Guid TaskId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:            typeof(Task  ),
-			       columnName:       nameof(TaskId),
+			       model:      typeof(Task  ),
+			       columnName: nameof(TaskId),
 			       foreignKey: "taggings_by_groups___task_id_fkey")]
 		public Task Task   { get; set; } = null!;
+
+		[PrimaryKey(columnName: "tag_by_group___id")]
+		public Guid       TagByGroupId { get; set; }
+
+		[Reference(joinType: ReferenceAttribute.JoinType.Left,
+			       model:      typeof(TagByGroup  ),
+			       columnName: nameof(TagByGroupId),
+			       foreignKey: "taggings_by_groups___tag_by_group___id_fkey")]
+		public TagByGroup TagByGroup   { get; set; } = null!;
 	}
 }
