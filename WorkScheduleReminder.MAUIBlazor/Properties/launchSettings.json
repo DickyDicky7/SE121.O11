@@ -1,8 +1,1 @@
-{
-    "profiles": {
-        "Windows Machine": {
-            "commandName": "Project", // Unpack The App. Replace With "MsixPackage" If You Want To Change Back To MsixPackage
-            "nativeDebugging": false
-        }
-    }
-}
+{ "profiles": { "Windows Machine": { "commandName": "Project", /* Unpack The App. Replace With "MsixPackage" If You Want To Change Back To MsixPackage */ "nativeDebugging": false } } }
