@@ -1,16 +1,12 @@
 ﻿using Supabase;
-using Supabase.Gotrue;
-using WorkScheduleReminder.SharedBusinessLogic;
+using WorkScheduleReminder.SharedBusinessLogic.Services.Abstractions___;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
 	public static partial class WorkScheduleReminderExtensions
 	{
 		public static IServiceCollection AddServicesAndExtensionsSharedBusinessLogic
-				(this IServiceCollection    services,
-				 Func<Session?, Task> onGotrueSessionSave,
-				 Func<Task<Session?>> onGotrueSessionLoad,
-				 Func<Task> onGotrueSessionDestroy)
+				(this IServiceCollection    services)
 		{
 			string SUPABASE_URL = "https://cklxrwkqemlsayifnnvn.supabase.co";
 			string SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey" +
@@ -19,15 +15,18 @@ namespace Microsoft.Extensions.DependencyInjection
 			"M30.HuP4n3fN3TPGnkoKcJOm4fM9awVeYw0WXBY4SjKA99w";
 			Environment.SetEnvironmentVariable("SUPABASE_URL", SUPABASE_URL, EnvironmentVariableTarget.Process);
 			Environment.SetEnvironmentVariable("SUPABASE_KEY", SUPABASE_KEY, EnvironmentVariableTarget.Process);
-			return services.AddSingleton<Supabase.Client>(serviceProvider => new(SUPABASE_URL, SUPABASE_KEY, new SupabaseOptions()
+			return services.AddSingleton<Supabase.Client>(serviceProvider =>
 			{
-				SessionHandler = new CustomGotrueSessionPersistence
-				(onGotrueSessionSave: onGotrueSessionSave,
-				 onGotrueSessionLoad: onGotrueSessionLoad,
-				 onGotrueSessionDestroy: onGotrueSessionDestroy),
-				AutoRefreshToken = true,
-				AutoConnectRealtime = true,
-			}));
+				IGotrueSessionPersistenceService gotrueSessionPersistenceService = serviceProvider.GetRequiredService<
+				IGotrueSessionPersistenceService>();
+				return new(SUPABASE_URL, SUPABASE_KEY, new SupabaseOptions()
+				{
+					SessionHandler =
+					gotrueSessionPersistenceService,
+					AutoRefreshToken = true, AutoConnectRealtime 
+									 = true,
+				});
+			});
 		}
 	}
 }
