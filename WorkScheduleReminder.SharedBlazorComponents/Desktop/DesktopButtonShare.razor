@@ -1,0 +1,43 @@
+﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
+		  Elevation="0">
+	@if (Type == Helper.ViewType.DefaultView)
+	{
+		<MudSwitch Checked="SwitchChecked"
+				   Label="@Text"
+				   Color="Color.Tertiary"
+				   ThumbIcon="@Icons.Material.Filled.Workspaces" 
+				   CheckedChanged="((bool a)=>OnSwitchCheckedChanged())"/>
+	}
+	else if (Type == Helper.ViewType.CustomView)
+	{
+		<MudText>Private view</MudText>
+	}
+	else if (Type == Helper.ViewType.WorkspaceView)
+	{
+		<MudButton Class=""
+				   StartIcon="@Icons.Material.Filled.Share"
+				   Size="Size.Small">
+			<MudText>Share</MudText>
+		</MudButton>
+	}
+</MudPaper>
+
+@code {
+	private string Text = "Individual";
+	[Parameter]
+	public Helper.ViewType Type { get; set; }
+	[Parameter]
+	public bool SwitchChecked { get; set; } = false;
+	private void OnSwitchCheckedChanged()
+	{
+		SwitchChecked = !SwitchChecked;
+		if (SwitchChecked)
+		{
+			Text = "Workspace";
+		}
+		else
+		{
+			Text = "Individual";
+		}
+	}
+}

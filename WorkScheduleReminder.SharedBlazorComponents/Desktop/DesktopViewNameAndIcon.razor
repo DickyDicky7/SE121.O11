@@ -1,0 +1,15 @@
+﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
+		  Elevation="0">
+	<MudIcon Class="rounded-cycle"
+			 Icon="@Icon"
+			 Size="Size.Small" />
+	<MudText Typo="Typo.h6">@Name</MudText>
+</MudPaper>
+
+@code
+{
+	[Parameter]
+	public string? Name{ get; set; }
+	[Parameter]
+	public string? Icon{ get; set; }
+}

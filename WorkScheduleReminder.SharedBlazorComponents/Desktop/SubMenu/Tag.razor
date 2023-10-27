@@ -1,0 +1,105 @@
+﻿<MudPaper Class="d-flex flex-column gap-2 pa-2 justify-center"
+		  Style="border-radius:20px;"
+		  Elevation="0"
+		  Width="300px" @attributes="AdditionalAttributes">
+	@if (EnableEdit == true)
+	{
+		<MudText Typo="Typo.h6" Style="font-family:inherit;">Add tags</MudText>
+		<MudTextField @bind-Value="value"
+					  MaxLength="15"
+					  Counter="15"
+					  Variant="Variant.Outlined"
+					  Immediate="true"
+					  Clearable="true"
+					  Required="true"
+					  AutoFocus="true"
+					  Label="Name your tag!" />
+		<MudChipSet @bind-SelectedChip="selectedChip"
+					Filter="true"
+					Mandatory="true">
+			<MudChip Default="true"
+					 Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Error" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Warning" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Success" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Info" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Primary" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Secondary" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Tertiary" />
+			<MudChip Text="#Tag"
+					 Size="Size.Small"
+					 Variant="Variant.Text"
+					 Color="Color.Dark" />
+		</MudChipSet>
+		<MudButton Class="pa-2 rounded-pill border-2"
+				   Size="Size.Small"
+				   StartIcon="@Icons.Material.Filled.Add"
+				   OnClick="Add">
+			<MudText Style="font-family:inherit;">Add tag</MudText>
+		</MudButton>
+	}
+	<MudText Typo="Typo.h6" Style="font-family:inherit;">Choose tags</MudText>
+	<MudChipSet AllClosable="@EnableEdit"
+				MultiSelection="true"
+				OnClose="Close"
+				Filter="true">
+		<MudChip Text="Example chip"
+				 Color="Color.Default"
+				 Size="Size.Small"
+				 Variant="Variant.Outlined" />
+		@foreach ((string Text, Color Color) in TagInfos)
+		{
+			<MudChip Text="@Text"
+					 Color="@Color"
+					 Size="Size.Small"
+					 Variant="Variant.Outlined" />
+		}
+	</MudChipSet>
+</MudPaper>
+
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter]
+	public bool EnableEdit { get; set; }
+
+	private MudChip selectedChip { get; set; }
+	private string value { get; set; } = "";
+
+	List<(string Text, Color Color)> TagInfos = new();
+	public void Add()
+	{
+		if (value == "" || value == null)
+		{
+			return;
+		}
+		TagInfos.Add((Text: value, Color: selectedChip.Color));
+		value = "";
+	}
+	private void Close(MudChip Chip)
+	{
+		TagInfos.Remove((Text: Chip.Text, Color: Chip.Color));
+	}
+}

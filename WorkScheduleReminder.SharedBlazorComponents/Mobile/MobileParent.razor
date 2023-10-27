@@ -1,0 +1,74 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents
+<MudPaper Class="d-flex flex-column flex-grow-1 gap-2
+				align-center
+				border-solid border-2
+				pa-2"
+		  Elevation="0"
+		  MinHeight="450px" MinWidth="300px" Height="100vh" Width="100vw">
+	<MudPaper Class=""
+			  Width="100%"
+			  MaxWidth="300px"
+			  Elevation="0">
+		<MudToolBar Class="d-flex gap-2 pa-2">
+			<MudIconButton Class="rounded-cycle pa-2"
+						   Icon="@Icons.Material.Rounded.Search"
+						   Size="Size.Small"
+						   Color="Color.Tertiary" />
+			<MudIconButton Class="rounded-cycle pa-2"
+						   Icon="@Icons.Material.Rounded.Add"
+						   Size="Size.Small"
+						   Color="Color.Tertiary" />
+			<MudText Class="flex-grow-1 pa-2"
+					 Color="Color.Default"
+					 Align="Align.Center"
+					 Typo="Typo.h5">
+				-Title-
+			</MudText>
+			<MudIconButton Class="rounded-cycle pa-2"
+						   Icon="@Icons.Material.Rounded.Notifications"
+						   Size="Size.Small"
+						   Color="Color.Tertiary" />
+			<MudIconButton Class="rounded-cycle pa-2"
+						   Icon="@Icons.Material.Rounded.Settings"
+						   Size="Size.Small"
+						   Color="Color.Tertiary" />
+		</MudToolBar>
+	</MudPaper>
+
+	<MudPaper Class="flex-grow-1"
+			  Width="100%"
+			  MaxWidth="300px"
+			  Elevation="0">
+		@MainChildContent
+	</MudPaper>
+	<MudPaper Class=""
+			  Width="100%"
+			  MaxWidth="300px"
+			  Elevation="0">
+		<MudToolBar Class="d-flex gap-2 pa-2">
+			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
+						   Icon="@Icons.Material.Rounded.Home"
+						   Size="Size.Small"
+						   Color="Color.Tertiary"
+						   Href="/home" />
+			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
+						   Icon="@Icons.Material.Rounded.List"
+						   Size="Size.Small"
+						   Color="Color.Tertiary"
+						   Href="/list" />
+			<MudIconButton Class="d-flex flex-grow-1 rounded-pill pa-2"
+						   Icon="@Icons.Material.Rounded.EditCalendar"
+						   Size="Size.Small"
+						   Color="Color.Tertiary"
+						   Href="/calendar" />
+		</MudToolBar>
+	</MudPaper>
+</MudPaper>
+
+@code
+{
+
+	[Parameter]
+	public RenderFragment? MainChildContent { get; set; }
+
+}

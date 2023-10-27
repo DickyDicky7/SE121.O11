@@ -1,12 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
-@*
-<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+<Layout ChildContent="@Body" DeviceType="ChooseDeviceType()" />
 
-<MudLayout>
-	<Navigation />
-	<MudMainContent>@Body</MudMainContent>
-</MudLayout>
- *@
+@code
+{
 
-<Layout Body="@Body" />
+	private Helper.DeviceType ChooseDeviceType()
+	{
+		if (DeviceInfo.Current.Idiom == DeviceIdiom.Phone || DeviceInfo.Current.Idiom == DeviceIdiom.Tablet)
+		{
+			return Helper.DeviceType.Mobile;
+		}
+		if (DeviceInfo.Current.Idiom == DeviceIdiom.Desktop)
+		{
+			return Helper.DeviceType.Desktop;
+		}
+			return Helper.DeviceType.Unknown;
+	}
+
+}

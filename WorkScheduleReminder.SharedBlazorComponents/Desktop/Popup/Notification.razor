@@ -1,0 +1,39 @@
+﻿<MudPaper Class="d-flex flex-column gap-2 pa-2"
+		  Style="border-radius: 20px;"
+		  Elevation="0"
+		  Width="450px"
+		  Height="80vh">
+	<MudPaper Class="d-flex flex-row pa-2 justify-space-between"
+			  Elevation="0"
+			  Width="100%">
+		<MudButton Class="rounded-pill"
+				   Size="Size.Small">
+			<MudText>All</MudText>
+		</MudButton>
+		<MudButton Class="rounded-pill"
+				   Size="Size.Small">
+			<MudText>Unread</MudText>
+		</MudButton>
+		<MudButton Class="rounded-pill"
+				   Size="Size.Small">
+			<MudText>Mark all as read</MudText>
+		</MudButton>
+		<MudButton Class="rounded-pill"
+				   Size="Size.Small">
+			<MudText>Clear all</MudText>
+		</MudButton>
+	</MudPaper>
+	<MudPaper Class="d-flex flex-column pa-2"
+			  Elevation="0"
+			  Width="100%">
+		@*ex item*@
+		<MudPaper Class="d-flex flex-grow-1 pa-2 rounded-pill">
+			<MudText Class="d-flex flex-grow-1">abc</MudText>
+		</MudPaper>
+		@*for go here*@
+	</MudPaper>
+</MudPaper>
+
+@code {
+
+}

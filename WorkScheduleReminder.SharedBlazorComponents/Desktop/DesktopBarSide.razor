@@ -1,0 +1,96 @@
+﻿
+<MudButton>
+	<MudPaper Class="d-flex flex-row flex-grow-1 gap-3 align-center"
+			  Elevation="0">
+		<MudAvatar>
+			<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+		</MudAvatar>
+		<MudText>
+			-Name-
+		</MudText>
+	</MudPaper>
+</MudButton>
+<MudNavMenu Class="pa-2">
+	<MudButton StartIcon="@Icons.Material.Filled.Today"
+			   Href="/home"
+			   OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
+		<MudText>My day</MudText>
+	</MudButton>
+	<MudButton StartIcon="@Icons.Material.Filled.NextWeek"
+			   Href="/list"
+			   OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
+		<MudText>Next 7 days</MudText>
+	</MudButton>
+	<MudButton StartIcon="@Icons.Material.Filled.Task"
+			   Href="/calendar"
+			   OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
+		<MudText>All my tasks</MudText>
+	</MudButton>
+	<MudNavGroup Title="Custom views"
+				 Expanded="true"
+				 MaxHeight="100">
+		<MudButton Class=""
+				   Size="Size.Small"
+				   StartIcon="@Icons.Material.Filled.Add">
+			<MudText>Create a view</MudText>
+		</MudButton>
+		@*for go here*@
+		<MudButton StartIcon="@Icons.Material.Filled.Today"
+				   Href="/home"
+				   OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
+			<MudText>Example custom view</MudText>
+		</MudButton>
+	</MudNavGroup>
+	<MudNavGroup Title="Workspace"
+				 Expanded="true"
+				 MaxHeight="100">
+		<MudButton Class=""
+				   Size="Size.Small"
+				   StartIcon="@Icons.Material.Filled.Add">
+			<MudText>Create a workspace</MudText>
+		</MudButton>
+		<MudButton StartIcon="@Icons.Material.Filled.Today"
+				   Href="/home"
+				   OnClick="@(()=>Update("Example Workspace View", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
+			<MudText>Example Workspace View</MudText>
+		</MudButton>
+	</MudNavGroup>
+</MudNavMenu>
+
+@code
+{
+	[Parameter]
+	public string? Name { get; set; }
+	[Parameter]
+	public string? Icon { get; set; }
+	[Parameter]
+	public Helper.ViewType Type { get; set; }
+	[Parameter]
+	public EventCallback<string> NameChanged { get; set; }
+	[Parameter]
+	public EventCallback<string> IconChanged { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewType> TypeChanged { get; set; }
+	Task UpdateName(string newName)
+	{
+		Name = newName;
+		return NameChanged.InvokeAsync(Name);
+	}
+	Task UpdateIcon(string newIcon)
+	{
+		Icon = newIcon;
+		return IconChanged.InvokeAsync(Icon);
+	}
+	Task UpdateType(Helper.ViewType newType)
+	{
+		Type = newType;
+		return TypeChanged.InvokeAsync(Type);
+	}
+	void Update(string newName, string newIcon, Helper.ViewType newType)
+	{
+		UpdateName(newName);
+		UpdateIcon(newIcon);
+		UpdateType(newType);
+	}
+	
+}

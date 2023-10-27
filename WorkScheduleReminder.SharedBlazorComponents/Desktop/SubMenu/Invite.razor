@@ -1,0 +1,86 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+		  Class="d-flex flex-column flex-wrap gap-2 pa-2 align-content-start"
+		  Style="border-radius:20px"
+		  Elevation="0"
+		  Width="500px"
+		  Height="400px">
+	<MudText Class="mx-2"
+			 Style="font-family:inherit; font-weight:bold"
+			 Typo="Typo.h5">
+		Invite
+	</MudText>
+	@*Invite with email*@
+	<MudPaper Class="d-flex flex-column gap-1 px-2"
+			  Elevation="0"
+			  Width="100%">
+		<MudText Style="font-family:inherit;"
+				 Typo="Typo.subtitle1">
+			Invite with email
+		</MudText>
+		<MudPaper Class="d-flex flex-row gap-1 rounded-pill border-2 px-2"
+				  Elevation="0"
+				  Width="100%">
+			<MudTextField @bind-Value="Email"
+						  Class="d-flex flex-grow-1"
+						  Style="font-family:inherit"
+						  Immediate="true"
+						  Placeholder="Enter email"
+						  DisableUnderLine="true"
+						  Variant="Variant.Outlined" 
+						  Margin="Margin.Dense" />
+			<MudButton Class="d-flex flex-wrap"
+					   Size="Size.Small"
+					   Color="Color.Info"
+					   OnClick="InviteByEmail">
+				Invite
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
+	@*Invite with link*@
+	<MudPaper Class="d-flex flex-column gap-1 px-2"
+			  Elevation="0"
+			  Width="100%">
+		<MudText Style="font-family:inherit;"
+				 Typo="Typo.subtitle1">
+			Invite with link
+		</MudText>
+		<MudPaper Class="d-flex flex-row gap-1 rounded-pill border-2 px-2"
+				  Elevation="0"
+				  Width="100%">
+			<MudText Class="d-flex flex-grow-1 align-content-center py-2"
+					 Style="font-family:inherit">
+				@Link
+			</MudText>
+			<MudButton Class="d-flex flex-wrap"
+					   Size="Size.Small"
+					   Color="Color.Info"
+					   OnClick="InviteByLink">
+				Copy
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
+	<MudText Class="mx-2"
+			 Style="font-family:inherit; font-weight:bold"
+			 Typo="Typo.h5">
+		Permission
+	</MudText>
+	@*List of member*@
+</MudPaper>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	public string Email { get; set; } = "";
+	public string Link { get; set; } = "http//";
+
+	private void InviteByEmail()
+	{
+
+	}
+	private void InviteByLink()
+	{
+
+	}
+}
