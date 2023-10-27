@@ -1,56 +1,115 @@
 ﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2"
 		  Elevation="0">
-	<MudMenu Class=""
-			 ListClass=""
-			 PopoverClass=""
-			 Size="Size.Small"
-			 FullWidth="false"
-			 AnchorOrigin="Origin.BottomCenter"
-			 TransformOrigin="Origin.TopCenter"
-			 MaxHeight="250">
-		<ActivatorContent>
-			<MudIconButton Class="rounded-cycle"
-						   Icon="@Icons.Material.Filled.MoreVert"
-						   Size="Size.Small">
-			</MudIconButton>
-		</ActivatorContent>
-		<ChildContent>
-			<MudMenuItem Class="">
-				Weekend
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Board Activity
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Board tags
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Sections
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Make private
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Multi-select
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				View archived items
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Save as template
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Leave board
-			</MudMenuItem>
-			<MudMenuItem Class="">
-				Archive board
-			</MudMenuItem>
-		</ChildContent>
-	</MudMenu>
+	@if (Type == Helper.ViewType.DefaultView)
+	{
+		<MudMenu Class=""
+				 ListClass=""
+				 PopoverClass=""
+				 Size="Size.Small"
+				 FullWidth="false"
+				 AnchorOrigin="Origin.BottomCenter"
+				 TransformOrigin="Origin.TopCenter"
+				 MaxHeight="250">
+			<ActivatorContent>
+				<MudIconButton Class="rounded-cycle"
+							   Icon="@Icons.Material.Filled.MoreVert"
+							   Size="Size.Small">
+				</MudIconButton>
+			</ActivatorContent>
+			<ChildContent>
+				<MudMenuItem Class="">
+					Clear completed
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Multi-select
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Print
+				</MudMenuItem>
+			</ChildContent>
+		</MudMenu>
+	}
+	else if (Type == Helper.ViewType.CustomView)
+	{
+		<MudMenu Class=""
+				 ListClass=""
+				 PopoverClass=""
+				 Size="Size.Small"
+				 FullWidth="false"
+				 AnchorOrigin="Origin.BottomCenter"
+				 TransformOrigin="Origin.TopCenter"
+				 MaxHeight="250">
+			<ActivatorContent>
+				<MudIconButton Class="rounded-cycle"
+							   Icon="@Icons.Material.Filled.MoreVert"
+							   Size="Size.Small">
+				</MudIconButton>
+			</ActivatorContent>
+			<ChildContent>
+				<MudMenuItem Class="">
+					Edit
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Delete
+				</MudMenuItem>
+			</ChildContent>
+		</MudMenu>
+	}
+	else if (Type == Helper.ViewType.WorkspaceView)
+	{
+		<MudMenu Class=""
+				 ListClass=""
+				 PopoverClass=""
+				 Size="Size.Small"
+				 FullWidth="false"
+				 AnchorOrigin="Origin.BottomCenter"
+				 TransformOrigin="Origin.TopCenter"
+				 MaxHeight="250">
+			<ActivatorContent>
+				<MudIconButton Class="rounded-cycle"
+							   Icon="@Icons.Material.Filled.MoreVert"
+							   Size="Size.Small">
+				</MudIconButton>
+			</ActivatorContent>
+			<ChildContent>
+				<MudMenuItem Class="">
+					Weekend
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Board Activity
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Board tags
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Sections
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Make private
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Multi-select
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					View archived items
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Save as template
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Leave board
+				</MudMenuItem>
+				<MudMenuItem Class="">
+					Archive board
+				</MudMenuItem>
+			</ChildContent>
+		</MudMenu>
+	}
 </MudPaper>
 
 
 @code
 {
-
+	[Parameter]
+	public Helper.ViewType Type{ get; set; }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Components.Forms;
 namespace WorkScheduleReminder.SharedBlazorComponents
 {
 	public class Helper
@@ -14,7 +14,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		{
 			DefaultView, CustomView, WorkspaceView
 		}
-		public static Assembly[] LibraryAdditionalAssemblies = new[] { Assembly.GetExecutingAssembly()};
+		public static Assembly[] DependencyAdditionalAssemblies = new[] { Assembly.GetExecutingAssembly()};
 		public static string GetResource(string path)
 		{
 			StringBuilder stringBuilder = new("_content/WorkScheduleReminder.SharedBlazorComponents");

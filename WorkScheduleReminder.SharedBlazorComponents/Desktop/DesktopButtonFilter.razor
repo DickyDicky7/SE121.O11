@@ -1,8 +1,7 @@
-﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.SubMenu
+<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2"
 		  Elevation="0">
 	<MudMenu Class=""
-			 ListClass=""
-			 PopoverClass=""
 			 Size="Size.Small"
 			 FullWidth="false"
 			 AnchorOrigin="Origin.BottomCenter"
@@ -16,8 +15,7 @@
 		</ActivatorContent>
 		<ChildContent>
 			<MudMenuItem Class="">
-				<MudMenu ActivationEvent="MouseEvent.MouseOver"
-						 AnchorOrigin="Origin.CenterRight"
+				<MudMenu AnchorOrigin="Origin.CenterRight"
 						 TransformOrigin="Origin.CenterLeft">
 					<ActivatorContent>
 						<MudButton Class="rounded-cycle"
@@ -32,8 +30,7 @@
 				</MudMenu>
 			</MudMenuItem>
 			<MudMenuItem Class="">
-				<MudMenu ActivationEvent="MouseEvent.MouseOver"
-						 AnchorOrigin="Origin.CenterRight"
+				<MudMenu AnchorOrigin="Origin.CenterRight"
 						 TransformOrigin="Origin.TopLeft">
 					<ActivatorContent>
 						<MudButton Class="rounded-cycle"
@@ -43,13 +40,12 @@
 						</MudButton>
 					</ActivatorContent>
 					<ChildContent>
-						<MudPaper Class="mud-theme-primary" Width="200px" Height="200px"/>
+						<DueDay />
 					</ChildContent>
 				</MudMenu>
 			</MudMenuItem>
 			<MudMenuItem Class="">
-				<MudMenu ActivationEvent="MouseEvent.MouseOver"
-						 AnchorOrigin="Origin.CenterRight"
+				<MudMenu AnchorOrigin="Origin.CenterRight"
 						 TransformOrigin="Origin.CenterLeft">
 					<ActivatorContent>
 						<MudButton Class="rounded-cycle"
@@ -64,8 +60,7 @@
 				</MudMenu>
 			</MudMenuItem>
 			<MudMenuItem Class="">
-				<MudMenu ActivationEvent="MouseEvent.MouseOver"
-						 AnchorOrigin="Origin.CenterRight"
+				<MudMenu AnchorOrigin="Origin.CenterRight"
 						 TransformOrigin="Origin.CenterLeft">
 					<ActivatorContent>
 						<MudButton Class="rounded-cycle"
@@ -75,13 +70,12 @@
 						</MudButton>
 					</ActivatorContent>
 					<ChildContent>
-
+						<Tag EnableEdit=false/>
 					</ChildContent>
 				</MudMenu>
 			</MudMenuItem>
 			<MudMenuItem Class="">
-				<MudMenu ActivationEvent="MouseEvent.MouseOver"
-						 AnchorOrigin="Origin.CenterRight"
+				<MudMenu AnchorOrigin="Origin.CenterRight"
 						 TransformOrigin="Origin.CenterLeft">
 					<ActivatorContent>
 						<MudButton Class="rounded-cycle"

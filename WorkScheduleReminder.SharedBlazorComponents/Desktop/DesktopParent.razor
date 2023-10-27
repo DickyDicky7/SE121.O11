@@ -1,4 +1,5 @@
-﻿
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.Popup;
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop.SubMenu;
 <MudPaper Class="d-flex flex-row"
 		  Elevation="0"
 		  Height="100vh" Width="100vw" MinHeight="400px" MinWidth="600px">
@@ -8,7 +9,7 @@
 			  Elevation="0"
 			  Height="100%"
 			  Width="200px">
-		<DesktopBarSide @bind-Name="ActiveName" @bind-Type="Type"/>
+		<DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
 	</MudPaper>
 	@*Top bar & mainscreen*@
 	<MudPaper Class="d-flex flex-column flex-grow-1"
@@ -20,14 +21,26 @@
 						border-solid border-1"
 				  Elevation="0"
 				  Width="100%">
-			<DesktopBarTop ActiveName="@ActiveName" Type="@Type"/>
+			<DesktopBarTop ActiveName="@ActiveName"
+						   ActiveIcon="@ActiveIcon"
+						   ActiveType="@ActiveType" />
+			<MudButton Class="d-flex flex-wrap rounded-pill"
+					   OnClick="(()=>{isVisible = !isVisible;})">
+				@isVisible
+			</MudButton>
 		</MudPaper>
 		@*MainScreen*@
-		<MudPaper Class="d-flex flex-grow-1 pa-2
-						align-self-center"
+		<MudPaper Class="d-flex pa-2 justify-content-center"
 				  Elevation="0"
-				  Width="100%">
-			@MainChildContent
+				  Width="100%" Height="100%">
+			@* @MainChildContent *@
+			<MudOverlay Visible="isVisible"
+						DarkBackground="true"
+						AutoClose="true"
+						OnClick="(()=>{isVisible=!isVisible;})">
+				<Invite @onclick:stopPropagation/>
+				@* <Tag @onclick:stopPropagation EnableEdit="true"/> *@
+			</MudOverlay>
 		</MudPaper>
 	</MudPaper>
 </MudPaper>
@@ -38,6 +51,9 @@
 	[Parameter]
 	public RenderFragment? MainChildContent { get; set; }
 
-	public string ActiveName { get; set; }
-	public Helper.ViewType Type { get; set; }
+	private bool isVisible { get; set; } = false;
+
+	public string? ActiveName { get; set; }
+	public string? ActiveIcon { get; set; }
+	public Helper.ViewType ActiveType { get; set; }
 }
