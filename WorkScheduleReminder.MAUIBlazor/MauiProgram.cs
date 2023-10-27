@@ -1,7 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
-using MudBlazor.Services;
-using MudExtensions.Services;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 
 namespace WorkScheduleReminder.MAUIBlazor
 {
@@ -18,13 +16,12 @@ namespace WorkScheduleReminder.MAUIBlazor
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				});
 
-			builder.Services.AddMauiBlazorWebView();
-			builder.Services.AddMudServices();
-			builder.Services.AddMudExtensions();
-
 #if DEBUG
 			builder.Services.AddBlazorWebViewDeveloperTools(); builder.Logging.AddDebug();
 #endif
+
+			builder.Services.AddMauiBlazorWebView();
+			builder.Services.AddServicesAndExtensionsMAUIBlazor();
 
 			return builder.Build();
 		}

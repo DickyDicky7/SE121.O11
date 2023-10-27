@@ -1,6 +1,6 @@
 # WorkScheduleReminder
 
-UI Library
-https://mudblazor.com/
-https://codebeam-mudextensions.pages.dev/
+UI Library:
+- https://mudblazor.com/
+- https://codebeam-mudextensions.pages.dev/
 
