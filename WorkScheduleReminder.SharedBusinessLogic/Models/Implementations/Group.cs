@@ -7,7 +7,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	public class Group : CustomBaseModelTableN
 	{
 		[Column(columnName: "name")]
-		public string Name { get; set; } = null!;
+		public string Name { get; set; } = default!;
 
 		[Column(columnName: "owner_id")]
 		public Guid    OwnerId { get; set; }
@@ -16,6 +16,6 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(Profile), 
 			       columnName: nameof(OwnerId),
 			       foreignKey: "groups___owner_id_fkey")]
-		public Profile Owner   { get; set; } = null!;
+		public Profile Owner   { get; set; } = default!;
 	}
 }

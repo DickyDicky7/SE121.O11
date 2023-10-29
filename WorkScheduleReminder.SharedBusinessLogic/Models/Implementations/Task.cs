@@ -7,16 +7,16 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	public class Task : CustomBaseModelTableN
 	{
 		[Column(columnName: "name")]
-		public string Name { get; set; } = null!;
+		public string Name { get; set; } = default!;
 
 		[Column(columnName: "note")]
-		public string Note { get; set; } = null!;
+		public string Note { get; set; } = default!;
 
 		[Column(columnName: "done")]
 		public bool   Done { get; set; }
 
 		[Column(columnName: "checklist")]
-		public string Checklist { get; set; } = null!;
+		public string Checklist { get; set; } = default!;
 
 		[Column(columnName: "begin_date")]
 		public DateOnly? BeginDate {  get; set; }
@@ -31,13 +31,13 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public DateTimeOffset? CeaseTime { get; set; }
 
 		[Column(columnName: "settings")]
-		public string Settings { get; set; } = null!;
+		public string Settings { get; set; } = default!;
 
 		[Column(columnName: "reminder")]
-		public string Reminder { get; set; } = null!;
+		public string Reminder { get; set; } = default!;
 
 		[Column(columnName: "attachments")]
-		public string Attachments { get; set; } = null!;
+		public string Attachments { get; set; } = default!;
 
 		[Column(columnName: "group___id")]
 		public Guid?   GroupId { get; set; }

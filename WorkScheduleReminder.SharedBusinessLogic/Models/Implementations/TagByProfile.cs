@@ -7,10 +7,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	public class TagByProfile : CustomBaseModelTableN
 	{
 		[PrimaryKey(columnName: "name")]
-		public string Name     { get; set; } = null!;
+		public string Name     { get; set; } = default!;
 
 		[Column    (columnName: "settings")]
-		public string Settings { get; set; } = null!;
+		public string Settings { get; set; } = default!;
 
 		[PrimaryKey(columnName: "profile_id")]
 		public Guid    ProfileId { get; set; }
@@ -19,6 +19,6 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(Profile  ),
 			       columnName: nameof(ProfileId),
 			       foreignKey: "tags_by_profiles_profile_id_fkey")]
-		public Profile Profile   { get; set; } = null!;
+		public Profile Profile   { get; set; } = default!;
 	}
 }

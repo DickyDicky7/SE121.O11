@@ -16,16 +16,16 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:         typeof(Task  ),
 			       columnName:    nameof(TaskId),
 			       foreignKey: "comments_task____id_fkey")]
-		public    Task    Task { get; set; } = null!;
+		public    Task    Task { get; set; } = default!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:         typeof(Profile  ),
 			       columnName:    nameof(ProfileId),
 			       foreignKey: "comments_profile_id_fkey")]
-		public Profile Profile { get; set; } = null!;
+		public Profile Profile { get; set; } = default!;
 
 		[Column(columnName: "message")]
-		public string  Message { get; set; } = null!;
+		public string  Message { get; set; } = default!;
 
 		[Column(columnName: "comment_id")]
 		public Guid? CommentId { get; set; }
@@ -33,6 +33,6 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:    typeof(Comment  ),
 			       foreignKey:     "comments")]
-		public List<Comment> Replies { get; set; } = null!;
+		public List<Comment> Replies { get; set; } = default!;
 	}
 }

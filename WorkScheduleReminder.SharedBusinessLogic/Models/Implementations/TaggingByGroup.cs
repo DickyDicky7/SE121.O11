@@ -25,7 +25,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(Task  ),
 			       columnName: nameof(TaskId),
 			       foreignKey: "taggings_by_groups___task_id_fkey")]
-		public Task Task   { get; set; } = null!;
+		public Task Task   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "tag_by_group___id")]
 		public Guid       TagByGroupId { get; set; }
@@ -34,6 +34,6 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(TagByGroup  ),
 			       columnName: nameof(TagByGroupId),
 			       foreignKey: "taggings_by_groups___tag_by_group___id_fkey")]
-		public TagByGroup TagByGroup   { get; set; } = null!;
+		public TagByGroup TagByGroup   { get; set; } = default!;
 	}
 }

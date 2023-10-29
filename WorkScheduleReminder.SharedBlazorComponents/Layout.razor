@@ -1,23 +1,52 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Mobile
+﻿@using Supabase.Gotrue
+@using Supabase.Gotrue.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@using WorkScheduleReminder.SharedBlazorComponents.Mobile_
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop
 
-<MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
+@implements IDisposable
+@inject     Supabase.Client SupabaseClient
 
-@switch (DeviceType)
-{
-    case Helper.DeviceType.Mobile:
-        <MobileLogIn/>
-        break;
+<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
 
-    case Helper.DeviceType.Desktop:
-        <DesktopSignUp/>
-        break;
+<CascadingAuthenticationState>
+	<AuthorizeView>
+		<Authorized>
+			@switch (DeviceType)
+			{
+				case Helper.DeviceType.Mobile:
+					<MobileParent  MainChildContent="@ChildContent" />
+					 break;
 
-    case Helper.DeviceType.Unknown:
-        break;
-}
+				case Helper.DeviceType.Desktop:
+					@* <AddTask/> *@
+					@* <DesktopLoginMain/> *@
+					<DesktopParent MainChildContent="@ChildContent" />
+					 break;
+
+				case Helper.DeviceType.Unknown:
+					 break;
+			}
+		</Authorized>
+		<Authorizing>
+			<MudText>Authorizing</MudText>
+		</Authorizing>
+		<NotAuthorized>
+			@switch (DeviceType)
+			{
+				case Helper.DeviceType.Mobile:
+					 break;
+
+				case Helper.DeviceType.Desktop:
+					<DesktopLoginMain/>
+					 break;
+
+				case Helper.DeviceType.Unknown:
+					 break;
+			}
+		</NotAuthorized>
+	</AuthorizeView>
+</CascadingAuthenticationState>
 
 @code
 {
@@ -26,5 +55,19 @@
     public RenderFragment? ChildContent { get; set; }
     [Parameter]
     public Helper.DeviceType DeviceType { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+	}
+
+	protected async void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
+	{
+	}
+
+	public void Dispose()
+	{
+		SupabaseClient.Auth.RemoveStateChangedListener(AuthEventHandler);
+	}
 
 }

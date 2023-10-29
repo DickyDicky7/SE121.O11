@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		public static IServiceCollection AddServicesAndExtensionsMAUIBlazor
 				(this IServiceCollection    services)
 		=> services.AddSingleton<IGotrueSessionPersistenceService,
-								  GotrueSessionPersistenceService>().AddServicesAndExtensionsSharedBusinessLogic()
+								  GotrueSessionPersistenceService>()/*.AddServicesAndExtensionsSharedBusinessLogic()*/
 				   .AddServicesAndExtensionsSharedBlazorComponents();
 	}
 }
