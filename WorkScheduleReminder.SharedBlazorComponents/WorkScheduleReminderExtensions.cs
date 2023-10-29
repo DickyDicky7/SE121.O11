@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
 				Supabase.Client>();
 				return new(supabaseClient);
 			})
-			.AddAuthorizationCore();
+			.AddAuthorizationCore()
+			.AddServicesAndExtensionsSharedBusinessLogic();
 	}
 }

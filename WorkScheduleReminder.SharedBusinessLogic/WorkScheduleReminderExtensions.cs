@@ -1,5 +1,6 @@
 ﻿using Supabase;
 using WorkScheduleReminder.SharedBusinessLogic.Services.Abstractions___;
+using WorkScheduleReminder.SharedBusinessLogic.Services.Implementations;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -26,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
 					AutoRefreshToken = true, AutoConnectRealtime 
 									 = true,
 				});
-			});
+			})             .AddSingleton<ObservableDictionaryTransferService>();
 		}
 	}
 }

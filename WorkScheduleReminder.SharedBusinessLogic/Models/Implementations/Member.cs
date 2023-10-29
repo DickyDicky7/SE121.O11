@@ -28,16 +28,16 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(Group  ),
 			       columnName: nameof(GroupId),
 			       foreignKey: "members_group___id_fkey")]
-		public   Group   Group { get; set; } = null!;
+		public   Group   Group { get; set; } = default!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:      typeof(Profile  ),
 			       columnName: nameof(ProfileId),
 			       foreignKey: "members_profile_id_fkey")]
-		public Profile Profile { get; set; } = null!;
+		public Profile Profile { get; set; } = default!;
 
 		[Column(columnName: "role")]
-		public string Role { get; set; } = null!;
+		public string Role { get; set; } = default!;
 
 		[Column(columnName: "invitation_accepted")]
 		public  bool? InvitationAccepted { get; set; }

@@ -1,37 +1,40 @@
-﻿using System.Threading.Tasks;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
-using System;
 
 namespace WorkScheduleReminder.Testing.Core
 {
 	public class PlaywrightWebView2Test : PlaywrightTest
 	{
-		public IPage Page { get; internal set; } = null!;
-		public IBrowser Browser { get; internal set; } = null!;
-		public IBrowserContext Context { get; internal set; } = null!;
+		public IPage           Page    { get; internal set; } = default!;
+		public IBrowser        Browser { get; internal set; } = default!;
+		public IBrowserContext Context { get; internal set; } = default!;
 
-		private Process? _webView2Process = null;
-		private string _userDataDirectory = null!;
-		private string _executablePath = Path.Join(Directory.GetCurrentDirectory(), @"..\..\..\..\WorkScheduleReminder.MAUIBlazor\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\WorkScheduleReminder.MAUIBlazor.exe");
+		private Process? webView2Process;
+		private          string userDataDirectory = default!;
+		private readonly string executablePath    = Path.Join(Directory.GetCurrentDirectory
+		(), @"..\..\..\..\WorkScheduleReminder.MAUIBlazor\bin\Debug\net7.0-windows10.0.19041.0\win10-x64\WorkScheduleReminder.MAUIBlazor.exe");
 
 		[SetUp]
 		public async Task BrowserSetUp()
 		{
 			int cdpPort = 10000 + WorkerIndex;
-			Assert.IsTrue(File.Exists(_executablePath), "Make sure that the executable exists, try to build the project which creates the executable again");
-			_userDataDirectory = Path.Join(Path.GetTempPath(), $"PlaywrightWebView2Tests/UserDataDirectory-{NUnit.Framework.TestContext.CurrentContext.WorkerId}");
-			if (Directory.Exists(_userDataDirectory))
-				Directory.Delete(_userDataDirectory, true);
+			Assert.IsTrue(File.Exists(executablePath
+			), "Make sure that the executable exists, try to build the project which creates the executable again");
+			userDataDirectory =  Path.Join(Path.GetTempPath
+			(), $"PlaywrightWebView2Tests/UserDataDirectory-{NUnit.Framework.TestContext.CurrentContext.WorkerId}");
+			if (Directory.Exists(userDataDirectory))
+				Directory.Delete(userDataDirectory, true);
 
-			_webView2Process = Process.Start(new ProcessStartInfo(_executablePath)
+			webView2Process = Process.Start(new ProcessStartInfo(executablePath)
 			{
 				EnvironmentVariables =
 				{
-					["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = $"--remote-debugging-port={cdpPort}",
-					["WEBVIEW2_USER_DATA_FOLDER"] = _userDataDirectory,
+					["WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS"] = $"--remote-debugging-port={cdpPort}", ["WEBVIEW2_USER_DATA_FOLDER"]
+					= userDataDirectory,
 				},
 				RedirectStandardOutput = true,
 			});
@@ -53,13 +56,16 @@ namespace WorkScheduleReminder.Testing.Core
 			await Task.Delay(TimeSpan.FromSeconds(10));
 
 			string cdpAddress = $"http://127.0.0.1:{cdpPort}";
-			Browser = await Playwright.Chromium.ConnectOverCDPAsync(cdpAddress); Context = Browser.Contexts[0]; Page = Context.Pages[0];
+			Browser = await Playwright.Chromium.ConnectOverCDPAsync(cdpAddress);
+			Context = Browser.Contexts[0]; 
+			   Page = Context.Pages   [0];
 		}
 
 		[TearDown]
 		public async Task BrowserTearDown()
 		{
-			_webView2Process!.Kill(true); await Browser.CloseAsync();
+			webView2Process!.Kill(true); 
+			await   Browser .CloseAsync();
 		}
 	}
 }

@@ -13,12 +13,12 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			       model:      typeof(Group  ),
 			       columnName: nameof(GroupId),
 			       foreignKey: "tags_by_groups___group___id_fkey")]
-		public Group Group   { get; set; } = null!;
+		public Group Group   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "name")]
-		public string Name     { get; set; } = null!;
+		public string Name     { get; set; } = default!;
 
 		[Column    (columnName: "settings")]
-		public string Settings { get; set; } = null!;
+		public string Settings { get; set; } = default!;
 	}
 }
