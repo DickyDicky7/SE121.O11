@@ -1,0 +1,77 @@
+﻿<MudPaper Class="d-flex flex-row"
+          Elevation="0"
+          Height="100vh"
+          Width="100vw"
+          MinHeight="500px"
+          MinWidth="800px">
+    <MudPaper Class="d-flex justify-center"
+              Elevation="0"
+              Width="50%"
+              Height="100%">
+        <MudPaper Class="d-flex flex-column align-self-center gap-2"
+                  Elevation="0">
+            <MudImage Class="align-self-center"
+                      Src="@Helper.GetResource("/images/catsayhello.png")"
+                      Width="250" Height="250"
+                      ObjectFit="ObjectFit.Contain"
+                      ObjectPosition="ObjectPosition.Center" />
+            <MudText Style="font-family:inherit;"
+                     Align="Align.Center">
+                Over 10 millions people using this to manage their day
+            </MudText>
+        </MudPaper>
+    </MudPaper>
+    <MudPaper Class="d-flex justify-center"
+              Elevation="0"
+              Width="50%"
+              Height="100%">
+        <MudPaper Class="d-flex flex-wrap align-self-center gap-2"
+                  Elevation="0"
+                  Width="50%">
+            <MudTextField @bind-Value="Email"
+                          Class="rounded-pill"
+                          Style="font-family:inherit"
+                          Placeholder="Enter email"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+            <MudTextField @bind-Value="Password"
+                          Class="rounded-pill"
+                          Style="font-family:inherit"
+                          Placeholder="Enter password"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+            <MudButton Class="d-flex flex-wrap rounded-pill"
+                       StartIcon="@Icons.Material.Filled.Login"
+                       Size="Size.Medium"
+                       FullWidth="true"
+                       Variant=Variant.Outlined
+                       OnClick="LogIn">
+                <MudText Style="font-family:inherit;">
+                    Log in
+                </MudText>
+            </MudButton>
+            <MudLink Class="d-flex justify-center"
+                     Href="">
+                <MudText Style="font-family:inherit">
+                    Sign up
+                </MudText>
+            </MudLink>
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+@code
+{
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+    public void LogIn()
+    {
+
+    }
+}

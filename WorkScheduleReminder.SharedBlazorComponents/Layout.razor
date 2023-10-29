@@ -1,30 +1,30 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Mobile
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop
 
-<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 @switch (DeviceType)
 {
-	case Helper.DeviceType.Mobile:
-		<MobileParent  MainChildContent="@ChildContent" />
-		 break;
+    case Helper.DeviceType.Mobile:
+        <MobileLogIn/>
+        break;
 
-	case Helper.DeviceType.Desktop: 
-		@* <AddTask/> *@
-		@* <DesktopLoginMain/> *@
-		<DesktopParent MainChildContent="@ChildContent" />
-		 break;
+    case Helper.DeviceType.Desktop:
+        <DesktopSignUp/>
+        break;
 
-	case Helper.DeviceType.Unknown:
-		 break;
+    case Helper.DeviceType.Unknown:
+        break;
 }
 
 @code
 {
 
-	[Parameter]
-	public RenderFragment? ChildContent { get; set; }
-	[Parameter]
-	public Helper.DeviceType DeviceType { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public Helper.DeviceType DeviceType { get; set; }
 
 }

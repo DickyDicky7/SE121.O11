@@ -1,5 +1,5 @@
 ﻿
-<MudButton>
+<MudButton Href="/login">
 	<MudPaper Class="d-flex flex-row flex-grow-1 gap-3 align-center"
 			  Elevation="0">
 		<MudAvatar>
@@ -12,17 +12,17 @@
 </MudButton>
 <MudNavMenu Class="pa-2">
 	<MudButton StartIcon="@Icons.Material.Filled.Today"
-			   Href="/home"
+			   Href=""
 			   OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
 		<MudText>My day</MudText>
 	</MudButton>
 	<MudButton StartIcon="@Icons.Material.Filled.NextWeek"
-			   Href="/list"
+			   Href=""
 			   OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
 		<MudText>Next 7 days</MudText>
 	</MudButton>
 	<MudButton StartIcon="@Icons.Material.Filled.Task"
-			   Href="/calendar"
+			   Href=""
 			   OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
 		<MudText>All my tasks</MudText>
 	</MudButton>
@@ -36,7 +36,7 @@
 		</MudButton>
 		@*for go here*@
 		<MudButton StartIcon="@Icons.Material.Filled.Today"
-				   Href="/home"
+				   Href=""
 				   OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
 			<MudText>Example custom view</MudText>
 		</MudButton>
@@ -50,7 +50,7 @@
 			<MudText>Create a workspace</MudText>
 		</MudButton>
 		<MudButton StartIcon="@Icons.Material.Filled.Today"
-				   Href="/home"
+				   Href=""
 				   OnClick="@(()=>Update("Example Workspace View", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
 			<MudText>Example Workspace View</MudText>
 		</MudButton>

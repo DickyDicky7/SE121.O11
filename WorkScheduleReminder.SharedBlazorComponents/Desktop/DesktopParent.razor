@@ -34,13 +34,13 @@
 				  Elevation="0"
 				  Width="100%" Height="100%">
 			@* @MainChildContent *@
-			<MudOverlay Visible="isVisible"
+			@* <MudOverlay Visible="isVisible"
 						DarkBackground="true"
 						AutoClose="true"
 						OnClick="(()=>{isVisible=!isVisible;})">
 				<Invite @onclick:stopPropagation/>
-				@* <Tag @onclick:stopPropagation EnableEdit="true"/> *@
-			</MudOverlay>
+				<Tag @onclick:stopPropagation EnableEdit="true"/>
+			</MudOverlay> *@
 		</MudPaper>
 	</MudPaper>
 </MudPaper>

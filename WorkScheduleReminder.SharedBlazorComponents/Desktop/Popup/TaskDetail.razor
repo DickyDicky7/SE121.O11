@@ -1,153 +1,164 @@
 ﻿@inject ISnackbar Snackbar
 <MudPaper Class="d-flex flex-column gap-2 justify-start pa-2"
-		  Style="border-radius:20px;"
-		  Elevation="0"
-		  Width="500px"
-		  Height="80%" @attributes="AdditionalAttributes">
-	@*link and buttons*@
-	<MudPaper Class="d-flex flex-row pa-2"
-			  Elevation="0"
-			  Width="100%">
-		<MudText>abc/def/-taskname-</MudText>
-		<MudPaper Class="d-flex flex-grow-1" Elevation="0" />
-		<MudPaper Class="d-flex flex-row gap-2"
-				  Elevation="0">
-			<MudToggleIconButton Class="rounded-cycle"
-								 Size="Size.Small"
-								 ToggledSize="Size.Small"
-								 Title="Add to My day"
-								 ToggledTitle="Remove form My day"
-								 Icon="@Icons.Material.Filled.AddCircle"
-								 ToggledIcon="@Icons.Material.Filled.AddCircle"
-								 Color="Color.Default"
-								 ToggledColor="Color.Tertiary" />
-			<MudToggleIconButton Class="rounded-cycle"
-								 Size="Size.Small"
-								 ToggledSize="Size.Small"
-								 Title="Mark as done"
-								 ToggledTitle="Mark as undone"
-								 Icon="@Icons.Material.Filled.Done"
-								 ToggledIcon="@Icons.Material.Filled.Done"
-								 Color="Color.Default"
-								 ToggledColor="Color.Tertiary" />
-			<MudIconButton Class="rounded-cycle"
-						   Size="Size.Small"
-						   Title="Archive task"
-						   Icon="@Icons.Material.Filled.Archive"
-						   Color="Color.Default" />
-		</MudPaper>
-	</MudPaper>
-	@*title*@
-	<MudText Class="mx-2"
-			 Typo="Typo.h4"
-			 Style="font-family:inherit; font-weight:bold;">
-		taskname
-	</MudText>
-	@*remind me and tag*@
-	<MudPaper Class="d-flex flex-row gap-2 px-2"
-			  Elevation="0">
-		<MudButton Class="rounded-pill"
-				   Size=Size.Small
-				   StartIcon="@Icons.Material.Filled.Alarm"
-				   Color="Color.Default">
-			Remind me
-		</MudButton>
-		<MudButton Class="rounded-pill align-content-start"
-				   Size=Size.Small
-				   StartIcon="@Icons.Material.Filled.Tag"
-				   Color="Color.Default">
-			Tag
-		</MudButton>
-	</MudPaper>
-	@*note*@
-	<MudPaper Class="d-flex flex-column gap-1 px-2"
-			  Elevation="0">
-		<MudText Typo="Typo.subtitle1">Note</MudText>
-		<MudTextField @bind-Value="note" 
-					  FullWidth="true"
-					  Variant="Variant.Outlined"
-					  Lines="3" />
-	</MudPaper>
-	@*subtasks*@
-	<MudPaper Class="d-flex flex-column gap-1 px-2"
-			  Elevation="0">
-		<MudText Typo="Typo.subtitle1">SubTasks</MudText>
-		<MudTextField @bind-Value="newSubTask"
-					  FullWidth="true"
-					  Variant="Variant.Outlined" />
-		@*for go here*@
-	</MudPaper>
-	@*attachments*@
-	<MudPaper Class="d-flex flex-column gap-1 px-2"
-			  Elevation="0">
-		<MudText Typo="Typo.subtitle1">Attachments</MudText>
-		<MudFileUpload Class="flex-1"
-					   InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20"
-					   InputStyle="opacity:0"
-					   T="IReadOnlyList<IBrowserFile>"
-					   OnFilesChanged="OnInputFileChanged"
-					   AppendMultipleFiles="true"
-					   Hidden="false"
-		@ondragenter=@SetDragClass @ondragleave=@ClearDragClass @ondragend=@ClearDragClass>
-			<ButtonTemplate>
-				<MudPaper Class="@DragClass"
-						  Elevation="0"
-						  Outlined="true"
-						  Width="100%">
-					<MudText Style="font-family:inherit">
-						Drag or drop files here or click
-					</MudText>
-				</MudPaper>
-			</ButtonTemplate>
-		</MudFileUpload>
-		@foreach (IBrowserFile file in FileList)
-		{
-			<MudChip Text="@file.Name" />
-		}
-		<MudButton Class="rounded-pill"
-				   Size="Size.Small"
-				   Color="Color.Error"
-				   Disabled="@(!FileList.Any())"
-				   OnClick="Clear">
-			Clear
-		</MudButton>
-	</MudPaper>
+          Style="border-radius:20px;"
+          Elevation="0"
+          Width="500px"
+          Height="80%" @attributes="AdditionalAttributes">
+    @*link and buttons*@
+    <MudPaper Class="d-flex flex-row pa-2"
+              Elevation="0"
+              Width="100%">
+        <MudText>abc/def/-taskname-</MudText>
+        <MudPaper Class="d-flex flex-grow-1" Elevation="0" />
+        <MudPaper Class="d-flex flex-row gap-2"
+                  Elevation="0">
+            <MudToggleIconButton Class="rounded-cycle"
+                                 Size="Size.Small"
+                                 ToggledSize="Size.Small"
+                                 Title="Add to My day"
+                                 ToggledTitle="Remove form My day"
+                                 Icon="@Icons.Material.Filled.AddCircle"
+                                 ToggledIcon="@Icons.Material.Filled.AddCircle"
+                                 Color="Color.Default"
+                                 ToggledColor="Color.Tertiary" />
+            <MudToggleIconButton Class="rounded-cycle"
+                                 Size="Size.Small"
+                                 ToggledSize="Size.Small"
+                                 Title="Mark as done"
+                                 ToggledTitle="Mark as undone"
+                                 Icon="@Icons.Material.Filled.Done"
+                                 ToggledIcon="@Icons.Material.Filled.Done"
+                                 Color="Color.Default"
+                                 ToggledColor="Color.Tertiary" />
+            <MudIconButton Class="rounded-cycle"
+                           Size="Size.Small"
+                           Title="Archive task"
+                           Icon="@Icons.Material.Filled.Archive"
+                           Color="Color.Default" />
+        </MudPaper>
+    </MudPaper>
+    @*title*@
+    <MudText Class="mx-2"
+             Typo="Typo.h4"
+             Style="font-family:inherit; font-weight:bold;">
+        taskname
+    </MudText>
+    @*remind me and tag*@
+    <MudPaper Class="d-flex flex-row gap-2 px-2"
+              Elevation="0">
+        <MudButton Class="rounded-pill"
+                   Size=Size.Small
+                   StartIcon="@Icons.Material.Filled.Alarm"
+                   Color="Color.Default">
+            Remind me
+        </MudButton>
+        <MudButton Class="rounded-pill align-content-start"
+                   Size=Size.Small
+                   StartIcon="@Icons.Material.Filled.Tag"
+                   Color="Color.Default">
+            Tag
+        </MudButton>
+    </MudPaper>
+    @*note*@
+    <MudPaper Class="d-flex flex-column gap-1 px-2"
+              Elevation="0">
+        <MudText Typo="Typo.subtitle1">Note</MudText>
+        <MudTextField @bind-Value="note"
+                      Class=""
+                      Style="font-family:inherit;"
+                      Placeholder="Name your subtask"
+                      Immediate="true"
+                      DisableUnderLine="true"
+                      FullWidth="true"
+                      Variant="Variant.Outlined"
+                      Lines="3" />
+    </MudPaper>
+    @*subtasks*@
+    <MudPaper Class="d-flex flex-column gap-1 px-2"
+              Elevation="0">
+        <MudText Typo="Typo.subtitle1">SubTasks</MudText>
+        <MudTextField @bind-Value="newSubTask"
+                      Class=""
+                      Style="font-family:inherit;"
+                      Placeholder="Name your subtask"
+                      Immediate="true"
+                      DisableUnderLine="true"
+                      FullWidth="true"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense" />
+        @*for go here*@
+    </MudPaper>
+    @*attachments*@
+    <MudPaper Class="d-flex flex-column gap-1 px-2"
+              Elevation="0">
+        <MudText Typo="Typo.subtitle1">Attachments</MudText>
+        <MudFileUpload Class="flex-1"
+                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20"
+                       InputStyle="opacity:0"
+                       T="IReadOnlyList<IBrowserFile>"
+                       OnFilesChanged="OnInputFileChanged"
+                       AppendMultipleFiles="true"
+                       Hidden="false"
+        @ondragenter=@SetDragClass @ondragleave=@ClearDragClass @ondragend=@ClearDragClass>
+            <ButtonTemplate>
+                <MudPaper Class="@DragClass"
+                          Elevation="0"
+                          Outlined="true"
+                          Width="100%">
+                    <MudText Style="font-family:inherit">
+                        Drag or drop files here or click
+                    </MudText>
+                </MudPaper>
+            </ButtonTemplate>
+        </MudFileUpload>
+        @foreach (IBrowserFile file in FileList)
+        {
+            <MudChip Text="@file.Name" />
+        }
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Color="Color.Error"
+                   Disabled="@(!FileList.Any())"
+                   OnClick="Clear">
+            Clear
+        </MudButton>
+    </MudPaper>
 </MudPaper>
 
 @code
 {
-	[Parameter]
-	public string note { get; set; } = "";
-	[Parameter]
-	public string newSubTask { get; set; } = "";
-	[Parameter(CaptureUnmatchedValues = true)]
-	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter]
+    public string note { get; set; } = "";
+    [Parameter]
+    public string newSubTask { get; set; } = "";
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	private static string DefaultDragClass = "relative rounded-lg border-dashed border-2 pa-2 z-10";
-	private string DragClass = DefaultDragClass;
-	List<IBrowserFile> FileList = new List<IBrowserFile>();
+    private static string DefaultDragClass = "relative rounded-lg border-dashed border-2 pa-2 z-10";
+    private string DragClass = DefaultDragClass;
+    List<IBrowserFile> FileList = new List<IBrowserFile>();
 
-	private void OnInputFileChanged(InputFileChangeEventArgs e)
-	{
-		ClearDragClass();
-		IReadOnlyList<IBrowserFile> files = e.GetMultipleFiles();
-		foreach (IBrowserFile file in files)
-		{
-			FileList.Add(file);
-		}
-	}
-	private void Clear()
-	{
-		FileList.Clear();
-		ClearDragClass();
+    private void OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        ClearDragClass();
+        IReadOnlyList<IBrowserFile> files = e.GetMultipleFiles();
+        foreach (IBrowserFile file in files)
+        {
+            FileList.Add(file);
+        }
+    }
+    private void Clear()
+    {
+        FileList.Clear();
+        ClearDragClass();
 
-	}
-	private void SetDragClass()
-	{
-		DragClass = $"{DefaultDragClass} mud-border-primary";
-	}
-	private void ClearDragClass()
-	{
-		DragClass = DefaultDragClass;
-	}
+    }
+    private void SetDragClass()
+    {
+        DragClass = $"{DefaultDragClass} mud-border-primary";
+    }
+    private void ClearDragClass()
+    {
+        DragClass = DefaultDragClass;
+    }
 }

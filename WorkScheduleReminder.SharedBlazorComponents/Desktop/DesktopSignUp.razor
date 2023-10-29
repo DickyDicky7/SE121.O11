@@ -1,0 +1,66 @@
+﻿<MudPaper Class="d-flex flex-column"
+          Style=""
+          Elevation="0"
+          Width="100vw"
+          Height="100vh">
+    <MudPaper Class=""
+              Elevation="0"
+              MinWidth="800px"
+              Width="100%"
+              MaxWidth="1600px">
+        <MudIconButton Class=""
+                       Style=""
+                       Icon="@Icons.Material.Filled.ArrowBack"
+                       Size="Size.Large"
+                       Href=""
+                       Color="Color.Primary" />
+    </MudPaper>
+    <MudPaper Class="d-flex justify-center"
+              Elevation="0"
+              MinWidth="800px"
+              Width="100%"
+              Height="100%"
+              MaxWidth="1600px">
+        <MudPaper Class="d-flex flex-wrap align-self-center gap-2"
+                  Elevation="0"
+                  Width="25%">
+            <MudTextField @bind-Value="Email"
+                          Class="rounded-pill"
+                          Style="font-family:inherit"
+                          Placeholder="Enter email"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+            <MudTextField @bind-Value="Password"
+                          Class="rounded-pill"
+                          Style="font-family:inherit"
+                          Placeholder="Enter password"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+            <MudButton Class="d-flex flex-wrap rounded-pill"
+                       Size="Size.Medium"
+                       FullWidth="true"
+                       Variant=Variant.Outlined
+                       OnClick="SignUp">
+                <MudText Style="font-family:inherit;">
+                    Sign Up
+                </MudText>
+            </MudButton>
+        </MudPaper>
+    </MudPaper>
+</MudPaper>
+
+@code
+{
+    public string Email { get; set; } = "";
+    public string Password { get; set; } = "";
+    public void SignUp()
+    {
+
+    }
+}
