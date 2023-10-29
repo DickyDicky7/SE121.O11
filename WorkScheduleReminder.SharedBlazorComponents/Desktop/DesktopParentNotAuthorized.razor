@@ -1,0 +1,24 @@
+﻿@inject NavigationManager NavigationManager
+
+@switch (RenderComponentType)
+{
+	case ComponentType.LogIn:
+		       <DesktopLogIn  NotifySignUpClicked="OnSignUpClicked" />
+		 break;
+
+	case ComponentType.SignUp:
+		       <DesktopSignUp NotifyBack__Clicked="OnBack__Clicked" />
+		 break;
+}
+
+@code
+{
+
+	public enum ComponentType { LogIn, SignUp, };
+	public      ComponentType RenderComponentType { get; set; }
+	=           ComponentType . LogIn;
+
+	public void OnSignUpClicked() => RenderComponentType = ComponentType.SignUp;
+	public void OnBack__Clicked() => RenderComponentType = ComponentType. LogIn;
+
+}
