@@ -1,4 +1,4 @@
-﻿@inject ISnackbar Snackbar
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
 <MudPaper Class="d-flex flex-column gap-2 justify-start pa-2"
           Style="border-radius:20px;"
           Elevation="0"
@@ -49,13 +49,15 @@
         <MudButton Class="rounded-pill"
                    Size=Size.Small
                    StartIcon="@Icons.Material.Filled.Alarm"
-                   Color="Color.Default">
+                   Color="Color.Default"
+                   OnClick="(()=>{ReminderVisible = !ReminderVisible;})">
             Remind me
         </MudButton>
         <MudButton Class="rounded-pill align-content-start"
                    Size=Size.Small
                    StartIcon="@Icons.Material.Filled.Tag"
-                   Color="Color.Default">
+                   Color="Color.Default"
+                   OnClick="(()=>{TagVisible = !TagVisible;})">
             Tag
         </MudButton>
     </MudPaper>
@@ -124,9 +126,28 @@
         </MudButton>
     </MudPaper>
 </MudPaper>
+<MudOverlay Class="border-2"
+            Visible="ReminderVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            ZIndex="10"
+            OnClick="(()=>{ReminderVisible=!ReminderVisible;})">
+    <Reminder @onclick:stopPropagation />
+</MudOverlay>
+<MudOverlay Class="border-2"
+            Visible="TagVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            ZIndex="10"
+            OnClick="(()=>{TagVisible=!TagVisible;})">
+    <Tag @onclick:stopPropagation EnableEdit="true" />
+</MudOverlay>
 
 @code
 {
+    private bool TagVisible { get; set; } = false;
+    private bool ReminderVisible { get; set; } = false;
+
     [Parameter]
     public string note { get; set; } = "";
     [Parameter]

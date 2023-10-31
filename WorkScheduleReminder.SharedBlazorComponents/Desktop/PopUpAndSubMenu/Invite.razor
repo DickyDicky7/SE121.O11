@@ -17,7 +17,7 @@
 				 Typo="Typo.subtitle1">
 			Invite with email
 		</MudText>
-		<MudPaper Class="d-flex flex-row gap-1 rounded-pill border-2 px-2"
+		<MudPaper Class="d-flex flex-row gap-1 px-2"
 				  Elevation="0"
 				  Width="100%">
 			<MudTextField @bind-Value="Email"
@@ -44,10 +44,10 @@
 				 Typo="Typo.subtitle1">
 			Invite with link
 		</MudText>
-		<MudPaper Class="d-flex flex-row gap-1 rounded-pill border-2 px-2"
+		<MudPaper Class="d-flex flex-row gap-1 px-2"
 				  Elevation="0"
 				  Width="100%">
-			<MudText Class="d-flex flex-grow-1 align-content-center py-2"
+			<MudText Class="d-flex flex-grow-1 align-center"
 					 Style="font-family:inherit">
 				@Link
 			</MudText>
@@ -64,7 +64,28 @@
 			 Typo="Typo.h5">
 		Permission
 	</MudText>
-	@*List of member*@
+	<MudPaper Class="d-flex flex-column gap-1 px-2"
+			  Elevation="0"
+			  Width="100%">
+		@*for go here*@
+		<MudPaper Class="d-flex flex-row gap-1 px-2"
+				  Elevation="0"
+				  Width="100%">
+			<MudAvatar>
+				<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+			</MudAvatar>
+			<MudText Class="d-flex flex-grow-1 align-center"
+					 Style="font-family:inherit">
+				Person A
+			</MudText>
+			<MudButton Class="d-flex flex-wrap"
+					   Size="Size.Small"
+					   Color="Color.Info"
+					   OnClick="ChangePermission">
+				@Permission
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
 </MudPaper>
 
 @code
@@ -75,6 +96,8 @@
 	public string Email { get; set; } = "";
 	public string Link { get; set; } = "http//";
 
+	private string Permission { get; set; } = "Admin";
+
 	private void InviteByEmail()
 	{
 
@@ -82,5 +105,23 @@
 	private void InviteByLink()
 	{
 
+	}
+	private void ChangePermission()
+	{
+		if (Permission == "Admin")
+		{
+			Permission = "Staff";
+			return;
+		}
+		if (Permission == "Staff")
+		{
+			Permission = "Viewer";
+			return;
+		}
+		if (Permission == "Viewer")
+		{
+			Permission = "Admin";
+			return;
+		}
 	}
 }

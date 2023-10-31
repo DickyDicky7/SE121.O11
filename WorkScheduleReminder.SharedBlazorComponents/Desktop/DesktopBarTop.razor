@@ -1,4 +1,5 @@
-﻿@* Toolbar1 *@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@* Toolbar1 *@
 <MudPaper Class="d-flex flex-row flex-wrap rounded-pill"
 		  Elevation="0">
 	<DesktopViewNameAndIcon Name="@ActiveName" Icon="@ActiveIcon"/>
@@ -23,15 +24,24 @@
 					   Icon="@Icons.Material.Filled.Sync" />
 		<MudIconButton Class="rounded-cycle"
 					   Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Notifications" />
+					   Icon="@Icons.Material.Filled.Notifications" 
+					   OnClick="(()=>{NotiVisible=!NotiVisible;})"/>
 		<MudIconButton Class="rounded-cycle"
 					   Size="Size.Small"
 					   Icon="@Icons.Material.Filled.Search" />
 	</MudToolBar>
 </MudPaper>
+<MudOverlay Class="border-2"
+			Visible="NotiVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="(()=>{NotiVisible=!NotiVisible;})">
+	<Notification @onclick:stopPropagation />
+</MudOverlay>
 
 @code
 {
+	private bool NotiVisible { get; set; } = false;
 	[Parameter]
 	public string? ActiveName { get; set; }
 	[Parameter]
