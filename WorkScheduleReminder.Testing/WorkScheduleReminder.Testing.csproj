@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
+		<UseMaui>true</UseMaui>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,7 +32,7 @@
 
 
 	<ItemGroup>
-	  <ProjectReference Include="..\WorkScheduleReminder.SharedBlazorComponents\WorkScheduleReminder.SharedBlazorComponents.csproj" />
+		<ProjectReference Include="..\WorkScheduleReminder.MAUIBlazor\WorkScheduleReminder.MAUIBlazor.csproj" />
 	</ItemGroup>
 
 
