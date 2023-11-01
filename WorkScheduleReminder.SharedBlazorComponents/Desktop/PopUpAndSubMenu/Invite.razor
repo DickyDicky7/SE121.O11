@@ -5,7 +5,7 @@
 		  Width="500px"
 		  Height="400px">
 	<MudText Class="mx-2"
-			 Style="font-family:inherit; font-weight:bold"
+			 Style="font-weight:bold"
 			 Typo="Typo.h5">
 		Invite
 	</MudText>
@@ -13,8 +13,7 @@
 	<MudPaper Class="d-flex flex-column gap-1 px-2"
 			  Elevation="0"
 			  Width="100%">
-		<MudText Style="font-family:inherit;"
-				 Typo="Typo.subtitle1">
+		<MudText Typo="Typo.subtitle1">
 			Invite with email
 		</MudText>
 		<MudPaper Class="d-flex flex-row gap-1 px-2"
@@ -22,11 +21,10 @@
 				  Width="100%">
 			<MudTextField @bind-Value="Email"
 						  Class="d-flex flex-grow-1"
-						  Style="font-family:inherit"
 						  Immediate="true"
 						  Placeholder="Enter email"
 						  DisableUnderLine="true"
-						  Variant="Variant.Outlined" 
+						  Variant="Variant.Outlined"
 						  Margin="Margin.Dense" />
 			<MudButton Class="d-flex flex-wrap"
 					   Size="Size.Small"
@@ -40,15 +38,13 @@
 	<MudPaper Class="d-flex flex-column gap-1 px-2"
 			  Elevation="0"
 			  Width="100%">
-		<MudText Style="font-family:inherit;"
-				 Typo="Typo.subtitle1">
+		<MudText Typo="Typo.subtitle1">
 			Invite with link
 		</MudText>
 		<MudPaper Class="d-flex flex-row gap-1 px-2"
 				  Elevation="0"
 				  Width="100%">
-			<MudText Class="d-flex flex-grow-1 align-center"
-					 Style="font-family:inherit">
+			<MudText Class="d-flex flex-grow-1 align-center">
 				@Link
 			</MudText>
 			<MudButton Class="d-flex flex-wrap"
@@ -60,7 +56,7 @@
 		</MudPaper>
 	</MudPaper>
 	<MudText Class="mx-2"
-			 Style="font-family:inherit; font-weight:bold"
+			 Style="font-weight:bold"
 			 Typo="Typo.h5">
 		Permission
 	</MudText>
@@ -74,8 +70,7 @@
 			<MudAvatar>
 				<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
 			</MudAvatar>
-			<MudText Class="d-flex flex-grow-1 align-center"
-					 Style="font-family:inherit">
+			<MudText Class="d-flex flex-grow-1 align-center">
 				Person A
 			</MudText>
 			<MudButton Class="d-flex flex-wrap"

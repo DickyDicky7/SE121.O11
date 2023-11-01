@@ -2,8 +2,8 @@
 @* Toolbar1 *@
 <MudPaper Class="d-flex flex-row flex-wrap rounded-pill"
 		  Elevation="0">
-	<DesktopViewNameAndIcon Name="@ActiveName" Icon="@ActiveIcon"/>
-	<DesktopButtonShare Type="@ActiveType"/>
+	<DesktopViewNameAndIcon Name="@ActiveName" Icon="@ActiveIcon" />
+	<DesktopButtonShare Type="@ActiveType" />
 	@if (ActiveType == Helper.ViewType.WorkspaceView)
 	{
 		<DesktopButtonView />
@@ -12,7 +12,7 @@
 	{
 		<DesktopButtonFilter />
 	}
-	<DesktopButtonMore Type="@ActiveType"/>
+	<DesktopButtonMore Type="@ActiveType" />
 </MudPaper>
 <MudPaper Class="d-flex flex-row flex-grow-1" />
 @* Toolbar2 *@
@@ -24,8 +24,8 @@
 					   Icon="@Icons.Material.Filled.Sync" />
 		<MudIconButton Class="rounded-cycle"
 					   Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Notifications" 
-					   OnClick="(()=>{NotiVisible=!NotiVisible;})"/>
+					   Icon="@Icons.Material.Filled.Notifications"
+					   OnClick="(()=>{NotiVisible=!NotiVisible;})" />
 		<MudIconButton Class="rounded-cycle"
 					   Size="Size.Small"
 					   Icon="@Icons.Material.Filled.Search" />

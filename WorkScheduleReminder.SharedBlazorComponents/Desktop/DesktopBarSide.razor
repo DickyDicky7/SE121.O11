@@ -1,158 +1,158 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
 <MudButton>
-    <MudPaper Class="d-flex flex-row flex-grow-1 gap-3 align-center"
-              Elevation="0">
-        <MudAvatar>
-            <MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
-        </MudAvatar>
-        <MudText Style="font-family:inherit;font-size:large">
-            -Name-
-        </MudText>
-    </MudPaper>
+	<MudPaper Class="d-flex flex-row flex-grow-1 gap-3 align-center"
+			  Elevation="0">
+		<MudAvatar>
+			<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+		</MudAvatar>
+		<MudText Style="font-size:large">
+			-Name-
+		</MudText>
+	</MudPaper>
 </MudButton>
 <MudPaper Class=""
-          Elevation="0"
-          Width="100%"
-          Height="100%">
-    <MudList Class=""
-             Dense="true"
-             DisableGutters="true"
-             DisablePadding="true">
-        @*default views*@
-        <MudButton Class="justify-start"
-                   StartIcon="@Icons.Material.Filled.Today"
-                   Size="Size.Medium"
-                   FullWidth="true"
-                   Href=""
-                   OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
-            <MudText Style="font-family:inherit">My day</MudText>
-        </MudButton>
-        <MudButton Class="justify-start"
-                   StartIcon="@Icons.Material.Filled.NextWeek"
-                   Size="Size.Medium"
-                   FullWidth="true"
-                   Href=""
-                   OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
-            <MudText Style="font-family:inherit">Next 7 days</MudText>
-        </MudButton>
-        <MudButton Class="justify-start"
-                   StartIcon="@Icons.Material.Filled.Task"
-                   Size="Size.Medium"
-                   FullWidth="true"
-                   Href=""
-                   OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
-            <MudText Style="font-family:inherit">All my tasks</MudText>
-        </MudButton>
-        @*custom views*@
-        <MudListItem Class=""
-                     InitiallyExpanded="true"
-                     DisableGutters="true"
-                     Dense="true">
-            <ChildContent>
-                <MudPaper Class="d-flex flex-row align-center gap-2"
-                          Elevation="0"
-                          Width="100%">
-                    <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
-                             Size="Size.Medium" />
-                    <MudText Style="font-family:inherit;font-weight:bolder;">
-                        Custom views
-                    </MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small" />
-                </MudPaper>
-            </ChildContent>
-            <NestedList>
-                @*example item*@
-                <MudButton Class="justify-start"
-                           StartIcon="@Icons.Material.Filled.Today"
-                           Size="Size.Medium"
-                           FullWidth="true"
-                           Href=""
-                           OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
-                    <MudText Style="font-family:inherit">Example custom view</MudText>
-                </MudButton>
-                @*for go here*@
-            </NestedList>
-        </MudListItem>
-        @*workspace*@
-        <MudListItem Class=""
-                     InitiallyExpanded="true"
-                     DisableGutters="true"
-                     Dense="true">
-            <ChildContent>
-                <MudPaper Class="d-flex flex-row align-center gap-2"
-                          Elevation="0"
-                          Width="100%">
-                    <MudIcon Icon="@Icons.Material.Filled.Workspaces"
-                             Size="Size.Medium" />
-                    <MudText Style="font-family:inherit;font-weight:bolder;">
-                        Workspaces
-                    </MudText>
-                    <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                   Size="Size.Small" />
-                    <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                                   Size="Size.Small"
-                                   OnClick="(()=>{InviteVisible=!InviteVisible;})" />
-                </MudPaper>
-            </ChildContent>
-            <NestedList>
-                @*example item*@
-                <MudButton Class="justify-start"
-                           StartIcon="@Icons.Material.Filled.Today"
-                           Size="Size.Medium"
-                           FullWidth="true"
-                           Href=""
-                           OnClick="@(()=>Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
-                    <MudText Style="font-family:inherit">Example Board</MudText>
-                </MudButton>
-                @*for go here*@
-            </NestedList>
-        </MudListItem>
-    </MudList>
+		  Elevation="0"
+		  Width="100%"
+		  Height="100%">
+	<MudList Class=""
+			 Dense="true"
+			 DisableGutters="true"
+			 DisablePadding="true">
+		@*default views*@
+		<MudButton Class="justify-start"
+				   StartIcon="@Icons.Material.Filled.Today"
+				   Size="Size.Medium"
+				   FullWidth="true"
+				   Href=""
+				   OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
+			<MudText>My day</MudText>
+		</MudButton>
+		<MudButton Class="justify-start"
+				   StartIcon="@Icons.Material.Filled.NextWeek"
+				   Size="Size.Medium"
+				   FullWidth="true"
+				   Href=""
+				   OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
+			<MudText>Next 7 days</MudText>
+		</MudButton>
+		<MudButton Class="justify-start"
+				   StartIcon="@Icons.Material.Filled.Task"
+				   Size="Size.Medium"
+				   FullWidth="true"
+				   Href=""
+				   OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
+			<MudText>All my tasks</MudText>
+		</MudButton>
+		@*custom views*@
+		<MudListItem Class=""
+					 InitiallyExpanded="true"
+					 DisableGutters="true"
+					 Dense="true">
+			<ChildContent>
+				<MudPaper Class="d-flex flex-row align-center gap-2"
+						  Elevation="0"
+						  Width="100%">
+					<MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
+							 Size="Size.Medium" />
+					<MudText Style="font-weight:bolder;">
+						Custom views
+					</MudText>
+					<MudIconButton Icon="@Icons.Material.Filled.Add"
+								   Size="Size.Small" />
+				</MudPaper>
+			</ChildContent>
+			<NestedList>
+				@*example item*@
+				<MudButton Class="justify-start"
+						   StartIcon="@Icons.Material.Filled.Today"
+						   Size="Size.Medium"
+						   FullWidth="true"
+						   Href=""
+						   OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
+					<MudText>Example custom view</MudText>
+				</MudButton>
+				@*for go here*@
+			</NestedList>
+		</MudListItem>
+		@*workspace*@
+		<MudListItem Class=""
+					 InitiallyExpanded="true"
+					 DisableGutters="true"
+					 Dense="true">
+			<ChildContent>
+				<MudPaper Class="d-flex flex-row align-center gap-2"
+						  Elevation="0"
+						  Width="100%">
+					<MudIcon Icon="@Icons.Material.Filled.Workspaces"
+							 Size="Size.Medium" />
+					<MudText Style="font-weight:bolder;">
+						Workspaces
+					</MudText>
+					<MudIconButton Icon="@Icons.Material.Filled.Add"
+								   Size="Size.Small" />
+					<MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+								   Size="Size.Small"
+								   OnClick="(()=>{InviteVisible=!InviteVisible;})" />
+				</MudPaper>
+			</ChildContent>
+			<NestedList>
+				@*example item*@
+				<MudButton Class="justify-start"
+						   StartIcon="@Icons.Material.Filled.Today"
+						   Size="Size.Medium"
+						   FullWidth="true"
+						   Href=""
+						   OnClick="@(()=>Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
+					<MudText>Example Board</MudText>
+				</MudButton>
+				@*for go here*@
+			</NestedList>
+		</MudListItem>
+	</MudList>
 </MudPaper>
 <MudOverlay Class="border-2"
-            Visible="InviteVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{InviteVisible=!InviteVisible;})">
-    <Invite @onclick:stopPropagation />
+			Visible="InviteVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="(()=>{InviteVisible=!InviteVisible;})">
+	<Invite @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-    private bool InviteVisible { get; set; } = false;
-    [Parameter]
-    public string? Name { get; set; }
-    [Parameter]
-    public string? Icon { get; set; }
-    [Parameter]
-    public Helper.ViewType Type { get; set; }
-    [Parameter]
-    public EventCallback<string> NameChanged { get; set; }
-    [Parameter]
-    public EventCallback<string> IconChanged { get; set; }
-    [Parameter]
-    public EventCallback<Helper.ViewType> TypeChanged { get; set; }
-    Task UpdateName(string newName)
-    {
-        Name = newName;
-        return NameChanged.InvokeAsync(Name);
-    }
-    Task UpdateIcon(string newIcon)
-    {
-        Icon = newIcon;
-        return IconChanged.InvokeAsync(Icon);
-    }
-    Task UpdateType(Helper.ViewType newType)
-    {
-        Type = newType;
-        return TypeChanged.InvokeAsync(Type);
-    }
-    void Update(string newName, string newIcon, Helper.ViewType newType)
-    {
-        UpdateName(newName);
-        UpdateIcon(newIcon);
-        UpdateType(newType);
-    }
+	private bool InviteVisible { get; set; } = false;
+	[Parameter]
+	public string? Name { get; set; }
+	[Parameter]
+	public string? Icon { get; set; }
+	[Parameter]
+	public Helper.ViewType Type { get; set; }
+	[Parameter]
+	public EventCallback<string> NameChanged { get; set; }
+	[Parameter]
+	public EventCallback<string> IconChanged { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewType> TypeChanged { get; set; }
+	Task UpdateName(string newName)
+	{
+		Name = newName;
+		return NameChanged.InvokeAsync(Name);
+	}
+	Task UpdateIcon(string newIcon)
+	{
+		Icon = newIcon;
+		return IconChanged.InvokeAsync(Icon);
+	}
+	Task UpdateType(Helper.ViewType newType)
+	{
+		Type = newType;
+		return TypeChanged.InvokeAsync(Type);
+	}
+	void Update(string newName, string newIcon, Helper.ViewType newType)
+	{
+		UpdateName(newName);
+		UpdateIcon(newIcon);
+		UpdateType(newType);
+	}
 
 }

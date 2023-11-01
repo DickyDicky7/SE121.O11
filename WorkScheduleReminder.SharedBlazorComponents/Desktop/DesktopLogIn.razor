@@ -1,4 +1,8 @@
-﻿<MudPaper Class="d-flex flex-row"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
+@inject ISnackbar  Snackbar
+@inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
+
+<MudPaper Class="d-flex flex-row"
 		  Elevation="0"
 		  Height="100vh"
 		  Width="100vw"
@@ -15,8 +19,7 @@
 					  Width="250" Height="250"
 					  ObjectFit="ObjectFit.Contain"
 					  ObjectPosition="ObjectPosition.Center" />
-			<MudText Style="font-family:inherit;"
-					 Align="Align.Center">
+			<MudText Align="Align.Center">
 				Over 10 millions people using this to manage their day
 			</MudText>
 		</MudPaper>
@@ -30,7 +33,6 @@
 				  Width="50%">
 			<MudTextField @bind-Value="Email"
 						  Class="rounded-pill"
-						  Style="font-family:inherit"
 						  Placeholder="Enter email"
 						  Immediate="true"
 						  DisableUnderLine="true"
@@ -39,27 +41,31 @@
 						  Margin="Margin.Dense" />
 			<MudTextField @bind-Value="Password"
 						  Class="rounded-pill"
-						  Style="font-family:inherit"
 						  Placeholder="Enter password"
 						  Immediate="true"
 						  DisableUnderLine="true"
 						  FullWidth="true"
 						  Variant="Variant.Outlined"
-						  Margin="Margin.Dense" />
+						  Margin="Margin.Dense"
+						  InputType="PasswordInputType"
+						  Adornment="Adornment.End"
+						  AdornmentIcon="@PasswordInputIcon"
+						  AdornmentAriaLabel="Show Password"
+						  OnAdornmentClick="OnPasswordInputAdornmentClick" />
 			<MudButton Class="d-flex flex-wrap rounded-pill"
 					   StartIcon="@Icons.Material.Filled.Login"
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Variant=Variant.Outlined
 					   OnClick="LogIn">
-				<MudText Style="font-family:inherit;">
+				<MudText>
 					Log in
 				</MudText>
 			</MudButton>
 			<MudLink Class="d-flex justify-center"
 					 Href=""
 					 OnClick="NotifySignUpClicked">
-				<MudText Style="font-family:inherit">
+				<MudText>
 					Sign up
 				</MudText>
 			</MudLink>
@@ -71,12 +77,30 @@
 {
 	[Parameter]
 	public EventCallback NotifySignUpClicked { get; set; }
-	
+
 	public string Email    { get; set; } = string.Empty;
 	public string Password { get; set; } = string.Empty;
-	
-	public async Task LogIn()
-	{
+	public string    PasswordInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
+	public bool      PasswordInputShow { get; set; } = false;
+	public InputType PasswordInputType { get; set; } = InputType.Password;
 
+	public void OnPasswordInputAdornmentClick()
+	{
+		PasswordInputShow = !
+		PasswordInputShow;
+		if (PasswordInputShow)
+		{
+			PasswordInputType = InputType.Text;
+			PasswordInputIcon = Icons.Material.Filled.Visibility;
+		}
+		else
+		{
+			PasswordInputType = InputType.Password;
+			PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+		}
+	}
+
+	public async Task   LogIn()
+	{      await Common.LogIn(SupabaseAuthenticationStateProviderService, Email, Password, Snackbar);
 	}
 }

@@ -2,6 +2,7 @@
 	 .Claims;
 using Microsoft.AspNetCore
 			   .Components.Authorization;
+using Newtonsoft.Json.Linq;
 
 namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 {
@@ -32,6 +33,59 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			return new
 				   (claimsPrincipal);
+		}
+
+		public async Task<(bool ok, string reason)> SignUp_(string email, string password)
+		{
+			try
+			{
+				await supabaseClient.Auth.SignUp(email, password, new()
+				{
+					RedirectTo = "https://google.com",
+					Data = new()
+					{
+						{ "full_name", email }, { "avatar_url", string.Empty }
+					},
+				});
+				return (ok: true , reason: Message.Success.SUCCESSFULLY_SIGNING_UP(email));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message?["msg"]?.Value<string>() ?? string.Empty);
+			}
+		}
+
+		public async Task<(bool ok, string reason)> SignIn_(string email, string password)
+		{
+			try
+			{
+				await supabaseClient.Auth.SignIn(email, password);
+				NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+				return (ok: true , reason:
+				Message.Success.SUCCESSFULLY_LOGGING_IN_);
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message?["error_description"]?.Value<string>() ?? string.Empty);
+			}
+		}
+
+		public async Task<(bool ok, string reason)> SignOut()
+		{
+			try
+			{
+				await supabaseClient.Auth.SignOut();
+				NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+				return (ok: true , reason:
+				Message.Success.SUCCESSFULLY_LOGGING_OUT);
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message?["error_description"]?.Value<string>() ?? string.Empty);
+			}
 		}
 	}
 }

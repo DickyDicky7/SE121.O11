@@ -1,61 +1,61 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column gap-2 pa-2"
-          Style="border-radius: 20px;"
-          Elevation="0"
-          Width="450px"
-          Height="80vh">
-    <MudPaper Class="d-flex flex-row pa-2"
-              Elevation="0"
-              Width="100%">
-        <MudPaper Class=""
-                  Elevation="0"
-                  Width="50%">
-            <MudSwitch Checked="SwitchChecked"
-                       Style="font-family:inherit;"
-                       Label="@SwitchText"
-                       Color="Color.Tertiary"
-                       CheckedChanged="((bool a)=>OnSwitchCheckedChanged())" />
-        </MudPaper>
-        <MudPaper Class="d-flex gap-2"
-                  Elevation="0"
-                  Width="50%">
-            <MudButton Class="rounded-pill"
-                       Size="Size.Small">
-                <MudText>Mark all as read</MudText>
-            </MudButton>
-            <MudButton Class="rounded-pill"
-                       Size="Size.Small">
-                <MudText>Clear all</MudText>
-            </MudButton>
-        </MudPaper>
-    </MudPaper>
-    <MudPaper Class="d-flex flex-column pa-2"
-              Elevation="0"
-              Width="100%">
-        @*ex item*@
-        <MudPaper Class="d-flex flex-grow-1 pa-2 rounded-pill">
-            <MudText Class="d-flex flex-grow-1">abc</MudText>
-        </MudPaper>
-        @*for go here*@
-    </MudPaper>
+		  Class="d-flex flex-column gap-2 pa-2"
+		  Style="border-radius: 20px;"
+		  Elevation="0"
+		  Width="450px"
+		  Height="80vh">
+	<MudPaper Class="d-flex flex-row pa-2"
+			  Elevation="0"
+			  Width="100%">
+		<MudPaper Class=""
+				  Elevation="0"
+				  Width="50%">
+			<MudSwitch Checked="SwitchChecked"
+					   Label="@SwitchText"
+					   Color="Color.Tertiary"
+					   CheckedChanged="((bool a)=>OnSwitchCheckedChanged())" />
+		</MudPaper>
+		<MudPaper Class="d-flex gap-2"
+				  Elevation="0"
+				  Width="50%">
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small">
+				<MudText>Mark all as read</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small">
+				<MudText>Clear all</MudText>
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
+	<MudPaper Class="d-flex flex-column pa-2"
+			  Elevation="0"
+			  Width="100%">
+		@*ex item*@
+		<MudPaper Class="d-flex flex-grow-1 pa-2 rounded-pill">
+			<MudText Class="d-flex flex-grow-1">abc</MudText>
+		</MudPaper>
+		@*for go here*@
+	</MudPaper>
 </MudPaper>
 
-@code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private bool SwitchChecked { get; set; } = false;
-    private string SwitchText { get; set; } = "Unread";
-    private void OnSwitchCheckedChanged()
-    {
-        SwitchChecked = !SwitchChecked;
-        if (SwitchChecked)
-        {
-            SwitchText = "All";
-        }
-        else
-        {
-            SwitchText = "Unread";
-        }
-    }
+	private bool SwitchChecked { get; set; } = false;
+	private string SwitchText { get; set; } = "Unread";
+	private void OnSwitchCheckedChanged()
+	{
+		SwitchChecked = !SwitchChecked;
+		if (SwitchChecked)
+		{
+			SwitchText = "All";
+		}
+		else
+		{
+			SwitchText = "Unread";
+		}
+	}
 }

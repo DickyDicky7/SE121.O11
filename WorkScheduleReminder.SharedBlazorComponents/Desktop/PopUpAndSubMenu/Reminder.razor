@@ -2,7 +2,7 @@
 		  Class="d-flex flex-column flex-wrap gap-2 pa-2 justify-center"
 		  Style="border-radius:20px"
 		  Elevation="0">
-	<MudText Style="font-family:inherit; font-weight:500; font-size:large;">Reminder</MudText>
+	<MudText Style="font-weight:500; font-size:large;">Reminder</MudText>
 	<MudTimePicker @bind-Time=Time
 				   AmPm="true"
 				   Label="Time"
@@ -46,11 +46,11 @@
 					 Text="Yearly" />
 		</MudPaper>
 	</MudChipSet>
-	@if(Recurring == "Weekly")
+	@if (Recurring == "Weekly")
 	{
 		<MudText>aaaa</MudText>
 	}
-	@if(Recurring == "Monthly")
+	@if (Recurring == "Monthly")
 	{
 		<MudText>bbbb</MudText>
 	}

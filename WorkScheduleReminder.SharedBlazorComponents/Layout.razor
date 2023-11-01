@@ -7,7 +7,7 @@
 @implements IDisposable
 @inject     Supabase.Client SupabaseClient
 
-<MudThemeProvider /><MudDialogProvider /><MudSnackbarProvider />
+<MudThemeProvider Theme="Helper.CustomThemes[1]" /><MudDialogProvider /><MudSnackbarProvider />
 
 <CascadingAuthenticationState>
 	<AuthorizeView>
@@ -58,10 +58,33 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
+		SupabaseClient.Auth.LoadSession();
 	}
 
 	protected async void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
 	{
+		System.Diagnostics.Debug.WriteLine(authState);
+		switch (authState)
+		{
+			case Constants.AuthState.Shutdown:
+				 break;
+
+			case Constants.AuthState.SignedIn:
+				 break;
+
+			case Constants.AuthState.SignedOut:
+				 break;
+
+			case Constants.AuthState.UserUpdated:
+				 break;
+
+			case Constants.AuthState.TokenRefreshed:
+				 break;
+
+			case Constants.AuthState.PasswordRecovery:
+				 break;
+		}
 	}
 
 	public void Dispose()

@@ -4,7 +4,7 @@
 		  Width="300px" @attributes="AdditionalAttributes">
 	@if (EnableEdit == true)
 	{
-		<MudText Typo="Typo.h6" Style="font-family:inherit;">Add tags</MudText>
+		<MudText Typo="Typo.h6">Add tags</MudText>
 		<MudTextField @bind-Value="value"
 					  MaxLength="15"
 					  Counter="15"
@@ -55,10 +55,10 @@
 				   Size="Size.Small"
 				   StartIcon="@Icons.Material.Filled.Add"
 				   OnClick="Add">
-			<MudText Style="font-family:inherit;">Add tag</MudText>
+			<MudText>Add tag</MudText>
 		</MudButton>
 	}
-	<MudText Typo="Typo.h6" Style="font-family:inherit;">Choose tags</MudText>
+	<MudText Typo="Typo.h6">Choose tags</MudText>
 	<MudChipSet AllClosable="@EnableEdit"
 				MultiSelection="true"
 				OnClose="Close"
