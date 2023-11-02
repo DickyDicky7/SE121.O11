@@ -1,4 +1,5 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu;
+
 <MudLayout>
 	<MudPaper Class="d-flex flex-row"
 			  Elevation="0"
@@ -25,8 +26,8 @@
 							   ActiveIcon="@ActiveIcon"
 							   ActiveType="@ActiveType" />
 				<MudButton Class="d-flex flex-wrap rounded-pill"
-						   OnClick="(()=>{isVisible = !isVisible;})">
-					@isVisible
+						   OnClick="ToggleVisible">
+					@IsVisible
 				</MudButton>
 			</MudPaper>
 			@*MainScreen*@
@@ -37,10 +38,10 @@
 					@MainChildContent
 				</MudMainContent>
 				<MudOverlay Class="border-2"
-							Visible="isVisible"
+							Visible="IsVisible"
 							DarkBackground="true"
 							AutoClose="true"
-							OnClick="(()=>{isVisible=!isVisible;})">
+							OnClick="ToggleVisible">
 					<TaskDetail @onclick:stopPropagation />
 				</MudOverlay>
 			</MudPaper>
@@ -48,16 +49,20 @@
 	</MudPaper>
 </MudLayout>
 
-
 @code
 {
-
 	[Parameter]
 	public RenderFragment? MainChildContent { get; set; }
 
-	private bool isVisible { get; set; } = false;
+	public bool IsVisible { get; set; } = false;
 
 	public string? ActiveName { get; set; }
 	public string? ActiveIcon { get; set; }
 	public Helper.ViewType ActiveType { get; set; }
+
+	public void ToggleVisible()
+	{
+		IsVisible = !
+		IsVisible;
+	}
 }

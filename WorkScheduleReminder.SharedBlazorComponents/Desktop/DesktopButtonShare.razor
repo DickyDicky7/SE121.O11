@@ -1,4 +1,5 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
 <MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
 		  Elevation="0">
 	@if (Type == Helper.ViewType.DefaultView)
@@ -7,7 +8,7 @@
 				   Label="@Text"
 				   Color="Color.Tertiary"
 				   ThumbIcon="@Icons.Material.Filled.Workspaces"
-				   CheckedChanged="((bool a)=>OnSwitchCheckedChanged())" />
+				   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
 	}
 	else if (Type == Helper.ViewType.CustomView)
 	{
@@ -20,16 +21,16 @@
 		<MudButton Class=""
 				   StartIcon="@Icons.Material.Filled.Share"
 				   Size="Size.Small"
-				   OnClick="(()=>{isVisible = !isVisible;})">
+				   OnClick="ToggleVisible">
 			<MudText>
 				Share
 			</MudText>
 		</MudButton>
 		<MudOverlay Class="border-2"
-					Visible="isVisible"
+					Visible="IsVisible"
 					DarkBackground="true"
 					AutoClose="true"
-					OnClick="(()=>{isVisible=!isVisible;})">
+					OnClick="ToggleVisible">
 			<Invite @onclick:stopPropagation />
 		</MudOverlay>
 	}
@@ -37,15 +38,18 @@
 
 @code
 {
-	private string Text = "Individual";
 	[Parameter]
 	public Helper.ViewType Type { get; set; }
 	[Parameter]
-	public bool SwitchChecked { get; set; } = false;
-	private bool isVisible { get; set; } = false;
-	private void OnSwitchCheckedChanged()
+	public bool   SwitchChecked { get; set; } = false;
+
+	public string Text      { get; set; } = "Individual";
+	public bool   IsVisible { get; set; } = false;
+
+	public void OnSwitchCheckedChanged(bool _)
 	{
-		SwitchChecked = !SwitchChecked;
+		    SwitchChecked = !
+		    SwitchChecked;
 		if (SwitchChecked)
 		{
 			Text = "Workspace";
@@ -54,5 +58,11 @@
 		{
 			Text = "Individual";
 		}
+	}
+
+	public void ToggleVisible()
+	{
+		IsVisible = !
+		IsVisible;
 	}
 }

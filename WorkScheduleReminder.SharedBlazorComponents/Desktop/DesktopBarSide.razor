@@ -1,4 +1,5 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
 <MudButton>
 	<MudPaper Class="d-flex flex-row flex-grow-1 gap-3 align-center"
 			  Elevation="0">
@@ -24,7 +25,7 @@
 				   Size="Size.Medium"
 				   FullWidth="true"
 				   Href=""
-				   OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
+				   OnClick="@(() => Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
 			<MudText>My day</MudText>
 		</MudButton>
 		<MudButton Class="justify-start"
@@ -32,7 +33,7 @@
 				   Size="Size.Medium"
 				   FullWidth="true"
 				   Href=""
-				   OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
+				   OnClick="@(() => Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
 			<MudText>Next 7 days</MudText>
 		</MudButton>
 		<MudButton Class="justify-start"
@@ -40,7 +41,7 @@
 				   Size="Size.Medium"
 				   FullWidth="true"
 				   Href=""
-				   OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
+				   OnClick="@(() => Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
 			<MudText>All my tasks</MudText>
 		</MudButton>
 		@*custom views*@
@@ -68,7 +69,7 @@
 						   Size="Size.Medium"
 						   FullWidth="true"
 						   Href=""
-						   OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
+						   OnClick="@(() => Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
 					<MudText>Example custom view</MudText>
 				</MudButton>
 				@*for go here*@
@@ -92,7 +93,7 @@
 								   Size="Size.Small" />
 					<MudIconButton Icon="@Icons.Material.Filled.MoreVert"
 								   Size="Size.Small"
-								   OnClick="(()=>{InviteVisible=!InviteVisible;})" />
+								   OnClick="ToggleInviteVisible" />
 				</MudPaper>
 			</ChildContent>
 			<NestedList>
@@ -102,7 +103,7 @@
 						   Size="Size.Medium"
 						   FullWidth="true"
 						   Href=""
-						   OnClick="@(()=>Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
+						   OnClick="@(() => Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
 					<MudText>Example Board</MudText>
 				</MudButton>
 				@*for go here*@
@@ -114,13 +115,14 @@
 			Visible="InviteVisible"
 			DarkBackground="true"
 			AutoClose="true"
-			OnClick="(()=>{InviteVisible=!InviteVisible;})">
+			OnClick="ToggleInviteVisible">
 	<Invite @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-	private bool InviteVisible { get; set; } = false;
+	public bool InviteVisible { get; set; } = false;
+
 	[Parameter]
 	public string? Name { get; set; }
 	[Parameter]
@@ -133,26 +135,35 @@
 	public EventCallback<string> IconChanged { get; set; }
 	[Parameter]
 	public EventCallback<Helper.ViewType> TypeChanged { get; set; }
-	Task UpdateName(string newName)
+
+	public async Task UpdateName(string newName)
 	{
 		Name = newName;
-		return NameChanged.InvokeAsync(Name);
-	}
-	Task UpdateIcon(string newIcon)
-	{
-		Icon = newIcon;
-		return IconChanged.InvokeAsync(Icon);
-	}
-	Task UpdateType(Helper.ViewType newType)
-	{
-		Type = newType;
-		return TypeChanged.InvokeAsync(Type);
-	}
-	void Update(string newName, string newIcon, Helper.ViewType newType)
-	{
-		UpdateName(newName);
-		UpdateIcon(newIcon);
-		UpdateType(newType);
+		await NameChanged.InvokeAsync(Name);
 	}
 
+	public async Task UpdateIcon(string newIcon)
+	{
+		Icon = newIcon;
+		await IconChanged.InvokeAsync(Icon);
+	}
+
+	public async Task UpdateType(Helper.ViewType newType)
+	{
+		Type = newType;
+		await TypeChanged.InvokeAsync(Type);
+	}
+
+	public async Task Update(string newName, string newIcon, Helper.ViewType newType)
+	{
+		await UpdateName(newName);
+		await UpdateIcon(newIcon);
+		await UpdateType(newType);
+	}
+
+	public void ToggleInviteVisible()
+	{
+		InviteVisible = !
+		InviteVisible;
+	}
 }

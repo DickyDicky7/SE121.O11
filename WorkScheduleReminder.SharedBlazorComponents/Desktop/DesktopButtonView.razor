@@ -20,7 +20,7 @@
 				<MudButton Class=""
 						   StartIcon="@Icons.Material.Filled.ViewKanban"
 						   Size="Size.Small"
-						   OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.ViewKanban;})">
+						   OnClick="@(() => { ActiveIcon = Icons.Material.Filled.ViewKanban; })">
 					Kanban
 				</MudButton>
 			</MudMenuItem>
@@ -28,7 +28,7 @@
 				<MudButton Class=""
 						   StartIcon="@Icons.Material.Filled.GridView"
 						   Size="Size.Small"
-						   OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.GridView;})">
+						   OnClick="@(() => { ActiveIcon = Icons.Material.Filled.GridView; })">
 					Table
 				</MudButton>
 			</MudMenuItem>
@@ -36,14 +36,15 @@
 				<MudButton Class=""
 						   StartIcon="@Icons.Material.Filled.CalendarToday"
 						   Size="Size.Small"
-						   OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.CalendarToday;})">
+						   OnClick="@(() => { ActiveIcon = Icons.Material.Filled.CalendarToday; })">
 					Calendar
 				</MudButton>
 			</MudMenuItem>
 		</ChildContent>
 	</MudMenu>
 </MudPaper>
+
 @code
 {
-	private string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
+	public string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
 }
