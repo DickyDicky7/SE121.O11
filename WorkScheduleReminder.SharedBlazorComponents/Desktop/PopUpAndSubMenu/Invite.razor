@@ -88,20 +88,22 @@
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public string Email { get; set; } = "";
-	public string Link { get; set; } = "http//";
+	public string Email { get; set; } = string.Empty;
+	public string Link  { get; set; } = "http//";
+	public string Permission { get; set; } = "Admin";
 
-	private string Permission { get; set; } = "Admin";
-
-	private void InviteByEmail()
+	public void InviteByEmail()
 	{
 
 	}
-	private void InviteByLink()
+
+	public void InviteByLink()
 	{
 
 	}
-	private void ChangePermission()
+
+	/* CHỈ CÓ 3 ROLE: OWNER, EDITOR, VIEWER */
+	public void ChangePermission()
 	{
 		if (Permission == "Admin")
 		{

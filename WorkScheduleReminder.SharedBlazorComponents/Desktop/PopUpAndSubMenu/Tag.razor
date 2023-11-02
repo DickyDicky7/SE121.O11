@@ -2,10 +2,10 @@
 		  Style="border-radius:20px;"
 		  Elevation="0"
 		  Width="300px" @attributes="AdditionalAttributes">
-	@if (EnableEdit == true)
+	@if (EnableEdit)
 	{
 		<MudText Typo="Typo.h6">Add tags</MudText>
-		<MudTextField @bind-Value="value"
+		<MudTextField @bind-Value="Value"
 					  MaxLength="15"
 					  Counter="15"
 					  Variant="Variant.Outlined"
@@ -14,7 +14,7 @@
 					  Required="true"
 					  AutoFocus="true"
 					  Label="Name your tag!" />
-		<MudChipSet @bind-SelectedChip="selectedChip"
+		<MudChipSet @bind-SelectedChip="SelectedChip"
 					Filter="true"
 					Mandatory="true">
 			<MudChip Default="true"
@@ -67,16 +67,15 @@
 				 Color="Color.Default"
 				 Size="Size.Small"
 				 Variant="Variant.Outlined" />
-		@foreach ((string Text, Color Color) in TagInfos)
+		@foreach ((string text, Color color) in TagInfos)
 		{
-			<MudChip Text="@Text"
-					 Color="@Color"
+			<MudChip Text="@text"
+					 Color="@color"
 					 Size="Size.Small"
 					 Variant="Variant.Outlined" />
 		}
 	</MudChipSet>
 </MudPaper>
-
 
 @code
 {
@@ -85,21 +84,22 @@
 	[Parameter]
 	public bool EnableEdit { get; set; }
 
-	private MudChip selectedChip { get; set; }
-	private string value { get; set; } = "";
+	public MudChip SelectedChip { get; set; } = null!;
+	public string  Value        { get; set; } = string.Empty;
+	public List<(string text, Color color)> TagInfos { get; set; } = new();
 
-	List<(string Text, Color Color)> TagInfos = new();
 	public void Add()
 	{
-		if (value == "" || value == null)
+		if (string.IsNullOrWhiteSpace(Value))
 		{
 			return;
 		}
-		TagInfos.Add((Text: value, Color: selectedChip.Color));
-		value = "";
+		TagInfos.Add((text: Value, color: SelectedChip.Color));
+		Value = string.Empty;
 	}
+
 	private void Close(MudChip Chip)
 	{
-		TagInfos.Remove((Text: Chip.Text, Color: Chip.Color));
+		TagInfos.Remove((text: Chip.Text, color: Chip.Color));
 	}
 }

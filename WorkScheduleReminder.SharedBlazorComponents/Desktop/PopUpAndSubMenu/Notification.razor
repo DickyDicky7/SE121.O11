@@ -13,7 +13,7 @@
 			<MudSwitch Checked="SwitchChecked"
 					   Label="@SwitchText"
 					   Color="Color.Tertiary"
-					   CheckedChanged="((bool a)=>OnSwitchCheckedChanged())" />
+					   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
 		</MudPaper>
 		<MudPaper Class="d-flex gap-2"
 				  Elevation="0"
@@ -44,11 +44,13 @@
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	private bool SwitchChecked { get; set; } = false;
-	private string SwitchText { get; set; } = "Unread";
-	private void OnSwitchCheckedChanged()
+	public bool   SwitchChecked { get; set; } = false;
+	public string SwitchText    { get; set; } = "Unread";
+
+	public void OnSwitchCheckedChanged(bool _)
 	{
-		SwitchChecked = !SwitchChecked;
+		    SwitchChecked = !
+			SwitchChecked;
 		if (SwitchChecked)
 		{
 			SwitchText = "All";

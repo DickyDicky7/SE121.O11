@@ -1,15 +1,15 @@
 ﻿<MudPaper Class="d-flex flex-column flex-wrap gap-2 pa-2"
 		  Style="border-radius:20px;"
 		  Elevation="0">
-	<MudDateRangePicker DateRange="dateRange"
+	<MudDateRangePicker DateRange="DateRange"
 						PickerVariant="PickerVariant.Static"
 						AutoClose="false"
 						Editable="true"
 						DateFormat="dd/MM/yyyy"
 						TitleDateFormat="dd/MM/yyyy"
-						DateRangeChanged="(()=>{selectedChip = null;})">
+						DateRangeChanged="(() => { SelectedChip = null; })">
 		<PickerActions>
-			<MudChipSet @bind-SelectedChip="selectedChip"
+			<MudChipSet @bind-SelectedChip="SelectedChip"
 						Class="d-flex flex-grow-1"
 						Filter="true"
 						Mandatory="true">
@@ -20,37 +20,37 @@
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="Overdue"
-							 OnClick="(()=>SetDateRange(DateTime.MinValue, DateTime.Now.Date))" />
+							 OnClick="(() => SetDateRange(DateTime.MinValue, DateTime.Now.Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="Today"
-							 OnClick="(()=>SetDateRange(DateTime.Now.Date, DateTime.Now.Date))" />
+							 OnClick="(() => SetDateRange(DateTime.Now.Date, DateTime.Now.Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="This week"
-							 OnClick="(()=>SetWeekRange(DateTime.Now.Date))" />
+							 OnClick="(() => SetWeekRange(DateTime.Now.Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="Next week"
-							 OnClick="(()=>SetWeekRange(DateTime.Now.AddDays(7).Date))" />
+							 OnClick="(() => SetWeekRange(DateTime.Now.AddDays(7).Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="This month"
-							 OnClick="(()=>SetMonthRange(DateTime.Now.Date))" />
+							 OnClick="(() => SetMonthRange(DateTime.Now.Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="Next month"
-							 OnClick="(()=>SetMonthRange(DateTime.Now.AddDays(DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).Date))" />
+							 OnClick="(() => SetMonthRange(DateTime.Now.AddDays(DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).Date))" />
 					<MudChip Class="d-flex flex-wrap rounded-pill"
 							 Size="Size.Small"
 							 Variant="Variant.Text"
 							 Text="None"
-							 OnClick="(()=>{dateRange=new DateRange();})" />
+							 OnClick="(() => { DateRange = new(); })" />
 				</MudPaper>
 			</MudChipSet>
 		</PickerActions>
@@ -59,25 +59,28 @@
 
 @code
 {
-	private DateRange dateRange = new DateRange();
-	private MudChip? selectedChip { get; set; }
-	private void SetDateRange(DateTime begin, DateTime end)
+	public DateRange DateRange    { get; set; } = new DateRange();
+	public MudChip?  SelectedChip { get; set; }
+
+	public void SetDateRange(DateTime begin, DateTime end)
 	{
-		dateRange = new DateRange(begin, end);
+		DateRange = new DateRange(begin, end);
 	}
-	//input a day of a week
-	private void SetWeekRange(DateTime dt)
+
+	/* INPUT A DAY OF A WEEK */
+	private void SetWeekRange(DateTime dateTime)
 	{
-		int startOfWeek = (7 + (dt.DayOfWeek - DayOfWeek.Sunday)) % 7;
-		int endOfWeek = (7 + (DayOfWeek.Saturday - dt.DayOfWeek)) % 7;
-		SetDateRange(dt.AddDays(-1 * startOfWeek).Date, dt.AddDays(1 * endOfWeek).Date);
+		int startOfWeek = (7 + (dateTime .DayOfWeek - DayOfWeek.Sunday))    % 7;
+		int endOfWeek   = (7 + (DayOfWeek.Saturday  - dateTime .DayOfWeek)) % 7;
+		SetDateRange(dateTime.AddDays(-1 * startOfWeek).Date, dateTime.AddDays(1 * endOfWeek).Date);
 	}
-	//input a day of a month
-	private void SetMonthRange(DateTime dt)
+
+	/* INPUT A DAY OF A MONTH */
+	private void SetMonthRange(DateTime dateTime)
 	{
-		int daysInMonth = DateTime.DaysInMonth(dt.Year, dt.Month);
-		DateTime endOfMonth = new DateTime(dt.Year, dt.Month, daysInMonth);
-		DateTime startOfMonth = new DateTime(dt.Year, dt.Month, 1);
+		int daysInMonth = DateTime.DaysInMonth(dateTime.Year, dateTime.Month);
+		DateTime   endOfMonth = new DateTime(dateTime.Year, dateTime.Month, daysInMonth);
+		DateTime startOfMonth = new DateTime(dateTime.Year, dateTime.Month, 1);
 		SetDateRange(startOfMonth, endOfMonth);
 	}
 }

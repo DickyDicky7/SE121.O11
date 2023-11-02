@@ -18,7 +18,7 @@
 				   AnchorOrigin="Origin.BottomCenter"
 				   TransformOrigin="Origin.TopCenter"
 				   Variant="Variant.Outlined" />
-	<MudChipSet @bind-SelectedChip="@selectedChip" @bind-SelectedChip:after="OnSelectedChipChanged"
+	<MudChipSet @bind-SelectedChip="@SelectedChip" @bind-SelectedChip:after="OnSelectedChipChanged"
 				Filter="true"
 				Class="d-flex flex-column gap-2 pa-2">
 		<MudPaper Class="d-flex flex-grow-1 pa-2 justify-space-between"
@@ -59,27 +59,23 @@
 			   Color="Color.Tertiary"
 			   ThumbIcon="@Icons.Material.Filled.Workspaces" />
 </MudPaper>
+
 @code
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public TimeSpan? Time = new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-	public DateTime? Date = DateTime.Today;
+	public TimeSpan? Time { get; set; } = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+	public DateTime? Date { get; set; } = DateTime.Today;
 
-	private static MudChip? selectedChip { get; set; }
-	private string Recurring { get; set; } = "None";
-	private void OnSelectedChipChanged()
+	public static MudChip? SelectedChip { get; set; }
+	public string Recurring { get; set; } = "None";
+
+	public void OnSelectedChipChanged()
 	{
-		if (selectedChip != null)
-		{
-			Recurring = selectedChip.Text;
-		}
-		else
-		{
-			Recurring = "None";
-		}
+		Recurring = SelectedChip?.Text
+		?? "None";
 	}
 
-	private bool TaskNeverEnd { get; set; } = false;
+	public bool TaskNeverEnd { get; set; } = false;
 }

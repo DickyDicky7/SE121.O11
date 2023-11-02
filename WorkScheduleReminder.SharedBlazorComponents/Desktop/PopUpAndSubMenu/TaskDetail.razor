@@ -1,4 +1,5 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
 <MudPaper Class="d-flex flex-column gap-2 justify-start pa-2"
 		  Style="border-radius:20px;"
 		  Elevation="0"
@@ -50,14 +51,14 @@
 				   Size=Size.Small
 				   StartIcon="@Icons.Material.Filled.Alarm"
 				   Color="Color.Default"
-				   OnClick="(()=>{ReminderVisible = !ReminderVisible;})">
+				   OnClick="ToggleReminderVisible">
 			Remind me
 		</MudButton>
 		<MudButton Class="rounded-pill align-content-start"
 				   Size=Size.Small
 				   StartIcon="@Icons.Material.Filled.Tag"
 				   Color="Color.Default"
-				   OnClick="(()=>{TagVisible = !TagVisible;})">
+				   OnClick="ToggleTagVisible">
 			Tag
 		</MudButton>
 	</MudPaper>
@@ -65,7 +66,7 @@
 	<MudPaper Class="d-flex flex-column gap-1 px-2"
 			  Elevation="0">
 		<MudText Typo="Typo.subtitle1">Note</MudText>
-		<MudTextField @bind-Value="note"
+		<MudTextField @bind-Value="Note"
 					  Class=""
 					  Placeholder="Name your subtask"
 					  Immediate="true"
@@ -78,7 +79,7 @@
 	<MudPaper Class="d-flex flex-column gap-1 px-2"
 			  Elevation="0">
 		<MudText Typo="Typo.subtitle1">SubTasks</MudText>
-		<MudTextField @bind-Value="newSubTask"
+		<MudTextField @bind-Value="NewSubTask"
 					  Class=""
 					  Placeholder="Name your subtask"
 					  Immediate="true"
@@ -129,7 +130,7 @@
 			DarkBackground="true"
 			AutoClose="true"
 			ZIndex="10"
-			OnClick="(()=>{ReminderVisible=!ReminderVisible;})">
+			OnClick="ToggleReminderVisible">
 	<Reminder @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
@@ -137,47 +138,62 @@
 			DarkBackground="true"
 			AutoClose="true"
 			ZIndex="10"
-			OnClick="(()=>{TagVisible=!TagVisible;})">
+			OnClick="ToggleTagVisible">
 	<Tag @onclick:stopPropagation EnableEdit="true" />
 </MudOverlay>
 
 @code
 {
-	private bool TagVisible { get; set; } = false;
-	private bool ReminderVisible { get; set; } = false;
+	public bool      TagVisible { get; set; } = false;
+	public bool ReminderVisible { get; set; } = false;
 
 	[Parameter]
-	public string note { get; set; } = "";
+	public string Note       { get; set; } = string.Empty;
 	[Parameter]
-	public string newSubTask { get; set; } = "";
+	public string NewSubTask { get; set; } = string.Empty;
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	private static string DefaultDragClass = "relative rounded-lg border-dashed border-2 pa-2 z-10";
-	private string DragClass = DefaultDragClass;
-	List<IBrowserFile> FileList = new List<IBrowserFile>();
+	public const string DEFAULT_DRAG_CLASS = "relative rounded-lg border-dashed border-2 pa-2 z-10";
+	public string DragClass { get; set; }  = DEFAULT_DRAG_CLASS;
+	public List<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
 
-	private void OnInputFileChanged(InputFileChangeEventArgs e)
+	public void OnInputFileChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
 	{
 		ClearDragClass();
-		IReadOnlyList<IBrowserFile> files = e.GetMultipleFiles();
-		foreach (IBrowserFile file in files)
+		IReadOnlyList<IBrowserFile>   files =
+		inputFileChangeEventArgs.GetMultipleFiles();
+		foreach (     IBrowserFile file in  files)
 		{
 			FileList.Add(file);
 		}
 	}
-	private void Clear()
+
+	public void Clear()
 	{
 		FileList.Clear();
 		ClearDragClass();
+	}
 
-	}
-	private void SetDragClass()
+	public void SetDragClass()
 	{
-		DragClass = $"{DefaultDragClass} mud-border-primary";
+		DragClass = $"{DEFAULT_DRAG_CLASS} mud-border-primary";
 	}
-	private void ClearDragClass()
+
+	public void ClearDragClass()
 	{
-		DragClass = DefaultDragClass;
+		DragClass =    DEFAULT_DRAG_CLASS;
+	}
+
+	public void ToggleTagVisible()
+	{
+		TagVisible = !
+		TagVisible;
+	}
+
+	public void ToggleReminderVisible()
+	{
+		ReminderVisible = !
+		ReminderVisible;
 	}
 }
