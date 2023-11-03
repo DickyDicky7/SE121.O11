@@ -58,8 +58,6 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
-		SupabaseClient.Auth.LoadSession();
 	}
 
 	protected async void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)

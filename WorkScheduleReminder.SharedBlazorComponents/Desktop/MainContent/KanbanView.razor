@@ -1,0 +1,76 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@using WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
+
+<MudPaper Class="d-flex flex-row align-start gap-3 pa-3"
+          Style="background-color:transparent; overflow-y:hidden; overflow-x:scroll;"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    @for (int i = 0; i < 7; i++)
+    {
+        <MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
+                  Style="overflow-y:hidden; overflow-x:auto"
+                  Elevation="0"
+                  MinWidth="250px"
+                  MaxWidth="250px"
+                  MaxHeight="100%">
+            <MudText Style="font-weight:bold; font-size:large;">
+                Section Name
+            </MudText>
+            <MudPaper Class="f-flex flex-column gap-2"
+                      Style="overflow-y:scroll;"
+                      Elevation="0"
+                      Width="100%"
+                      MaxHeight="100%">
+                @for (int j = 0; j < 12; ++j)
+                {
+                    <MudButton Class=""
+                               FullWidth="true"
+                               Size="Size.Medium"
+                               OnClick="(()=>{TaskDetailVisible = !TaskDetailVisible;currentID=j;})">
+                        <MudPaper Class="d-flex flex-column gap-1 align-start"
+                                  Elevation="0"
+                                  Width="100%">
+                            <MudText>Task</MudText>
+                        </MudPaper>
+                    </MudButton>
+                }
+            </MudPaper>
+            <MudTextField @bind-Value="@NewTask"
+                          Class=""
+                          Style=""
+                          Placeholder="Add task"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense" />
+        </MudPaper>
+    }
+</MudPaper>
+<MudOverlay Class="border-2"
+            Visible="@TaskDetailVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation />
+</MudOverlay>
+
+@code
+{
+    private string NewTask { get; set; } = "";
+    private string[] SectionName = new string[] { "Today", "Tomorrow" };
+
+    private bool TaskDetailVisible { get; set; } = false;
+    private int currentID;
+    protected override void OnInitialized()
+    {
+        System.Threading.Tasks.Task.Factory.StartNew(() =>
+        {
+        while (true)
+        {
+          System.Diagnostics.Debug.WriteLine(currentID);
+        }
+        });
+    }
+}

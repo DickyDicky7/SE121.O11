@@ -1,0 +1,54 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+<MudPaper Class="d-flex flex-row align-center pa-2 justify-space-between"
+          Style="background-color:transparent;"
+          Elevation="0"
+          Width="100%">
+    @* Toolbar1 *@
+    <MudPaper Class="d-flex flex-row flex-wrap gap-2"
+              Elevation="0">
+        <DesktopViewTitle Name="@ActiveName"
+                          Icon="@ActiveIcon" />
+        <DesktopButtonShare Type="@ActiveType" />
+        @if (ActiveType == Helper.ViewType.WorkspaceView)
+        {
+            <DesktopButtonView />
+        }
+        @if (ActiveType == Helper.ViewType.CustomView || ActiveType == Helper.ViewType.WorkspaceView)
+        {
+            <DesktopButtonFilter />
+        }
+        <DesktopButtonMore Type="@ActiveType" />
+    </MudPaper>
+    @* Toolbar2 *@
+    <MudPaper Class="d-flex flex-row flex-wrap gap-2 py-2"
+              Elevation="0">
+        <MudIconButton Class="rounded-cycle"
+                       Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Sync" />
+        <MudIconButton Class="rounded-cycle"
+                       Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Notifications"
+                       OnClick="(()=>{NotiVisible=!NotiVisible;})" />
+        <MudIconButton Class="rounded-cycle"
+                       Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Search" />
+    </MudPaper>
+</MudPaper>
+<MudOverlay Class="border-2"
+            Visible="NotiVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{NotiVisible=!NotiVisible;})">
+    <Notification @onclick:stopPropagation />
+</MudOverlay>
+
+@code
+{
+    private bool NotiVisible { get; set; } = false;
+    [Parameter]
+    public string? ActiveName { get; set; }
+    [Parameter]
+    public string? ActiveIcon { get; set; }
+    [Parameter]
+    public Helper.ViewType ActiveType { get; set; }
+}

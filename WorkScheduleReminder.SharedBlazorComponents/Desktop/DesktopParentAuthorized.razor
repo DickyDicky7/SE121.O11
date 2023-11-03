@@ -1,68 +1,36 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu;
-
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop.MainContent;
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponent
 <MudLayout>
-	<MudPaper Class="d-flex flex-row"
-			  Elevation="0"
-			  Height="100vh" Width="100vw" MinHeight="400px" MinWidth="600px">
-		@* Sidebar *@
-		<MudPaper Class="d-flex flex-column gap-2 pa-2
-					border-solid border-1"
-				  Elevation="0"
-				  Height="100%"
-				  Width="250px">
-			<DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
-		</MudPaper>
-		@*Top bar & mainscreen*@
-		<MudPaper Class="d-flex flex-column flex-grow-1"
-				  Elevation="0"
-				  Height="100%">
-			@* Topbar *@
-			<MudPaper Class="d-flex flex-row flex-wrap
-						align-center pa-2
-						border-solid border-1"
-					  Elevation="0"
-					  Width="100%">
-				<DesktopBarTop ActiveName="@ActiveName"
-							   ActiveIcon="@ActiveIcon"
-							   ActiveType="@ActiveType" />
-				<MudButton Class="d-flex flex-wrap rounded-pill"
-						   OnClick="ToggleVisible">
-					@IsVisible
-				</MudButton>
-			</MudPaper>
-			@*MainScreen*@
-			<MudPaper Class="d-flex pa-2 justify-content-center"
-					  Elevation="0"
-					  Width="100%" Height="100%">
-				<MudMainContent>
-					@MainChildContent
-				</MudMainContent>
-				<MudOverlay Class="border-2"
-							Visible="IsVisible"
-							DarkBackground="true"
-							AutoClose="true"
-							OnClick="ToggleVisible">
-					<TaskDetail @onclick:stopPropagation />
-				</MudOverlay>
-			</MudPaper>
-		</MudPaper>
-	</MudPaper>
+    <MudPaper Class="d-flex flex-row mud-theme-info"
+              Elevation="0"
+              Height="100vh"
+              Width="100vw">
+        @* Sidebar *@
+        <DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
+        @*Top bar & mainscreen*@
+        <MudPaper Class="d-flex flex-column"
+                  Style="background-color:transparent;overflow:hidden;"
+                  Elevation="0"
+                  Height="100%"
+                  Width="100%">
+            @* Topbar *@
+            <DesktopBarTop ActiveName="@ActiveName"
+                           ActiveIcon="@ActiveIcon"
+                           ActiveType="@ActiveType" />
+            @*MainScreen*@
+            <KanbanView />
+        </MudPaper>
+    </MudPaper>
 </MudLayout>
 
 @code
 {
-	[Parameter]
-	public RenderFragment? MainChildContent { get; set; }
 
-	public bool IsVisible { get; set; } = false;
+    [Parameter]
+    public RenderFragment? MainChildContent { get; set; }
 
-	public string? ActiveName { get; set; }
-	public string? ActiveIcon { get; set; }
-	public Helper.ViewType ActiveType { get; set; }
-
-	public void ToggleVisible()
-	{
-		IsVisible = !
-		IsVisible;
-	}
+    public string? ActiveName { get; set; }
+    public string? ActiveIcon { get; set; }
+    public Helper.ViewType ActiveType { get; set; }
 }

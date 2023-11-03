@@ -28,7 +28,7 @@
 			  Elevation="0"
 			  Width="50%"
 			  Height="100%">
-		<MudPaper Class="d-flex flex-wrap align-self-center gap-2"
+		<MudPaper Class="d-flex flex-column flex-wrap align-self-center gap-2"
 				  Elevation="0"
 				  Width="50%">
 			<MudTextField @bind-Value="Email"
@@ -52,7 +52,7 @@
 						  AdornmentIcon="@PasswordInputIcon"
 						  AdornmentAriaLabel="Show Password"
 						  OnAdornmentClick="OnPasswordInputAdornmentClick" />
-			<MudButton Class="d-flex flex-wrap rounded-pill"
+			<MudButton Class="rounded-pill"
 					   StartIcon="@Icons.Material.Filled.Login"
 					   Size="Size.Medium"
 					   FullWidth="true"
@@ -62,13 +62,40 @@
 					Log in
 				</MudText>
 			</MudButton>
-			<MudLink Class="d-flex justify-center"
-					 Href=""
-					 OnClick="NotifySignUpClicked">
+			<MudLink OnClick="NotifySignUpClicked">
 				<MudText>
 					Sign up
 				</MudText>
 			</MudLink>
+			<MudLink OnClick="NotifyForgotPasswordClicked">
+				<MudText>
+					Forgot password ?
+				</MudText>
+			</MudLink>
+			<MudText Style="font-size:large;font-weight:bold;"
+					 Align="Align.Center">
+				Or
+			</MudText>
+			<MudButton Class="rounded-pill"
+					   StartIcon="@Icons.Custom.Brands.Google"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Variant=Variant.Outlined
+					   >
+				<MudText>
+					Sign in with Google
+				</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   StartIcon="@Icons.Custom.Brands.Facebook"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Variant=Variant.Outlined
+					   >
+				<MudText>
+					Sign in with Facebook
+				</MudText>
+			</MudButton>
 		</MudPaper>
 	</MudPaper>
 </MudPaper>
@@ -77,6 +104,8 @@
 {
 	[Parameter]
 	public EventCallback NotifySignUpClicked { get; set; }
+	[Parameter]
+	public EventCallback NotifyForgotPasswordClicked{ get; set; }
 
 	public string Email    { get; set; } = string.Empty;
 	public string Password { get; set; } = string.Empty;
