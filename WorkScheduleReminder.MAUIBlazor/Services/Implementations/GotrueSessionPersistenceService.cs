@@ -4,14 +4,14 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 {
 	public class GotrueSessionPersistenceService : IGotrueSessionPersistenceService
 	{
-		public async void SaveSession(Supabase.Gotrue.Session gotrueSession)
+		public void SaveSession(Supabase.Gotrue.Session gotrueSession)
 		{
 			try
 			{
 				string cacheFileName = ".gotrue.cache";
 				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
 				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-			await    File.WriteAllTextAsync(cacheFilePath, Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession));
+				     File.WriteAllText(cacheFilePath, Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession));
 			}
 			catch (Exception exception)
 			{
@@ -35,14 +35,14 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 			}
 		}
 
-		public async void DestroySession()
+		public void DestroySession()
 		{
 			try
 			{
 				string cacheFileName = ".gotrue.cache";
 				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
 				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-			await    File.WriteAllTextAsync(cacheFilePath, string.Empty);
+				     File.WriteAllText(cacheFilePath, string.Empty);
 			}
 			catch (Exception exception)
 			{
