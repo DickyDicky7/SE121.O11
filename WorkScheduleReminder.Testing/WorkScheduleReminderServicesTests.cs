@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Storage;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Storage;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -262,82 +263,203 @@ namespace WorkScheduleReminder.Testing.ServicesTests
 		}
 	}
 
+	public class MockGotrueSessionPersistenceService : GotrueSessionPersistenceService
+	{
+		public MockGotrueSessionPersistenceService() : base()
+		{
+			instanceNumber = count++;
+			GotrueSessionPersistenceServiceTests.MockGotrueSessionPersistenceServices.Add(this);
+		}
+
+		private static int count = 1;
+		private readonly int instanceNumber;
+
+		public override string AppDataDirectoryPath => Path.GetTempPath();
+		public override string CacheDirectoryPath => Path.GetTempPath();
+		public override string CacheFileName => $".gotrue{instanceNumber}.cache";
+	}
+
 	[TestFixture]
 	[Parallelizable]
 	[FixtureLifeCycle(LifeCycle.SingleInstance)]
 	public class GotrueSessionPersistenceServiceTests
 	{
-		protected GotrueSessionPersistenceService gotrueSessionPersistenceService = default!;
-		protected string cacheFileName = default!;
-		protected string cacheFilePath = default!;
-
-		[OneTimeSetUp]
-		public void OnStartJustOnce()
-		{
-			gotrueSessionPersistenceService = new();
-			cacheFileName = ".gotrue.cache";
-			cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-		}
+		public static List<MockGotrueSessionPersistenceService> MockGotrueSessionPersistenceServices { get; } = new();
 
 		[OneTimeTearDown]
 		public void CleanUpJustOnce()
 		{
-		}
-
-		[SetUp]
-		public void OnStartBeforeEveryTestCase()
-		{
-			Directory.Delete(FileSystem.CacheDirectory, true);
-		}
-
-		[TearDown]
-		public void CleanUpAfterEveryTestCase()
-		{
-			Directory.Delete(FileSystem.CacheDirectory, true);
+			foreach (var mockGotrueSessionPersistenceService in MockGotrueSessionPersistenceServices)
+			{
+				File.Delete(mockGotrueSessionPersistenceService.CacheFilePath);
+			}
 		}
 
 		[Test]
-		[NonParallelizable]
+		[Parallelizable]
 		public void SaveSession_Should_Create_Cache_Directory()
 		{
 			/* --- ARRANGE --- */
 			var gotrueSession = new Supabase.Gotrue.Session();
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
 
 			/* --- ACT --- */
-			gotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
+			mockGotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.IsTrue(Directory.Exists(FileSystem.CacheDirectory));
+			Assert.That(Directory.Exists(mockGotrueSessionPersistenceService.CacheDirectoryPath), Is.True);
 		}
 
 		[Test]
-		[NonParallelizable]
-		public void SaveSession_Should_Create_Cache_File_Path()
+		[Parallelizable]
+		public void SaveSession_Should_Create_Cache_File()
 		{
 			/* --- ARRANGE --- */
 			var gotrueSession = new Supabase.Gotrue.Session();
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
 
 			/* --- ACT --- */
-			gotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
+			mockGotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.IsTrue(Path.Exists(cacheFilePath));
+			Assert.That(Path.Exists(mockGotrueSessionPersistenceService.CacheFilePath), Is.True);
 		}
 
 		[Test]
-		[NonParallelizable]
+		[Parallelizable]
 		public async Task SaveSession_Should_Write_Serialized_Gotrue_Session_Into_Cache_File()
 		{
 			/* --- ARRANGE --- */
 			var gotrueSession = new Supabase.Gotrue.Session();
 			var gotrueSessionSerialized = Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession);
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
 
 			/* --- ACT --- */
-			gotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
-			var gotrueSessionStoredInCacheFile = await File.ReadAllTextAsync(cacheFilePath);
+			mockGotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
+			var gotrueSessionStoredInCacheFile = await File.ReadAllTextAsync(mockGotrueSessionPersistenceService.CacheFilePath);
 
 			/* --- ASSERT --- */
-			Assert.AreEqual(gotrueSessionSerialized, gotrueSessionStoredInCacheFile);
+			Assert.That(gotrueSessionSerialized, Is.EqualTo(gotrueSessionStoredInCacheFile));
+		}
+
+		[Test]
+		[Parallelizable]
+		public void LoadSession_Should_Create_Cache_Directory()
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(Directory.Exists(mockGotrueSessionPersistenceService.CacheDirectoryPath), Is.True);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void LoadSession_Should_Return_Full_Session_If_Cache_File_Existed_And_Data_In_Cache_File_Has_Valid_Format()
+		{
+			/* --- ARRANGE --- */
+			var gotrueSession = new Supabase.Gotrue.Session();
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.SaveSession(gotrueSession);
+			var returnGotrueSession = mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(returnGotrueSession, Is.Not.Null);
+		}
+
+		[Test]
+		[Parallelizable]
+		[TestCaseSource(sourceType: typeof(Helper), sourceName: nameof(Helper.GenerateAllPossibleStrings), methodParams: new object[] { 1 })]
+		public async Task LoadSession_Should_Return_Null_Session_If_Cache_File_Existed_And_Data_In_Cache_File_Has_Invalid_Format(string content)
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			await File.WriteAllTextAsync(mockGotrueSessionPersistenceService.CacheFilePath, content);
+			var returnGotrueSession = mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(returnGotrueSession, Is.Null);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void LoadSession_Should_Return_Null_Session_If_Cache_File_Not_Existed()
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			var returnGotrueSession = mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(returnGotrueSession, Is.Null);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void DestroySession_Should_Create_Cache_Directory()
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.DestroySession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(Directory.Exists(mockGotrueSessionPersistenceService.CacheDirectoryPath), Is.True);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void DestroySession_Should_Create_Cache_File()
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.DestroySession(); /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(Path.Exists(mockGotrueSessionPersistenceService.CacheFilePath), Is.True);
+		}
+
+		[Test]
+		[Parallelizable]
+		public async Task DestroySession_Should_Create_Cache_File_Empty()
+		{
+			/* --- ARRANGE --- */
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.DestroySession(); /* <-- HERE <-- */
+			var content = await File.ReadAllTextAsync(mockGotrueSessionPersistenceService.CacheFilePath);
+
+			/* --- ASSERT --- */
+			Assert.That(content, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public async Task DestroySession_Should_Make_Existed_Cache_File_Empty()
+		{
+			/* --- ARRANGE --- */
+			var gotrueSession = new Supabase.Gotrue.Session();
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			mockGotrueSessionPersistenceService.SaveSession(gotrueSession);
+			mockGotrueSessionPersistenceService.DestroySession(); /* <-- HERE <-- */
+			var content = await File.ReadAllTextAsync(mockGotrueSessionPersistenceService.CacheFilePath);
+
+			/* --- ASSERT --- */
+			Assert.That(content, Is.Empty);
 		}
 	}
 }

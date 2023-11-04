@@ -4,14 +4,17 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 {
 	public class GotrueSessionPersistenceService : IGotrueSessionPersistenceService
 	{
+		public virtual string   CacheFileName => ".gotrue.cache";
+		public virtual string   CacheFilePath => Path.Join(CacheDirectoryPath, CacheFileName);
+		public virtual string AppDataDirectoryPath => FileSystem.AppDataDirectory;
+		public virtual string   CacheDirectoryPath => FileSystem.  CacheDirectory;
+
 		public void SaveSession(Supabase.Gotrue.Session gotrueSession)
 		{
 			try
 			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-				     File.WriteAllText(cacheFilePath, Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession));
+				Directory.CreateDirectory(CacheDirectoryPath);
+				File.WriteAllText(CacheFilePath, Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession));
 			}
 			catch (Exception exception)
 			{
@@ -23,10 +26,8 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 		{
 			try
 			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-				return Newtonsoft.Json.JsonConvert.DeserializeObject<Supabase.Gotrue.Session>(File.ReadAllText(cacheFilePath));
+				Directory.CreateDirectory(CacheDirectoryPath);
+				return Newtonsoft.Json.JsonConvert.DeserializeObject<Supabase.Gotrue.Session>(File.ReadAllText(CacheFilePath));
 			}
 			catch (Exception exception)
 			{
@@ -39,10 +40,8 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 		{
 			try
 			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-				     File.WriteAllText(cacheFilePath, string.Empty);
+				Directory.CreateDirectory( CacheDirectoryPath);
+				File.WriteAllText(CacheFilePath, string.Empty);
 			}
 			catch (Exception exception)
 			{
