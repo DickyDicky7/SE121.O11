@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
 			Environment.SetEnvironmentVariable("SUPABASE_KEY", SUPABASE_KEY, EnvironmentVariableTarget.Process);
 			services.TryAddSingleton<Supabase.Client>(serviceProvider =>
 			{
-				IGotrueSessionPersistenceService gotrueSessionPersistenceService = serviceProvider.GetRequiredService<
-				IGotrueSessionPersistenceService>();
+				BaseGotrueSessionPersistenceService gotrueSessionPersistenceService = serviceProvider.GetRequiredService<
+				BaseGotrueSessionPersistenceService>();
 				return new(SUPABASE_URL, SUPABASE_KEY, new SupabaseOptions()
 				{
 					SessionHandler =

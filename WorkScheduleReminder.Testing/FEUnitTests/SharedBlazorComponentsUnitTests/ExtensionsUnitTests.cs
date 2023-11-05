@@ -1,159 +1,26 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Moq;
 using MudBlazor;
 using MudBlazor.Services;
 using MudExtensions.Services;
 using MudExtensions.Utilities;
-using System;
-using System.Linq;
 using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations;
 using WorkScheduleReminder.SharedBusinessLogic.Services.Abstractions___;
-using WorkScheduleReminder.SharedBusinessLogic.Services.Implementations;
+using WorkScheduleReminder.Testing.MockDependencies;
 
-namespace WorkScheduleReminder.Testing.ExtensionsTests
+namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTests
 {
-	public class MockNavigationManager : NavigationManager
-	{
-		public MockNavigationManager() : base()
-		{
-			Initialize(
-			"http://localhost:2112/",
-			"http://localhost:2112/test");
-		}
-
-		public bool WasNavigateInvoked { get; private set; }
-
-		protected override void NavigateToCore(string uri, bool forceLoad)
-		{
-			WasNavigateInvoked = true;
-		}
-	}
-
 	[TestFixture]
 	[Parallelizable]
 	[FixtureLifeCycle(LifeCycle.SingleInstance)]
-	public class SharedBusinessLogicTests
+	public class ExtensionsUnitTests
 	{
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_AddsSupabaseClientToServiceCollection()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-			Mock<IGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
-
-			/* --- ACT --- */
-			services.AddSingleton(mockGotrueSessionPersistenceService.Object);
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			ServiceProvider serviceProvider = services.BuildServiceProvider();
-			Supabase.Client? supabaseClient = serviceProvider.GetService<Supabase.Client>();
-
-			/* --- ASSERT --- */
-			Assert.IsNotNull(supabaseClient);
-		}
-
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_AddsObservableDictionaryTransferServiceToServiceCollection()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-
-			/* --- ACT --- */
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			ServiceProvider serviceProvider = services.BuildServiceProvider();
-			ObservableDictionaryTransferService? observableDictionaryTransferService = serviceProvider.GetService<ObservableDictionaryTransferService>();
-
-			/* --- ASSERT --- */
-			Assert.IsNotNull(observableDictionaryTransferService);
-		}
-
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_SetsSupabaseUrlEnvironmentVariable()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-
-			/* --- ACT --- */
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			string? supabaseUrl = Environment.GetEnvironmentVariable("SUPABASE_URL");
-
-			/* --- ASSERT --- */
-			Assert.AreEqual("https://cklxrwkqemlsayifnnvn.supabase.co", supabaseUrl);
-		}
-
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_SetsSupabaseKeyEnvironmentVariable()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-
-			/* --- ACT --- */
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			string? supabaseKey = Environment.GetEnvironmentVariable("SUPABASE_KEY");
-
-			/* --- ASSERT --- */
-			Assert.AreEqual("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbHhyd2txZW1sc2F5aWZubnZ" +
-			"uIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUyMTM2ODMsImV4cCI6MjAxMDc4OTY4M30.HuP4n3fN3TPGnkoKcJOm4fM9awVeYw0WXBY4SjKA99w", supabaseKey);
-		}
-
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_SetsSupabaseOptions()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-			Mock<IGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
-
-			/* --- ACT --- */
-			services.AddSingleton(mockGotrueSessionPersistenceService.Object);
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			ServiceProvider serviceProvider = services.BuildServiceProvider();
-			Supabase.Client? supabaseClient = serviceProvider.GetService<Supabase.Client>();
-
-			/* --- ASSERT --- */
-			Assert.IsNotNull(supabaseClient);
-			Supabase.Gotrue.ClientOptions? supabaseGotrueClientOptions = supabaseClient?.Auth.Options;
-			Assert.IsNotNull(supabaseGotrueClientOptions);
-			Assert.IsTrue(supabaseGotrueClientOptions?.AutoRefreshToken);
-		}
-
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBusinessLogic_DoesNotAddDuplicateServices()
-		{
-			/* --- ARRANGE --- */
-			ServiceCollection services = new();
-			Mock<IGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
-
-			/* --- ACT --- */
-			services.AddSingleton(mockGotrueSessionPersistenceService.Object);
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			services.AddServicesAndExtensionsSharedBusinessLogic(); /* <-- HERE <-- */
-			ServiceProvider serviceProvider = services.BuildServiceProvider();
-			int supabaseClientCount = serviceProvider.GetServices<Supabase.Client>().Count();
-			int observableDictionaryTransferServiceCount = serviceProvider.GetServices<ObservableDictionaryTransferService>().Count();
-
-			/* --- ASSERT --- */
-			Assert.AreEqual(1, supabaseClientCount);
-			Assert.AreEqual(1, observableDictionaryTransferServiceCount);
-		}
-	}
-
-	[TestFixture]
-	[Parallelizable]
-	[FixtureLifeCycle(LifeCycle.SingleInstance)]
-	public class SharedBlazorComponentsTests
-	{
-		[Test]
-		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_AddsMudServices()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustAddMudServices()
 		{
 			/* --- ARRANGE --- */
 			ServiceCollection services = new();
@@ -195,38 +62,38 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			IEventListenerFactory? eventListenerFactory = serviceProvider.GetService<IEventListenerFactory>();
 
 			/* --- ASSERT --- */
-			Assert.IsNotNull(dialogService);
-			Assert.IsNotNull(snackBarService);
-			Assert.IsNotNull(resizeListenerService);
-			Assert.IsNotNull(browserViewportService);
-			Assert.IsNotNull(browserWindowSizeProvider);
-			Assert.IsNotNull(resizeService);
-			Assert.IsNotNull(breakpointService);
-			Assert.IsNotNull(resizeObserver);
-			Assert.IsNotNull(resizeObserverFactory);
-			Assert.IsNotNull(keyInterceptor);
-			Assert.IsNotNull(keyInterceptorFactory);
-			Assert.IsNotNull(jsEvent);
-			Assert.IsNotNull(jsEventFactory);
-			Assert.IsNotNull(scrollManager);
-			Assert.IsNotNull(mudPopoverService);
-			Assert.IsNotNull(popoverService);
-			Assert.IsNotNull(scrollListener);
-			Assert.IsNotNull(scrollListenerFactory);
-			Assert.IsNotNull(scrollSpy);
-			Assert.IsNotNull(scrollSpyFactory);
-			Assert.IsNotNull(jsApiService);
-			Assert.IsNotNull(eventListener);
-			Assert.IsNotNull(eventListenerFactory);
+			Assert.That(dialogService, Is.Not.Null);
+			Assert.That(snackBarService, Is.Not.Null);
+			Assert.That(resizeListenerService, Is.Not.Null);
+			Assert.That(browserViewportService, Is.Not.Null);
+			Assert.That(browserWindowSizeProvider, Is.Not.Null);
+			Assert.That(resizeService, Is.Not.Null);
+			Assert.That(breakpointService, Is.Not.Null);
+			Assert.That(resizeObserver, Is.Not.Null);
+			Assert.That(resizeObserverFactory, Is.Not.Null);
+			Assert.That(keyInterceptor, Is.Not.Null);
+			Assert.That(keyInterceptorFactory, Is.Not.Null);
+			Assert.That(jsEvent, Is.Not.Null);
+			Assert.That(jsEventFactory, Is.Not.Null);
+			Assert.That(scrollManager, Is.Not.Null);
+			Assert.That(mudPopoverService, Is.Not.Null);
+			Assert.That(popoverService, Is.Not.Null);
+			Assert.That(scrollListener, Is.Not.Null);
+			Assert.That(scrollListenerFactory, Is.Not.Null);
+			Assert.That(scrollSpy, Is.Not.Null);
+			Assert.That(scrollSpyFactory, Is.Not.Null);
+			Assert.That(jsApiService, Is.Not.Null);
+			Assert.That(eventListener, Is.Not.Null);
+			Assert.That(eventListenerFactory, Is.Not.Null);
 		}
 
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_AddsSupabaseAuthenticationStateProviderService()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustAddSupabaseAuthenticationStateProviderService()
 		{
 			/* --- ARRANGE --- */
 			ServiceCollection services = new();
-			Mock<IGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
+			Mock<BaseGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
 
 			/* --- ACT --- */
 			services.AddSingleton(mockGotrueSessionPersistenceService.Object);
@@ -235,16 +102,16 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			SupabaseAuthenticationStateProviderService? supabaseAuthenticationStateProviderService = serviceProvider.GetService<SupabaseAuthenticationStateProviderService>();
 
 			/* --- ASSERT --- */
-			Assert.IsNotNull(supabaseAuthenticationStateProviderService);
+			Assert.That(supabaseAuthenticationStateProviderService, Is.Not.Null);
 		}
 
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_AddsAuthenticationStateProvider()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustAddAuthenticationStateProvider()
 		{
 			/* --- ARRANGE --- */
 			ServiceCollection services = new();
-			Mock<IGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
+			Mock<BaseGotrueSessionPersistenceService> mockGotrueSessionPersistenceService = new();
 
 			/* --- ACT --- */
 			services.AddSingleton(mockGotrueSessionPersistenceService.Object);
@@ -253,12 +120,12 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			AuthenticationStateProvider? authenticationStateProvider = serviceProvider.GetService<AuthenticationStateProvider>();
 
 			/* --- ASSERT --- */
-			Assert.IsNotNull(authenticationStateProvider);
+			Assert.That(authenticationStateProvider, Is.Not.Null);
 		}
 
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_AddsAuthorizationCore()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustAddAuthorizationCore()
 		{
 			/* --- ARRANGE --- */
 			ServiceCollection services = new();
@@ -275,12 +142,12 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			IAuthorizationPolicyProvider? authorizationPolicyProvider = serviceProvider.GetService<IAuthorizationPolicyProvider>();
 
 			/* --- ASSERT --- */
-			Assert.IsNotNull(authorizationService);
-			Assert.IsNotNull(authorizationHandler);
-			Assert.IsNotNull(authorizationHandlerProvider);
-			Assert.IsNotNull(authorizationHandlerContextFactory);
-			Assert.IsNotNull(authorizationEvaluator);
-			Assert.IsNotNull(authorizationPolicyProvider);
+			Assert.That(authorizationService, Is.Not.Null);
+			Assert.That(authorizationHandler, Is.Not.Null);
+			Assert.That(authorizationHandlerProvider, Is.Not.Null);
+			Assert.That(authorizationHandlerContextFactory, Is.Not.Null);
+			Assert.That(authorizationEvaluator, Is.Not.Null);
+			Assert.That(authorizationPolicyProvider, Is.Not.Null);
 		}
 
 		//[Test]
@@ -300,7 +167,7 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_AddsMudExtensions()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustAddMudExtensions()
 		{
 			/* --- ARRANGE --- */
 			ServiceCollection services = new();
@@ -315,14 +182,14 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			IScrollManagerExtended? scrollManagerExtended = serviceProvider.GetService<IScrollManagerExtended>();
 
 			/* --- ASSERT --- */
-			Assert.IsNotNull(mudTeleportManager);
-			Assert.IsNotNull(mudCssManager);
-			Assert.IsNotNull(scrollManagerExtended);
+			Assert.That(mudTeleportManager, Is.Not.Null);
+			Assert.That(mudCssManager, Is.Not.Null);
+			Assert.That(scrollManagerExtended, Is.Not.Null);
 		}
 
 		[Test]
 		[Parallelizable]
-		public void AddServicesAndExtensionsSharedBlazorComponents_UsesSupabaseAuthenticationStateProviderService()
+		public void AddServicesAndExtensionsSharedBlazorComponents_MustUseSupabaseAuthenticationStateProviderService()
 		{
 			/* --- ARRANGE --- */
 			string SUPABASE_URL = string.Empty;
@@ -339,7 +206,7 @@ namespace WorkScheduleReminder.Testing.ExtensionsTests
 			AuthenticationStateProvider authenticationStateProvider = serviceProvider.GetRequiredService<AuthenticationStateProvider>();
 
 			/* --- ASSERT --- */
-			Assert.AreSame(mockSupabaseAuthenticationStateProviderService, authenticationStateProvider);
+			Assert.That(mockSupabaseAuthenticationStateProviderService, Is.SameAs(authenticationStateProvider));
 		}
 	}
 }

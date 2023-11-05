@@ -10,12 +10,12 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		{
 			PrimaryKeyPropertyName1 = nameof(TagByProfileId);
 			PrimaryKeyPropertyName2 = nameof(        TaskId);
-			PrimaryKeyPropertyName3 = "";
-			PrimaryKeyPropertyName4 = "";
-			PrimaryKeyPropertyName5 = "";
-			PrimaryKeyPropertyName6 = "";
-			PrimaryKeyPropertyName7 = "";
-			PrimaryKeyPropertyName8 = "";
+			PrimaryKeyPropertyName3 = string.Empty;
+			PrimaryKeyPropertyName4 = string.Empty;
+			PrimaryKeyPropertyName5 = string.Empty;
+			PrimaryKeyPropertyName6 = string.Empty;
+			PrimaryKeyPropertyName7 = string.Empty;
+			PrimaryKeyPropertyName8 = string.Empty;
 		}
 
 		[PrimaryKey(columnName: "task_id")]

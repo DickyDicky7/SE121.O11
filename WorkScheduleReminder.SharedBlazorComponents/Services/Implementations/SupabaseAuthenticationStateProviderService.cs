@@ -22,11 +22,11 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			ClaimsPrincipal claimsPrincipal = new();
 			if (supabaseClient.Auth.CurrentSession != null)
 			{
-				string? UserId  = supabaseClient.Auth.CurrentUser?.Id;
-				if     (UserId != null)
+				string? userId  = supabaseClient.Auth.CurrentUser?.Id;
+				if     (userId != null)
 				{
-					claimsPrincipal = new(new ClaimsIdentity(new Claim[]
-					{ new(nameof(UserId), UserId)
+					claimsPrincipal = new(new ClaimsIdentity(claims: new Claim[]
+					{ new(nameof(userId), userId)
 					}
 					, authenticationType: "SUPABASE_GOTRUE"));
 				}
