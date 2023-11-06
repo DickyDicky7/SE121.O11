@@ -17,8 +17,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		{
 			foreach (var mockGotrueSessionPersistenceService in MockGotrueSessionPersistenceServices)
 			{
-				if (Path.Exists(mockGotrueSessionPersistenceService.CacheFilePath))
-					File.Delete(mockGotrueSessionPersistenceService.CacheFilePath);
+				if (Directory.Exists(mockGotrueSessionPersistenceService.CacheDirectoryPath))
+					Directory.Delete(mockGotrueSessionPersistenceService.CacheDirectoryPath, true);
+				if (Directory.Exists(mockGotrueSessionPersistenceService.AppDataDirectoryPath))
+					Directory.Delete(mockGotrueSessionPersistenceService.AppDataDirectoryPath, true);
 			}
 		}
 
