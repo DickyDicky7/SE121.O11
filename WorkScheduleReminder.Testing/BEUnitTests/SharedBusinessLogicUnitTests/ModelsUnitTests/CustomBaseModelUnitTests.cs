@@ -29,7 +29,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 				yield return new TestCaseData(null, Mock.Of<CustomBaseModel>()).Returns(false);
 				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), null).Returns(false);
 				yield return new TestCaseData(null, null).Returns(true);
-				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), Mock.Of<CustomBaseModel>()).Returns(true);
+				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), Mock.Of<CustomBaseModel>()).Returns(false);
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 				yield return new TestCaseData(null, Mock.Of<CustomBaseModel>()).Returns(true);
 				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), null).Returns(true);
 				yield return new TestCaseData(null, null).Returns(false);
-				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), Mock.Of<CustomBaseModel>()).Returns(false);
+				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), Mock.Of<CustomBaseModel>()).Returns(true);
 			}
 		}
 	}
