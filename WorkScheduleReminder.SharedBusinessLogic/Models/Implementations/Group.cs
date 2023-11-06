@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("groups__")]
 	public class Group : CustomBaseModelTableN
 	{
+	public       Group() : base() 
+		{
+		}
+
 		[Column(columnName: "name")]
 		public string Name { get; set; } = default!;
 

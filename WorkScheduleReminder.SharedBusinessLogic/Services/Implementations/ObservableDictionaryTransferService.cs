@@ -2,6 +2,10 @@
 {
 	public class ObservableDictionaryTransferService
 	{
+	public       ObservableDictionaryTransferService() 
+		{
+		}
+
 		private readonly Dictionary<object, object?> dataDictionary = new();
 		private readonly Dictionary<object, Action<object?>> eventDictionary = new();
 

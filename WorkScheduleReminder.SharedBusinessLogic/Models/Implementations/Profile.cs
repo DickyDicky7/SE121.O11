@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("profiles")]
 	public class Profile : CustomBaseModelTableN
 	{
+	public       Profile() : base()
+		{
+		}
+
 		[Column(columnName: "username")]
 		public string? UserName  { get; set; }
 

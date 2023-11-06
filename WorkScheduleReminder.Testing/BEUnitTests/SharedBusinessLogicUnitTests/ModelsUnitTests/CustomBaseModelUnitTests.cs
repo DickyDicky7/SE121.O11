@@ -16,7 +16,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	{
 		[Test]
 		[Parallelizable]
-		[TestCaseSource(sourceName: nameof(TestCasesForTestingEqualityOperatorEqualTo))]
+		[TestCaseSource(sourceType: typeof(CustomBaseModelUnitTests), sourceName: nameof(TestCasesForTestingEqualityOperatorEqualTo))]
 		public bool TestEqualityOperatorEqualTo(CustomBaseModel? cbm1, CustomBaseModel? cbm2)
 		{
 			return cbm1 == cbm2;
@@ -35,7 +35,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 
 		[Test]
 		[Parallelizable]
-		[TestCaseSource(sourceName: nameof(TestCasesForTestingEqualityOperatorNotEqualTo))]
+		[TestCaseSource(sourceType: typeof(CustomBaseModelUnitTests), sourceName: nameof(TestCasesForTestingEqualityOperatorNotEqualTo))]
 		public bool TestEqualityOperatorNotEqualTo(CustomBaseModel? cbm1, CustomBaseModel? cbm2)
 		{
 			return cbm1 != cbm2;

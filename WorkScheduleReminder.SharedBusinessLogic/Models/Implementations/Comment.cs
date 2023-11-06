@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("comments")]
 	public class Comment : CustomBaseModelTableN
 	{
+	public       Comment() : base() 
+		{
+		}
+
 		[Column(columnName:    "task_id")]
 		public Guid    TaskId { get; set; }
 

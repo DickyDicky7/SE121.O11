@@ -14,6 +14,34 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	{
 		[Test]
 		[Parallelizable]
+		public void PrimaryKeyPropertyName1_MustBeNameOfTagByGroupId()
+		{
+			/* --- ARRANGE --- */
+			var taggingByGroup = new TaggingByGroup();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName1 = taggingByGroup.PrimaryKeyPropertyName1; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName1, Is.EqualTo(nameof(taggingByGroup.TagByGroupId)));
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName2_MustBeNameOfTaskId()
+		{
+			/* --- ARRANGE --- */
+			var taggingByGroup = new TaggingByGroup();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName2 = taggingByGroup.PrimaryKeyPropertyName2; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName2, Is.EqualTo(nameof(taggingByGroup.TaskId)));
+		}
+
+		[Test]
+		[Parallelizable]
 		public void PrimaryKeyPropertyName3_MustBeEmptyString()
 		{
 			/* --- ARRANGE --- */

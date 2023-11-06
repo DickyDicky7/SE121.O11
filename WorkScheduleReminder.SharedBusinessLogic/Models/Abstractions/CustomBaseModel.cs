@@ -5,6 +5,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 {
 	public abstract class CustomBaseModel : BaseModel
 	{
+	public                CustomBaseModel() : base() 
+		{
+		}
+
 		[Column(columnName: "created_timestamp")]
 		public DateTimeOffset CreatedTimeStamp { get; set; }
 
