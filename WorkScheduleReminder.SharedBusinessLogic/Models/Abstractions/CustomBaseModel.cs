@@ -23,11 +23,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 		{
 			if (cbm1 is null
 			&&  cbm2 is null) return  true;
-			if (cbm1 is null 
-			||  cbm2 is null) return !true;
+			if (cbm1 is null) return !true;
 			return
-				cbm1.Equals(
-				cbm2);
+			    cbm1.Equals(
+			    cbm2);
 		}
 
 		public static bool operator !=(CustomBaseModel? cbm1, CustomBaseModel? cbm2)

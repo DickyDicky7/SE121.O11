@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using WorkScheduleReminder.Testing.MockDependencies;
 
@@ -11,10 +14,18 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	public class MockGotrueSessionPersistenceServiceUnitTests
 	{
 		public static List<MockGotrueSessionPersistenceService> MockGotrueSessionPersistenceServices { get; } = new();
+		public static int TraceListenerIndex { get; set; } = -1;
+
+		[OneTimeSetUp]
+		public static void OnStartJustOnce()
+		{
+			TraceListenerIndex = Trace.Listeners.Add(new MockTraceListener(nameof(MockGotrueSessionPersistenceServiceUnitTests)));
+		}
 
 		[OneTimeTearDown]
-		public void CleanUpJustOnce()
+		public static void CleanUpJustOnce()
 		{
+			Trace.Listeners.RemoveAt(TraceListenerIndex);
 			foreach (var mockGotrueSessionPersistenceService in MockGotrueSessionPersistenceServices)
 			{
 				if (Directory.Exists(mockGotrueSessionPersistenceService.CacheDirectoryPath))
@@ -110,6 +121,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
 
 			/* --- ACT --- */
+			Directory.CreateDirectory(mockGotrueSessionPersistenceService.CacheDirectoryPath);
 			await File.WriteAllTextAsync(mockGotrueSessionPersistenceService.CacheFilePath, content);
 			var returnGotrueSession = mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
 
@@ -189,6 +201,70 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 
 			/* --- ASSERT --- */
 			Assert.That(content, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void SaveSession_MustDebugUnableToWriteTheGotrueCacheFileIfAnyErrorsOccurred()
+		{
+			/* --- ARRANGE --- */
+			var traceListener = Trace.Listeners[TraceListenerIndex] as MockTraceListener;
+			var gotrueSession = new Supabase.Gotrue.Session();
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			Directory.CreateDirectory(mockGotrueSessionPersistenceService.CacheDirectoryPath);
+			File.Create(mockGotrueSessionPersistenceService.CacheFilePath).Close();
+			using (var __ = File.Open(mockGotrueSessionPersistenceService.CacheFilePath, FileMode.Open))
+			{
+				mockGotrueSessionPersistenceService.SaveSession(gotrueSession); /* <-- HERE <-- */
+			}
+
+			/* --- ASSERT --- */
+			Assert.That(traceListener, Is.Not.Null);
+			Assert.That(traceListener?.DebugOutputs.Any(debugOutput => debugOutput.StartsWith($"{Environment.CurrentManagedThreadId}: UNABLE TO WRITE THE GOTRUE CACHE FILE:")), Is.True);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void LoadSession_MustDebugUnableTo_ReadTheGotrueCacheFileIfAnyErrorsOccurred()
+		{
+			/* --- ARRANGE --- */
+			var traceListener = Trace.Listeners[TraceListenerIndex] as MockTraceListener;
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			Directory.CreateDirectory(mockGotrueSessionPersistenceService.CacheDirectoryPath);
+			File.Create(mockGotrueSessionPersistenceService.CacheFilePath).Close();
+			using (var __ = File.Open(mockGotrueSessionPersistenceService.CacheFilePath, FileMode.Open))
+			{
+				mockGotrueSessionPersistenceService.LoadSession(); /* <-- HERE <-- */
+			}
+
+			/* --- ASSERT --- */
+			Assert.That(traceListener, Is.Not.Null);
+			Assert.That(traceListener?.DebugOutputs.Any(debugOutput => debugOutput.StartsWith($"{Environment.CurrentManagedThreadId}: UNABLE TO @READ THE GOTRUE CACHE FILE:")), Is.True);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void DestroySession_MustDebugUnableToClearTheGotrueCacheFileIfAnyErrorsOccurred()
+		{
+			/* --- ARRANGE --- */
+			var traceListener = Trace.Listeners[TraceListenerIndex] as MockTraceListener;
+			var mockGotrueSessionPersistenceService = new MockGotrueSessionPersistenceService();
+
+			/* --- ACT --- */
+			Directory.CreateDirectory(mockGotrueSessionPersistenceService.CacheDirectoryPath);
+			File.Create(mockGotrueSessionPersistenceService.CacheFilePath).Close();
+			using (var __ = File.Open(mockGotrueSessionPersistenceService.CacheFilePath, FileMode.Open))
+			{
+				mockGotrueSessionPersistenceService.DestroySession(); /* <-- HERE <-- */
+			}
+
+			/* --- ASSERT --- */
+			Assert.That(traceListener, Is.Not.Null);
+			Assert.That(traceListener?.DebugOutputs.Any(debugOutput => debugOutput.StartsWith($"{Environment.CurrentManagedThreadId}: UNABLE TO CLEAR THE GOTRUE CACHE FILE:")), Is.True);
 		}
 	}
 }

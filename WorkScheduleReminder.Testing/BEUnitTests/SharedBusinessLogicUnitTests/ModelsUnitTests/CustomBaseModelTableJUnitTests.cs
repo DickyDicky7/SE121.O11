@@ -114,6 +114,118 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	{
 		[Test]
 		[Parallelizable]
+		public void PrimaryKeyPropertyName1_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName1 = cbmtj.PrimaryKeyPropertyName1; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName1, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName2_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName2 = cbmtj.PrimaryKeyPropertyName2; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName2, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName3_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName3 = cbmtj.PrimaryKeyPropertyName3; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName3, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName4_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName4 = cbmtj.PrimaryKeyPropertyName4; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName4, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName5_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName5 = cbmtj.PrimaryKeyPropertyName5; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName5, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName6_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName6 = cbmtj.PrimaryKeyPropertyName6; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName6, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName7_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName7 = cbmtj.PrimaryKeyPropertyName7; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName7, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
+		public void PrimaryKeyPropertyName8_MustReturnEmptyString()
+		{
+			/* --- ARRANGE --- */
+			var cbmtj = Mock.Of<CustomBaseModelTableJ>();
+
+			/* --- ACT --- */
+			var primaryKeyPropertyName8 = cbmtj.PrimaryKeyPropertyName8; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(primaryKeyPropertyName8, Is.Empty);
+		}
+
+		[Test]
+		[Parallelizable]
 		public void GetHashCode_MustReturnHashCodeCombinedOf00PrimaryKeyProperties()
 		{
 			/* --- ARRANGE --- */
