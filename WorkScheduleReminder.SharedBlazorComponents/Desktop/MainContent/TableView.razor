@@ -1,0 +1,72 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@page "/table"
+<MudPaper Class="pa-3"
+          Style="background-color:transparent; overflow-y:scroll;"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    @*Editing (create a custom button ?),
+    grouping (this),
+    sorting (alphabetically(this)),
+    resizing (this),
+    column re-ordering (this),
+    row hidden (toggle by switch),
+    filtering (by default toolbar)*@
+    <MudDataGrid T="Task"
+                 Items="Tasks"
+                 FixedHeader="true"
+                 Groupable="true"
+                 SortMode="SortMode.Multiple"
+
+                 Virtualize="true"
+                 >
+
+        <Columns>
+            <PropertyColumn Property="x=>x.Title" />
+            <PropertyColumn Property="x=>x.Tag" />
+            <PropertyColumn Property="x=>x.Assignees" />
+            <PropertyColumn Property="x=>x.DueDay" />
+            <TemplateColumn>
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Size="Size.Small"
+                                   OnClick="(()=>OnEditButtonClick(context.Item.Title))" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <NoRecordsContent>
+            <MudText>There's nothing here :(</MudText>
+        </NoRecordsContent>
+
+    </MudDataGrid>
+</MudPaper>
+<MudOverlay Class="border-2"
+            Visible="@TaskDetailVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation
+                Title="@CurrentTitle" />
+</MudOverlay>
+
+@code {
+    private bool TaskDetailVisible { get; set; } = false;
+    private string CurrentTitle { get; set; } = string.Empty;
+    public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
+    public IEnumerable<Task> Tasks = null!;
+    protected override void OnInitialized()
+    {
+        List<Task> Temp = new List<Task>();
+
+        foreach(int i in Enumerable.Range(0,30))  
+        {
+            Temp.Add(new Task(i.ToString(), (30 - i).ToString(), 45 - i, DateTime.Now.AddDays(i)));
+        }
+        Tasks = Temp;
+    }
+    public void OnEditButtonClick(string TaskTitle)
+    {
+        TaskDetailVisible = !TaskDetailVisible;
+        CurrentTitle = TaskTitle;
+    }
+}

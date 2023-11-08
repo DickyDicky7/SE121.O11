@@ -10,12 +10,6 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		{
 			PrimaryKeyPropertyName1 = nameof(  GroupId);
 			PrimaryKeyPropertyName2 = nameof(ProfileId);
-			PrimaryKeyPropertyName3 = "";
-			PrimaryKeyPropertyName4 = "";
-			PrimaryKeyPropertyName5 = "";
-			PrimaryKeyPropertyName6 = "";
-			PrimaryKeyPropertyName7 = "";
-			PrimaryKeyPropertyName8 = "";
 		}
 
 		[PrimaryKey(columnName: "group___id")]

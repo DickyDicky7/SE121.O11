@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("tags_by_profiles")]
 	public class TagByProfile : CustomBaseModelTableN
 	{
+	public       TagByProfile() : base()
+		{
+		}
+
 		[PrimaryKey(columnName: "name")]
 		public string Name     { get; set; } = default!;
 

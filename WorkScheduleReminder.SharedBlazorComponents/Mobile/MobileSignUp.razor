@@ -1,0 +1,132 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
+@inject ISnackbar  Snackbar
+@inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
+
+<MudPaper Class="d-flex flex-column"
+		  Style=""
+		  Elevation="0"
+		  Width="100vw"
+		  Height="100vh">
+	<MudPaper Class=""
+			  Elevation="0"
+			  MinWidth="300px"
+			  Width="100%"
+			  MaxWidth="350px">
+		<MudIconButton Class=""
+					   Style=""
+					   Icon="@Icons.Material.Filled.ArrowBack"
+					   Size="Size.Large"
+					   Href="login"
+					   Color="Color.Primary"
+					   OnClick="NotifyBack__Clicked" />
+	</MudPaper>
+	<MudPaper Class="d-flex justify-center"
+			  Elevation="0"
+			  MinWidth="300px"
+			  Width="100%"
+			  Height="100%"
+			  MaxWidth="350px">
+		<MudPaper Class="d-flex flex-wrap align-self-center gap-2"
+				  Elevation="0"
+				  Width="90%">
+			<MudTextField @bind-Value="Email"
+						  Class="rounded-pill"
+						  Placeholder="Enter email"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense" />
+			<MudTextField @bind-Value="Password"
+						  Class="rounded-pill"
+						  Placeholder="Enter password"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  InputType="PasswordInputType"
+						  Adornment="Adornment.End"
+						  AdornmentIcon="@PasswordInputIcon"
+						  AdornmentAriaLabel="Show Password"
+						  OnAdornmentClick="OnPasswordInputAdornmentClick" />
+			<MudTextField @bind-Value="PasswordConfirmed"
+						  Class="rounded-pill"
+						  Placeholder="Confirm password"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  InputType="PasswordConfirmedInputType"
+						  Adornment="Adornment.End"
+						  AdornmentIcon="@PasswordConfirmedInputIcon"
+						  AdornmentAriaLabel="Show Confirmed Password"
+						  OnAdornmentClick="OnPasswordConfirmedInputAdornmentClick" />
+			<MudButton Class="d-flex flex-wrap rounded-pill"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Variant=Variant.Outlined
+					   OnClick="SignUp">
+				<MudText>
+					Sign Up
+				</MudText>
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
+</MudPaper>
+
+@code
+{
+	[Parameter]
+	public EventCallback NotifyBack__Clicked { get; set; }
+
+	public string Email             { get; set; } = string.Empty;
+	public string Password          { get; set; } = string.Empty;
+	public string PasswordConfirmed { get; set; } = string.Empty;
+	public string    PasswordInputIcon          { get; set; } = Icons.Material.Filled.VisibilityOff;
+	public bool      PasswordInputShow          { get; set; } = false;
+	public InputType PasswordInputType          { get; set; } = InputType.Password;
+	public string    PasswordConfirmedInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
+	public bool      PasswordConfirmedInputShow { get; set; } = false;
+	public InputType PasswordConfirmedInputType { get; set; } = InputType.Password;
+
+	public void OnPasswordInputAdornmentClick()
+	{
+		PasswordInputShow = !
+		PasswordInputShow;
+		if (PasswordInputShow)
+		{
+			PasswordInputType = InputType.Text;
+			PasswordInputIcon = Icons.Material.Filled.Visibility;
+		}
+		else
+		{
+			PasswordInputType = InputType.Password;
+			PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+		}
+	}
+
+	public void OnPasswordConfirmedInputAdornmentClick()
+	{
+		PasswordConfirmedInputShow = !
+		PasswordConfirmedInputShow;
+		if (PasswordConfirmedInputShow)
+		{
+			PasswordConfirmedInputType = InputType.Text;
+			PasswordConfirmedInputIcon = Icons.Material.Filled.Visibility;
+		}
+		else
+		{
+			PasswordConfirmedInputType = InputType.Password;
+			PasswordConfirmedInputIcon = Icons.Material.Filled.VisibilityOff;
+		}
+	}
+
+	public async Task   SignUp()
+	{   if(await Common.SignUp(SupabaseAuthenticationStateProviderService, Email, Password, PasswordConfirmed, Snackbar))
+		{
+           await NotifyBack__Clicked.InvokeAsync();
+		}
+	}
+}

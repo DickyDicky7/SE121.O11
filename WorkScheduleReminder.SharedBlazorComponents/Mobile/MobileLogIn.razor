@@ -1,0 +1,106 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
+@inject ISnackbar  Snackbar
+@inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
+
+<MudPaper Class="d-flex flex-column"
+		  Elevation="0"
+		  MinWidth="300px"
+		  MinHeight="500px"
+		  Width="100vw"
+		  Height="100vh"
+		  MaxWidth="350px">
+	<MudPaper Class="d-flex justify-center"
+			  Elevation="0"
+			  Width="100%"
+			  Height="50%">
+		<MudPaper Class="d-flex flex-column align-self-center gap-2"
+				  Elevation="0">
+			<MudImage Class="align-self-center"
+					  Src="@Helper.GetResource("/images/catsayhello.png")"
+					  Width="200" Height="200"
+					  ObjectFit="ObjectFit.Contain"
+					  ObjectPosition="ObjectPosition.Center" />
+			<MudText Align="Align.Center">
+				Over 10 millions people using this to manage their day
+			</MudText>
+		</MudPaper>
+	</MudPaper>
+	<MudPaper Class="d-flex justify-center"
+			  Elevation="0"
+			  Width="100%"
+			  Height="50%">
+		<MudPaper Class="d-flex flex-column align-self-center gap-2"
+				  Elevation="0"
+				  Width="90%">
+			<MudTextField @bind-Value="Email"
+						  Class="rounded-pill"
+						  Placeholder="Enter email"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense" />
+			<MudTextField @bind-Value="Password"
+						  Class="rounded-pill"
+						  Placeholder="Enter password"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  InputType="PasswordInputType"
+						  Adornment="Adornment.End"
+						  AdornmentIcon="@PasswordInputIcon"
+						  AdornmentAriaLabel="Show Password"
+						  OnAdornmentClick="OnPasswordInputAdornmentClick" />
+			<MudButton Class="d-flex flex-wrap rounded-pill"
+					   StartIcon="@Icons.Material.Filled.Login"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Variant=Variant.Outlined
+					   OnClick="LogIn">
+				<MudText>
+					Log in
+				</MudText>
+			</MudButton>
+			<MudLink Class="d-flex justify-center"
+					 Href=""
+					 OnClick="NotifySignUpClicked">
+				<MudText>
+					Sign up
+				</MudText>
+			</MudLink>
+		</MudPaper>
+	</MudPaper>
+</MudPaper>
+
+@code
+{
+	[Parameter]
+	public EventCallback NotifySignUpClicked { get; set; }
+
+	public string Email    { get; set; } = string.Empty;
+	public string Password { get; set; } = string.Empty;
+	public string    PasswordInputIcon { get; set; } = Icons.Material.Filled.VisibilityOff;
+	public bool      PasswordInputShow { get; set; } = false;
+	public InputType PasswordInputType { get; set; } = InputType.Password;
+
+	public void OnPasswordInputAdornmentClick()
+	{
+		PasswordInputShow = !
+		PasswordInputShow;
+		if (PasswordInputShow)
+		{
+			PasswordInputType = InputType.Text;
+			PasswordInputIcon = Icons.Material.Filled.Visibility;
+		}
+		else
+		{
+			PasswordInputType = InputType.Password;
+			PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+		}
+	}
+
+	public async Task   LogIn()
+	{      await Common.LogIn(SupabaseAuthenticationStateProviderService, Email, Password, Snackbar); }
+}

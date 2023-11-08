@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("tags_by_groups__")]
 	public class TagByGroup : CustomBaseModelTableN
 	{
+	public       TagByGroup() : base()
+		{
+		}
+
 		[PrimaryKey(columnName: "group___id")]
 		public Guid  GroupId { get; set; }
 

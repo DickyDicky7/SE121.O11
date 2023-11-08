@@ -1,0 +1,111 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+<MudPaper Class="d-flex flex-row flex-wrap align-center"
+          Elevation="0">
+    <MudMenu Class=""
+             Size="Size.Small"
+             FullWidth="false"
+             DisableElevation="true"
+             Dense="true"
+             AnchorOrigin="Origin.BottomCenter"
+             TransformOrigin="Origin.TopCenter"
+             MaxHeight="250">
+        <ActivatorContent>
+            <MudButton StartIcon="@Icons.Material.Filled.Filter"
+                       Size="Size.Small">
+                <MudText>Filter</MudText>
+            </MudButton>
+        </ActivatorContent>
+        <ChildContent>
+            @*Boards and sections*@
+            <MudMenuItem AutoClose="false">
+                <MudMenu AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.CenterLeft">
+                    <ActivatorContent>
+                        <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                  Elevation="0">
+                            <MudIcon Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.ViewKanban" />
+                            <MudText>Boards and sections</MudText>
+                        </MudPaper>
+                    </ActivatorContent>
+                    <ChildContent>
+
+                    </ChildContent>
+                </MudMenu>
+            </MudMenuItem>
+            @*Due day*@
+            <MudMenuItem AutoClose="false">
+                <MudMenu AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.TopLeft">
+                    <ActivatorContent>
+                        <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                  Elevation="0">
+                            <MudIcon Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.CalendarToday" />
+                            <MudText>Due day</MudText>
+                        </MudPaper>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <DueDay />
+                    </ChildContent>
+                </MudMenu>
+            </MudMenuItem>
+            @*Assignees*@
+            <MudMenuItem AutoClose="false">
+                <MudMenu AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.CenterLeft">
+                    <ActivatorContent>
+                        <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                  Elevation="0">
+                            <MudIcon Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.People" />
+                            <MudText>Assignees</MudText>
+                        </MudPaper>
+                    </ActivatorContent>
+                    <ChildContent>
+
+                    </ChildContent>
+                </MudMenu>
+            </MudMenuItem>
+            @*Tags*@
+            <MudMenuItem AutoClose="false">
+                <MudMenu AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.CenterLeft">
+                    <ActivatorContent>
+                        <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                  Elevation="0">
+                            <MudIcon Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.Tag" />
+                            <MudText>Tags</MudText>
+                        </MudPaper>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <Tag />
+                    </ChildContent>
+                </MudMenu>
+            </MudMenuItem>
+            @*Messages*@
+            <MudMenuItem AutoClose="false">
+                <MudMenu AnchorOrigin="Origin.CenterRight"
+                         TransformOrigin="Origin.CenterLeft">
+                    <ActivatorContent>
+                        <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                  Elevation="0">
+                            <MudIcon Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.Message" />
+                            <MudText>Messages</MudText>
+                        </MudPaper>
+                    </ActivatorContent>
+                    <ChildContent>
+
+                    </ChildContent>
+                </MudMenu>
+            </MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+</MudPaper>
+
+@code 
+{
+
+}

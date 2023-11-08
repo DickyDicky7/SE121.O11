@@ -4,14 +4,26 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 {
 	public abstract class CustomBaseModelTableJ : CustomBaseModel
 	{
-		public string PrimaryKeyPropertyName1 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName2 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName3 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName4 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName5 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName6 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName7 { get; protected set; } = null!;
-		public string PrimaryKeyPropertyName8 { get; protected set; } = null!;
+	public                CustomBaseModelTableJ() : base()
+		{
+			PrimaryKeyPropertyName1 = string.Empty;
+			PrimaryKeyPropertyName2 = string.Empty;
+			PrimaryKeyPropertyName3 = string.Empty;
+			PrimaryKeyPropertyName4 = string.Empty;
+			PrimaryKeyPropertyName5 = string.Empty;
+			PrimaryKeyPropertyName6 = string.Empty;
+			PrimaryKeyPropertyName7 = string.Empty;
+			PrimaryKeyPropertyName8 = string.Empty;
+		}
+
+		public string PrimaryKeyPropertyName1 { get; protected set; }
+		public string PrimaryKeyPropertyName2 { get; protected set; }
+		public string PrimaryKeyPropertyName3 { get; protected set; }
+		public string PrimaryKeyPropertyName4 { get; protected set; }
+		public string PrimaryKeyPropertyName5 { get; protected set; }
+		public string PrimaryKeyPropertyName6 { get; protected set; }
+		public string PrimaryKeyPropertyName7 { get; protected set; }
+		public string PrimaryKeyPropertyName8 { get; protected set; }
 
 		public object? PrimaryKeyProperty1 => this.GetType().GetProperty(PrimaryKeyPropertyName1)?.GetValue(this);
 		public object? PrimaryKeyProperty2 => this.GetType().GetProperty(PrimaryKeyPropertyName2)?.GetValue(this);

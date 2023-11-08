@@ -13,16 +13,16 @@
 
 	<ItemGroup>
 		<PackageReference Include="MudBlazor" Version="6.11.0" /><PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.6.2" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web"            Version="7.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization"  Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\WorkScheduleReminder.SharedBusinessLogic\WorkScheduleReminder.SharedBusinessLogic.csproj" />
+		<ProjectReference Include="..\WorkScheduleReminder.SharedBusinessLogic\WorkScheduleReminder.SharedBusinessLogic.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="wwwroot\images\" />
+		<Folder Include="wwwroot\images\" />
 	</ItemGroup>
 
 </Project>

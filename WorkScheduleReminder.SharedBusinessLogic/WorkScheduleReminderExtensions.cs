@@ -1,4 +1,5 @@
 ﻿using Supabase;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using WorkScheduleReminder.SharedBusinessLogic.Services.Abstractions___;
 using WorkScheduleReminder.SharedBusinessLogic.Services.Implementations;
 
@@ -9,6 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		public static IServiceCollection AddServicesAndExtensionsSharedBusinessLogic
 				(this IServiceCollection    services)
 		{
+			/* THOSE SECRETS ARE SAFE TO USE IN PUBLIC DUE TO ROW LEVEL SECURITY AND PRE-CONFIGURED POLICIES AVAILABILITY */
 			string SUPABASE_URL = "https://cklxrwkqemlsayifnnvn.supabase.co";
 			string SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey" +
 			"Jpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbHhyd2txZW1sc2F5aWZubnZuIiw" +
@@ -16,10 +18,10 @@ namespace Microsoft.Extensions.DependencyInjection
 			"M30.HuP4n3fN3TPGnkoKcJOm4fM9awVeYw0WXBY4SjKA99w";
 			Environment.SetEnvironmentVariable("SUPABASE_URL", SUPABASE_URL, EnvironmentVariableTarget.Process);
 			Environment.SetEnvironmentVariable("SUPABASE_KEY", SUPABASE_KEY, EnvironmentVariableTarget.Process);
-			return services.AddSingleton<Supabase.Client>(serviceProvider =>
+			services.TryAddSingleton<Supabase.Client>(serviceProvider =>
 			{
-				IGotrueSessionPersistenceService gotrueSessionPersistenceService = serviceProvider.GetRequiredService<
-				IGotrueSessionPersistenceService>();
+				BaseGotrueSessionPersistenceService gotrueSessionPersistenceService = serviceProvider.GetRequiredService<
+				BaseGotrueSessionPersistenceService>();
 				return new(SUPABASE_URL, SUPABASE_KEY, new SupabaseOptions()
 				{
 					SessionHandler =
@@ -27,7 +29,10 @@ namespace Microsoft.Extensions.DependencyInjection
 					AutoRefreshToken = true, AutoConnectRealtime 
 									 = true,
 				});
-			})             .AddSingleton<ObservableDictionaryTransferService>();
+			});
+			services.TryAddSingleton<ObservableDictionaryTransferService>();
+			return
+			services;
 		}
 	}
 }
