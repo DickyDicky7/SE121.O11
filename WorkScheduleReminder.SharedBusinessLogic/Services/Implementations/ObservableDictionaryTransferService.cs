@@ -33,8 +33,8 @@
 
 		public void Remove(object key, Action<object?> @event)
 		{
-			if (eventDictionary.ContainsKey(key) 
-			&&  eventDictionary[key] != null)
+			if (eventDictionary.ContainsKey(key))
+			if (eventDictionary[key] != null)
 				eventDictionary[key] -= @event;
 		}
 	}
