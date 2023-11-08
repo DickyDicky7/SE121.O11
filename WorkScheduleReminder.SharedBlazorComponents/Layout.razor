@@ -60,7 +60,7 @@
 		await base.OnInitializedAsync();
 	}
 
-	protected async void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
+	protected void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
 	{
 		System.Diagnostics.Debug.WriteLine(authState);
 		switch (authState)
