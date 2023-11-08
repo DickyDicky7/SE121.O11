@@ -42,7 +42,7 @@
     <MudText Class="mx-2"
              Typo="Typo.h4"
 			 Style="font-weight:bold;">
-        taskname
+        @Title
     </MudText>
     @*remind me and tag*@
     <MudPaper Class="d-flex flex-row gap-2 px-2"
@@ -139,14 +139,15 @@
             AutoClose="true"
             ZIndex="10"
 			OnClick="ToggleTagVisible">
-    <Tag @onclick:stopPropagation EnableEdit="true" />
+    <Tag @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-	public bool      TagVisible { get; set; } = false;
-	public bool ReminderVisible { get; set; } = false;
-
+    public bool      TagVisible { get; set; } = false;
+    public bool ReminderVisible { get; set; } = false;
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
     [Parameter]
 	public string Note       { get; set; } = string.Empty;
     [Parameter]

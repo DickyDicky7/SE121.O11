@@ -30,7 +30,7 @@
                        StartIcon="@Icons.Material.Filled.Today"
                        Size="Size.Medium"
                        FullWidth="true"
-                       Href=""
+                       Href="kanban"
                        OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
                 <MudText Style="font-family:inherit">My day</MudText>
             </MudButton>
@@ -38,7 +38,7 @@
                        StartIcon="@Icons.Material.Filled.NextWeek"
                        Size="Size.Medium"
                        FullWidth="true"
-                       Href=""
+                       Href="kanban/next7days"
                        OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
                 <MudText Style="font-family:inherit">Next 7 days</MudText>
             </MudButton>
@@ -46,7 +46,7 @@
                        StartIcon="@Icons.Material.Filled.Task"
                        Size="Size.Medium"
                        FullWidth="true"
-                       Href=""
+                       Href="kanban/alltasks"
                        OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
                 <MudText Style="font-family:inherit">All my tasks</MudText>
             </MudButton>
@@ -74,7 +74,7 @@
                                StartIcon="@Icons.Material.Filled.Today"
                                Size="Size.Medium"
                                FullWidth="true"
-                               Href=""
+                               Href="calendar/hehe"
                                OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
                         <MudText Style="font-family:inherit">Example custom view</MudText>
                     </MudButton>
@@ -108,7 +108,7 @@
                                StartIcon="@Icons.Material.Filled.Today"
                                Size="Size.Medium"
                                FullWidth="true"
-                               Href=""
+                               Href="table"
                                OnClick="@(()=>Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
                         <MudText Style="font-family:inherit">Example Board</MudText>
                     </MudButton>

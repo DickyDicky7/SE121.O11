@@ -1,5 +1,7 @@
-﻿
-
-@code {
-
+﻿@page "/calendar/{param}"
+<div>@Param</div>
+@code
+{
+    [Parameter]
+    public string Param { get; set; }
 }
