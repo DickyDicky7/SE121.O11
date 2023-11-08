@@ -6,6 +6,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	[Table("tasks")]
 	public class Task : CustomBaseModelTableN
 	{
+	public       Task() : base()
+		{
+		}
+
 		[Column(columnName: "name")]
 		public string Name { get; set; } = default!;
 

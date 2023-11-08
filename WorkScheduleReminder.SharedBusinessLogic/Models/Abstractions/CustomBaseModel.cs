@@ -5,6 +5,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 {
 	public abstract class CustomBaseModel : BaseModel
 	{
+	public                CustomBaseModel() : base() 
+		{
+		}
+
 		[Column(columnName: "created_timestamp")]
 		public DateTimeOffset CreatedTimeStamp { get; set; }
 
@@ -17,13 +21,12 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 
 		public static bool operator ==(CustomBaseModel? cbm1, CustomBaseModel? cbm2)
 		{
-			if (cbm1 == null
-			&&  cbm2 == null) return  true;
-			if (cbm1 == null 
-			||  cbm2 == null) return !true;
+			if (cbm1 is null
+			&&  cbm2 is null) return  true;
+			if (cbm1 is null) return !true;
 			return
-				cbm1.Equals(
-				cbm2);
+			    cbm1.Equals(
+			    cbm2);
 		}
 
 		public static bool operator !=(CustomBaseModel? cbm1, CustomBaseModel? cbm2)

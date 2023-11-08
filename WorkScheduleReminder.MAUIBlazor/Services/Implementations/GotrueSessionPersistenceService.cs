@@ -2,52 +2,14 @@
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Services.Implementations
 {
-	public class GotrueSessionPersistenceService : IGotrueSessionPersistenceService
+	public class GotrueSessionPersistenceService : BaseGotrueSessionPersistenceService
 	{
-		public async void SaveSession(Supabase.Gotrue.Session gotrueSession)
+	public       GotrueSessionPersistenceService() : base() 
 		{
-			try
-			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-			await    File.WriteAllTextAsync(cacheFilePath, Newtonsoft.Json.JsonConvert.SerializeObject(gotrueSession));
-			}
-			catch (Exception exception)
-			{
-				System.Diagnostics.Debug.WriteLine($"UNABLE TO WRITE THE GOTRUE CACHE FILE: {exception.Message}");
-			}
 		}
 
-		public Supabase.Gotrue.Session? LoadSession()
-		{
-			try
-			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-				return Newtonsoft.Json.JsonConvert.DeserializeObject<Supabase.Gotrue.Session>(File.ReadAllText(cacheFilePath));
-			}
-			catch (Exception exception)
-			{
-				System.Diagnostics.Debug.WriteLine($"UNABLE TO @READ THE GOTRUE CACHE FILE: {exception.Message}");
-				return null;
-			}
-		}
-
-		public async void DestroySession()
-		{
-			try
-			{
-				string cacheFileName = ".gotrue.cache";
-				Directory.CreateDirectory       (FileSystem.CacheDirectory               );
-				string cacheFilePath = Path.Join(FileSystem.CacheDirectory, cacheFileName);
-			await    File.WriteAllTextAsync(cacheFilePath, string.Empty);
-			}
-			catch (Exception exception)
-			{
-				System.Diagnostics.Debug.WriteLine($"UNABLE TO CLEAR THE GOTRUE CACHE FILE: {exception.Message}");
-			}
-		}
+		public override string   CacheFileName => ".gotrue.cache";
+		public override string   CacheDirectoryPath => FileSystem.  CacheDirectory;
+		public override string AppDataDirectoryPath => FileSystem.AppDataDirectory;
 	}
 }

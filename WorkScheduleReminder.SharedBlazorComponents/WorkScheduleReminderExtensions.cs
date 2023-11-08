@@ -2,6 +2,8 @@
 using MudBlazor;
 using MudBlazor.Services;
 using MudExtensions.Services;
+using Microsoft.Extensions.DependencyInjection
+			   .Extensions;
 using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -9,7 +11,9 @@ namespace Microsoft.Extensions.DependencyInjection
 	public static partial class WorkScheduleReminderExtensions
 	{
 		public static IServiceCollection AddServicesAndExtensionsSharedBlazorComponents
-				(this IServiceCollection    services) => services
+				(this IServiceCollection    services)
+		{
+			services
 			.AddMudServices(configuration =>
 			{
 				configuration.SnackbarConfiguration.PreventDuplicates = true;
@@ -18,19 +22,19 @@ namespace Microsoft.Extensions.DependencyInjection
 				configuration.SnackbarConfiguration.ShowTransitionDuration = 500;
 				configuration.SnackbarConfiguration.ShowCloseIcon = true;
 				configuration.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
-				
+
 			})
-			.AddMudExtensions()
-			.AddSingleton<
-				  SupabaseAuthenticationStateProviderService>
+			.AddMudExtensions();
+			services
+			.TryAddSingleton<SupabaseAuthenticationStateProviderService>
 			(serviceProvider =>
 			{
 				Supabase.Client supabaseClient = serviceProvider.GetRequiredService<
 				Supabase.Client>();
 				return new(supabaseClient);
-			})
-			.AddSingleton<AuthenticationStateProvider,
-				  SupabaseAuthenticationStateProviderService>
+			});
+			services
+			.TryAddSingleton<AuthenticationStateProvider>
 			(serviceProvider =>
 			{
 				SupabaseAuthenticationStateProviderService
@@ -38,8 +42,12 @@ namespace Microsoft.Extensions.DependencyInjection
 				SupabaseAuthenticationStateProviderService>();
 				return
 				supabaseAuthenticationStateProviderService;
-			})
+			});
+			services
 			.AddAuthorizationCore()
 			.AddServicesAndExtensionsSharedBusinessLogic();
+			return
+			services;
+		}
 	}
 }

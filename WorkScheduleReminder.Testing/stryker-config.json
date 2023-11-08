@@ -1,0 +1,7 @@
+{
+    "stryker-config": {
+        "project": "SharedBusinessLogic.csproj",
+        "solution": "../WorkScheduleReminder.sln",
+        "mutation-level": "Complete"
+    }
+}
