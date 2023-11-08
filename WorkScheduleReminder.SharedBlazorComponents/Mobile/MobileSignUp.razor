@@ -123,8 +123,13 @@
 		}
 	}
 
-	public async Task   SignUp()
-	{   if(await Common.SignUp(SupabaseAuthenticationStateProviderService, Email, Password, PasswordConfirmed, Snackbar))
+	public async Task SignUp()
+	{   if(await SupabaseAuthenticationStateProviderService
+	    .             SignUp(
+	       Email            ,
+	       Password         ,
+	       PasswordConfirmed,
+	       Snackbar         ))
 		{
            await NotifyBack__Clicked.InvokeAsync();
 		}

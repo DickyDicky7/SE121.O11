@@ -30,6 +30,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			=> $"Cannot log out: {reason}";
 			public static string CANNOT_SIGN_UP(string reason)
 			=> $"Cannot sign up: {reason}";
+
+			public static string USER_ALREADY_EXISTS(string email)
+			=> $"User with the email {email} already exists";
 		}
 
 		public static class Normal
@@ -39,7 +42,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 
 		public static class Success
 		{
-			public const string SUCCESSFULLY_LOGGING_IN_ = "Successfully logging in";
+			public const string SUCCESSFULLY_LOGGING_IN_ = "Successfully logging in" ;
 			public const string SUCCESSFULLY_LOGGING_OUT = "Successfully logging out";
 
 			public static string SUCCESSFULLY_SIGNING_UP(string email)

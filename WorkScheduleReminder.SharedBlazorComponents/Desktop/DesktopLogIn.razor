@@ -129,7 +129,11 @@
 		}
 	}
 
-	public async Task   LogIn()
-	{      await Common.LogIn(SupabaseAuthenticationStateProviderService, Email, Password, Snackbar);
+	public async Task LogIn()
+	{      await SupabaseAuthenticationStateProviderService
+	.                 LogIn(
+	       Email           ,
+	       Password        ,
+	       Snackbar        );
 	}
 }

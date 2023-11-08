@@ -31,7 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
 			{
 				Supabase.Client supabaseClient = serviceProvider.GetRequiredService<
 				Supabase.Client>();
-				return new(supabaseClient);
+				return new     (supabaseClient);
 			});
 			services
 			.TryAddSingleton<AuthenticationStateProvider>
