@@ -1,1 +1,1 @@
-if (window.location.search) history.replaceState({}, "", window.location.pathname);
+if (window.location.hash || window.location.search) history.replaceState({}, "", window.location.pathname);
