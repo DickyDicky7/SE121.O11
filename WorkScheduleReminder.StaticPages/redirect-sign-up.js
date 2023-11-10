@@ -1,0 +1,1 @@
+if (window.location.search) history.pushState({}, "", window.location.pathname);
