@@ -1,5 +1,7 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
-@inject ISnackbar  Snackbar
+
+@inject NavigationManager NavigationManager
+@inject ISnackbar         Snackbar
 @inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 
 <MudPaper Class="d-flex flex-column"
@@ -65,7 +67,7 @@
 			</MudButton>
 			<MudLink Class="d-flex justify-center"
 					 Href=""
-					 OnClick="NotifySignUpClicked">
+					 OnClick="NotifySignUp________Clicked">
 				<MudText>
 					Sign up
 				</MudText>
@@ -77,7 +79,9 @@
 @code
 {
 	[Parameter]
-	public EventCallback NotifySignUpClicked { get; set; }
+	public EventCallback NotifySignUp________Clicked { get; set; }
+	[Parameter]
+	public EventCallback NotifyForgotPasswordClicked { get; set; }
 
 	public string Email    { get; set; } = string.Empty;
 	public string Password { get; set; } = string.Empty;

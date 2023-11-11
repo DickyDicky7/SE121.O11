@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using MudBlazor.Services;
+using MudBlazor    .Services;
 using MudExtensions.Services;
 using Microsoft.Extensions.DependencyInjection
 			   .Extensions;
+using WorkScheduleReminder.SharedBusinessLogic   .Services.Implementations;
 using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -29,9 +31,12 @@ namespace Microsoft.Extensions.DependencyInjection
 			.TryAddSingleton<SupabaseAuthenticationStateProviderService>
 			(serviceProvider =>
 			{
-				Supabase.Client supabaseClient = serviceProvider.GetRequiredService<
-				Supabase.Client>();
-				return new     (supabaseClient);
+				Supabase.Client supabaseClient =
+				serviceProvider .GetRequiredService<Supabase.Client>();
+				ObservableDictionaryTransferService observableDictionaryTransferService =
+				serviceProvider .GetRequiredService<ObservableDictionaryTransferService>();
+				return new(     supabaseClient      ,
+				observableDictionaryTransferService);
 			});
 			services
 			.TryAddSingleton<AuthenticationStateProvider>

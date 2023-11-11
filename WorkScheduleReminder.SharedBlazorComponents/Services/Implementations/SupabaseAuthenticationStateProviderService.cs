@@ -1,7 +1,9 @@
 ﻿using System.Security
-	 .Claims;
+     .Claims;
 using Microsoft.AspNetCore
-			   .Components.Authorization;
+               .Components;
+using Microsoft.AspNetCore
+               .Components.Authorization;
 using MudBlazor;
 using Newtonsoft.Json.Linq;
 
@@ -11,12 +13,19 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 	{
 	public       SupabaseAuthenticationStateProviderService
 			    (Supabase
-		.Client  supabaseClient) : base()
+		.Client  supabaseClient,
+		                 SharedBusinessLogic.Services.Implementations
+		.ObservableDictionaryTransferService observableDictionaryTransferService) : base()
 		{
-			this.supabaseClient  = supabaseClient;
+			this.supabaseClient =
+			     supabaseClient ;
+			this.observableDictionaryTransferService =
+			     observableDictionaryTransferService ;
 		}
 
 		private readonly Supabase.Client supabaseClient;
+		private readonly SharedBusinessLogic.Services.Implementations
+		.ObservableDictionaryTransferService observableDictionaryTransferService;
 
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 		{
@@ -43,7 +52,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 				Supabase.Gotrue.Session? gotrueSession =
 				await supabaseClient.Auth.SignUp(email, password, new()
 				{
-					RedirectTo = "https://google.com",
+					RedirectTo = "https://work-schedule-reminder.vercel.app/redirect-sign-up.html/",
 					Data = new()
 					{
 						{ "full_name", email }, { "avatar_url", string.Empty }
@@ -168,5 +177,55 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 				return   true    ;
 			}
 		}
+
+		public async Task LogInWithGoogle__(NavigationManager navigationManager)
+		{
+			Supabase.Gotrue.
+			ProviderAuthState
+			providerAuthState = await  supabaseClient.Auth.SignIn(
+			Supabase.Gotrue.Constants.Provider.Google, new Supabase.Gotrue.SignInOptions()
+			{
+				FlowType   =
+			Supabase.Gotrue.Constants.
+			  OAuthFlowType.PKCE,
+				RedirectTo = navigationManager.BaseUri
+			,
+			});
+			navigationManager.NavigateTo(providerAuthState.Uri.ToString());
+			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithGoogle(
+			providerAuthState.PKCEVerifier));
+			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithGoogle(
+			providerAuthState.PKCEVerifier));
+		}
+
+		public async Task LogInWithFacebook(NavigationManager navigationManager)
+		{
+			Supabase.Gotrue.
+			ProviderAuthState
+			providerAuthState = await    supabaseClient.Auth.SignIn(
+			Supabase.Gotrue.Constants.Provider.Facebook, new Supabase.Gotrue.SignInOptions()
+			{
+				FlowType   =
+			Supabase.Gotrue.Constants.
+			  OAuthFlowType.PKCE,
+				RedirectTo = navigationManager.BaseUri
+			,
+			});
+			navigationManager.NavigateTo(providerAuthState.Uri.ToString());
+			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithGoogle(
+			providerAuthState.PKCEVerifier));
+			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithGoogle(
+			providerAuthState.PKCEVerifier));
+		}
+
+		public Action<object?> SuccessfullyLogInWithGoogle(string? maybeNullPKCEVerifier)
+		=>  async (maybeNullAuthenticationCode) =>
+		{
+			string pkceVerifier       = maybeNullPKCEVerifier                 ?? string.Empty;
+			string authenticationCode = maybeNullAuthenticationCode as string ?? string.Empty;
+			await  supabaseClient.Auth.ExchangeCodeForSession(pkceVerifier, authenticationCode);
+			NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+			observableDictionaryTransferService.Remove(nameof(authenticationCode));
+		};
 	}
 }

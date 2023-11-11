@@ -1,5 +1,7 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
-@inject ISnackbar  Snackbar
+
+@inject NavigationManager NavigationManager
+@inject ISnackbar         Snackbar
 @inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 
 <MudPaper Class="d-flex flex-row"
@@ -62,7 +64,7 @@
 					Log in
 				</MudText>
 			</MudButton>
-			<MudLink OnClick="NotifySignUpClicked">
+			<MudLink OnClick="NotifySignUp________Clicked">
 				<MudText>
 					Sign up
 				</MudText>
@@ -81,7 +83,7 @@
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Variant=Variant.Outlined
-					   >
+					   OnClick="LogInWithGoogle__">
 				<MudText>
 					Sign in with Google
 				</MudText>
@@ -91,7 +93,7 @@
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Variant=Variant.Outlined
-					   >
+					   OnClick="LogInWithFacebook">
 				<MudText>
 					Sign in with Facebook
 				</MudText>
@@ -103,9 +105,9 @@
 @code
 {
 	[Parameter]
-	public EventCallback NotifySignUpClicked { get; set; }
+	public EventCallback NotifySignUp________Clicked { get; set; }
 	[Parameter]
-	public EventCallback NotifyForgotPasswordClicked{ get; set; }
+	public EventCallback NotifyForgotPasswordClicked { get; set; }
 
 	public string Email    { get; set; } = string.Empty;
 	public string Password { get; set; } = string.Empty;
@@ -135,5 +137,13 @@
 	       Email           ,
 	       Password        ,
 	       Snackbar        );
+	}
+
+	public async Task LogInWithGoogle__()
+	{      await SupabaseAuthenticationStateProviderService.LogInWithGoogle__(NavigationManager);
+	}
+
+	public async Task LogInWithFacebook()
+	{      await SupabaseAuthenticationStateProviderService.LogInWithFacebook(NavigationManager);
 	}
 }
