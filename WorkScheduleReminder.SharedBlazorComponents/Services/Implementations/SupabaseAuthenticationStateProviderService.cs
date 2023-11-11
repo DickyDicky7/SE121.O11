@@ -227,5 +227,15 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 			observableDictionaryTransferService.Remove(nameof(authenticationCode));
 		};
+
+		public async Task ResetPassword(string email)
+		{
+			var s=await supabaseClient.Auth.ResetPasswordForEmail(new Supabase.Gotrue.ResetPasswordForEmailOptions(email)
+			{
+				  RedirectTo = "https://0.0.0.0/", FlowType = Supabase.Gotrue.Constants.OAuthFlowType.Implicit,
+				  
+			});
+			supabaseClient.Auth.Update(new Supabase.Gotrue.UserAttributes() {  });
+		}
 	}
 }

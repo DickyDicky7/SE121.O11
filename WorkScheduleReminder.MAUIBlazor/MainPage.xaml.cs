@@ -27,7 +27,7 @@ namespace WorkScheduleReminder.MAUIBlazor
 			blazorWebView.UrlLoading += BlazorWebViewOnUrlLoading;
 		}
 
-		protected void BlazorWebViewOnUrlLoading(object? sender,
+		protected async void BlazorWebViewOnUrlLoading(object? sender,
 			UrlLoadingEventArgs
 			urlLoadingEventArgs)
 		{
@@ -50,6 +50,7 @@ namespace WorkScheduleReminder.MAUIBlazor
 						ObservableDictionaryTransferService>();
 						observableDictionaryTransferService.
 						InsertOrUpdate(nameof(authenticationCode), authenticationCode);
+						await ConfigureWebViewAndClearWebViewCache();
 					}
 				}
 			}
