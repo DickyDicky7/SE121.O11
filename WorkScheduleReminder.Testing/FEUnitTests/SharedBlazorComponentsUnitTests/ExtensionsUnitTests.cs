@@ -9,6 +9,7 @@ using MudExtensions.Services;
 using MudExtensions.Utilities;
 using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations;
 using WorkScheduleReminder.SharedBusinessLogic.Services.Abstractions___;
+using WorkScheduleReminder.SharedBusinessLogic.Services.Implementations;
 using WorkScheduleReminder.Testing.MockDependencies;
 
 namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTests
@@ -196,7 +197,8 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 			string SUPABASE_KEY = string.Empty;
 			ServiceCollection services = new();
 			Supabase.Client mockSupabaseClient = new(SUPABASE_URL, SUPABASE_KEY);
-			SupabaseAuthenticationStateProviderService mockSupabaseAuthenticationStateProviderService = new(mockSupabaseClient);
+			ObservableDictionaryTransferService mockObservableDictionaryTransferService = new();
+			SupabaseAuthenticationStateProviderService mockSupabaseAuthenticationStateProviderService = new(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			services.AddSingleton(mockSupabaseClient);

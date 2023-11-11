@@ -2,7 +2,10 @@
 using System.Security
 	 .Claims;
 using System.Threading.Tasks;
-using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations;
+using WorkScheduleReminder.SharedBusinessLogic
+	 .Services.Implementations;
+using WorkScheduleReminder.SharedBlazorComponents
+	 .Services.Implementations;
 
 namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTests.ServicesUnitTests
 {
@@ -13,6 +16,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 	{
 		public SupabaseAuthenticationStateProviderServiceUnitTests()
 		{
+			mockObservableDictionaryTransferService = new();
 			string SUPABASE_URL = "https://cklxrwkqemlsayifnnvn.supabase.co";
 			string SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey" +
 			"Jpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbHhyd2txZW1sc2F5aWZubnZuIiw" +
@@ -22,13 +26,14 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		}
 
 		private readonly Supabase.Client mockSupabaseClient = default!;
+		private readonly ObservableDictionaryTransferService mockObservableDictionaryTransferService = default!;
 
 		[Test]
 		[Parallelizable]
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithNoClaimIfCurrentSessionNotExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			var authenticationState = await supabaseAuthenticationStateProviderService.GetAuthenticationStateAsync(); /* <-- HERE <-- */
@@ -42,7 +47,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithNoIdentityIfCurrentSessionNotExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			var authenticationState = await supabaseAuthenticationStateProviderService.GetAuthenticationStateAsync(); /* <-- HERE <-- */
@@ -56,7 +61,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithOneClaimIfCurrentSessionExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			await mockSupabaseClient.Auth.SignIn("default@default.com", "default@default.com");
@@ -71,7 +76,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithOneIdentityIfCurrentSessionExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			await mockSupabaseClient.Auth.SignIn("default@default.com", "default@default.com");
@@ -86,7 +91,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithOneClaimHavingValidUserIdIfCurrentSessionExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			await mockSupabaseClient.Auth.SignIn("default@default.com", "default@default.com");
@@ -104,7 +109,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithOneIdentityHavingValidClaimsAndValidAuthenticationTypeIfCurrentSessionExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			await mockSupabaseClient.Auth.SignIn("default@default.com", "default@default.com");
@@ -126,7 +131,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithPrimaryIdentityHavingIsAuthenticatedTrueIfCurrentSessionExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			await mockSupabaseClient.Auth.SignIn("default@default.com", "default@default.com");
@@ -142,7 +147,7 @@ namespace WorkScheduleReminder.Testing.FEUnitTests.SharedBlazorComponentsUnitTes
 		public async Task GetAuthenticationStateAsync_MustReturnAuthenticationStateWithNoPrimaryIdentityIfCurrentSessionNotExisted()
 		{
 			/* --- ARRANGE --- */
-			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient);
+			var supabaseAuthenticationStateProviderService = new SupabaseAuthenticationStateProviderService(mockSupabaseClient, mockObservableDictionaryTransferService);
 
 			/* --- ACT --- */
 			var authenticationState = await supabaseAuthenticationStateProviderService.GetAuthenticationStateAsync(); /* <-- HERE <-- */
