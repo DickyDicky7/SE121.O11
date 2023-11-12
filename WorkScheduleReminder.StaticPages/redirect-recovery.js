@@ -5,9 +5,19 @@ if (window.location.hash
                      URLSearchParams(window.location.hash.substring(1));
     history.replaceState({ recoveryCode: `${currentPageURLSearchParams.get("access_token")}&${currentPageURLSearchParams.get("refresh_token")}`, }, "", window.location.pathname);
 }
-//else
-//{
+
     document
-        .querySelector(".\\.container")
-        .innerHTML = `Your recovery code: ${history.state.recoveryCode}`;
-//}
+        .querySelector(".button-copy-recovery-code")
+        .addEventListener("click", (event) =>
+        {
+            navigator.clipboard.writeText(history.state.recoveryCode);
+            if                           (history.state.recoveryCode)
+            {
+                const notification = document.querySelector(".notification");
+                notification.innerHTML = "Successfully copied the recovery code";
+                setTimeout(() =>
+                {
+                notification.innerHTML = "";
+                }, 5000);
+            }
+        });
