@@ -1,0 +1,16 @@
+﻿
+<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column gap-2 pa-2"
+          Style="overflow:hidden; border-radius:20px;"
+          Elevation="0"
+          Width="500px">
+    <MudText Style="font-size:xx-large;font-weight:bold">
+        HEHE
+    </MudText>
+</MudPaper>
+
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+}

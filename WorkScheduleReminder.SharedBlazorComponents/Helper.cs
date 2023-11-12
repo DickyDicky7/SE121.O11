@@ -19,9 +19,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			return        stringBuilder.Append(path).ToString();
 		}
 
-		public enum   ViewType
+		public enum ViewType
 		{
-			DefaultView, CustomView, WorkspaceView
+			MyDay, DefaultView, CustomView, WorkspaceView
 		}
 
 		public enum DeviceType

@@ -30,8 +30,8 @@
                        StartIcon="@Icons.Material.Filled.Today"
                        Size="Size.Medium"
                        FullWidth="true"
-                       Href="kanban"
-                       OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
+                       Href="myday"
+                       OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.MyDay))">
                 <MudText Style="font-family:inherit">My day</MudText>
             </MudButton>
             <MudButton Class="justify-start"
@@ -65,7 +65,8 @@
                             Custom views
                         </MudText>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small" />
+                                       Size="Size.Small" 
+                                       OnClick="ToggleCreateCustomView"/>
                     </MudPaper>
                 </ChildContent>
                 <NestedList>
@@ -74,7 +75,7 @@
                                StartIcon="@Icons.Material.Filled.Today"
                                Size="Size.Medium"
                                FullWidth="true"
-                               Href="calendar/hehe"
+                               Href="test"
                                OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
                         <MudText Style="font-family:inherit">Example custom view</MudText>
                     </MudButton>
@@ -96,10 +97,11 @@
                             Workspaces
                         </MudText>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small" />
+                                       Size="Size.Small" 
+                                       OnClick="ToggleCreateBoard"/>
                         <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
                                        Size="Size.Small"
-                                       OnClick="(()=>{InviteVisible=!InviteVisible;})" />
+                                       OnClick="ToggleInvite" />
                     </MudPaper>
                 </ChildContent>
                 <NestedList>
@@ -122,13 +124,29 @@
             Visible="InviteVisible"
             DarkBackground="true"
             AutoClose="true"
-            OnClick="(()=>{InviteVisible=!InviteVisible;})">
+            OnClick="ToggleInvite">
     <Invite @onclick:stopPropagation />
+</MudOverlay>
+<MudOverlay Class="border-2"
+            Visible="CreateBoardVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleCreateBoard">
+    <CreateBoard @onclick:stopPropagation />
+</MudOverlay>
+<MudOverlay Class="border-2"
+            Visible="CreateCustomViewVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleCreateCustomView">
+    <CreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
     private bool InviteVisible { get; set; } = false;
+    private bool CreateBoardVisible { get; set; } = false;
+    private bool CreateCustomViewVisible { get; set; } = false;
     [Parameter]
     public string? Name { get; set; }
     [Parameter]
@@ -162,5 +180,16 @@
         UpdateIcon(newIcon);
         UpdateType(newType);
     }
-
+    private void ToggleInvite()
+    {
+        InviteVisible = !InviteVisible;
+    }
+    private void ToggleCreateBoard()
+    {
+        CreateBoardVisible = !CreateBoardVisible;
+    }
+    private void ToggleCreateCustomView()
+    {
+        CreateCustomViewVisible = !CreateCustomViewVisible;
+    }
 }

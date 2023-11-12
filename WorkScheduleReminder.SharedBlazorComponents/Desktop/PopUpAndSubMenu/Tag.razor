@@ -37,27 +37,12 @@
                      Text="#Tag"
                      Size="Size.Small"
                      Color="Color.Error" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Warning" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Success" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Info" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Primary" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Secondary" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Tertiary" />
-            <MudChip Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Dark" />
+            @foreach (Color color in Colors)
+            {
+                <MudChip Text="#Tag"
+                         Size="Size.Small"
+                         Color="color" />
+            }
         </MudChipSet>
         @*Action button(s)*@
         @if (CurrentMode == Mode.Add)
@@ -118,8 +103,8 @@
                           Elevation="0">
                     <MudText Color="color">@text</MudText>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                   Size="Size.Small" 
-                                   OnClick="(()=>ChangeMode(Mode.Edit))"/>
+                                   Size="Size.Small"
+                                   OnClick="(()=>ChangeMode(Mode.Edit))" />
                 </MudPaper>
             }
         </MudPaper>
@@ -137,7 +122,7 @@
 {
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
-    public enum Mode {Select, Add, Edit}
+    public enum Mode { Select, Add, Edit }
     public Mode CurrentMode = Mode.Select;
 
     public MudChip SelectedColoredChip { get; set; } = null!;
@@ -146,10 +131,11 @@
     public Color EditingTagColor { get; set; }
 
     public List<(string text, Color color)> TagInfos { get; set; } = new();
+    private List<Color> Colors { get; set; } = new List<Color>();
 
     private void ChangeMode(Mode NextMode)
     {
-        if(NextMode == Mode.Add)
+        if (NextMode == Mode.Add)
         {
             //empty tagname, color default
             TagName = string.Empty;
@@ -173,11 +159,11 @@
             TagInfos.Add((text: TagName, color: SelectedColoredChip.Color));
             TagName = string.Empty;
         }
-        else if(CurrentMode == Mode.Edit)
+        else if (CurrentMode == Mode.Edit)
         {
-            int index = TagInfos.FindIndex(x=>x==(EditingTagName, EditingTagColor));
+            int index = TagInfos.FindIndex(x => x == (EditingTagName, EditingTagColor));
             TagInfos[index] = new(TagName, SelectedColoredChip.Color);
-    }
+        }
         CurrentMode = Mode.Select;
     }
     private void SaveTagging()
@@ -189,5 +175,16 @@
         int index = TagInfos.FindIndex(x => x == (EditingTagName, EditingTagColor));
         TagInfos.RemoveAt(index);
         CurrentMode = Mode.Select;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Colors.Add(Color.Warning);
+        Colors.Add(Color.Success);
+        Colors.Add(Color.Info);
+        Colors.Add(Color.Primary);
+        Colors.Add(Color.Secondary);
+        Colors.Add(Color.Tertiary);
+        Colors.Add(Color.Dark);
     }
 }

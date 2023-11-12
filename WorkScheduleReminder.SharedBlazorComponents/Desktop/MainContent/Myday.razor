@@ -1,5 +1,125 @@
-﻿
+﻿@page "/"
+@page "/myday"
 
-@code {
+<MudPaper Class="d-flex flex-row"
+          Style="background-color:transparent;overflow:hidden;position:relative;"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    <MudDrawerContainer Class="mud-height-full mud-width-full"
+                        Style="background-color:transparent">
+        <MudDrawer @bind-Open="@DrawerOpen"
+                   Class=""
+                   Style="background-color:transparent"
+                   Elevation="0"
+                   Height="100%"
+                   Anchor="Anchor.Right"
+                   Variant="@DrawerVariant.Persistent">
+            <MudDrawerHeader>
+                <MudTextField @bind-Value=@FilterValue
+                              Placeholder="Filter"
+                              Immediate="true"
+                              DisableUnderLine="true"
+                              FullWidth="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
+            </MudDrawerHeader>
+            @foreach (int i in Enumerable.Range(0, 10))
+            {
+                <MudButton Class="border-2 justify-start align-center"
+                           Size="Size.Medium"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Add">
+                    @i
+                </MudButton>
+            }
+        </MudDrawer>
+        <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                  Elevation="0"
+                  Height="100%">
+            @*Day*@
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText Style="font-weight:bold;font-size:large;">
+                    @($"{DateTime.Now.DayOfWeek} {DateTime.Now.Day} {DateTime.Now.ToString("MMM")}")
+                </MudText>
+                <MudToggleIconButton Icon="@Icons.Material.Filled.Lightbulb"
+                                     ToggledIcon="@Icons.Material.Filled.Lightbulb"
+                                     Size="Size.Small"
+                                     ToggledSize="Size.Small"
+                                     Color="Color.Default"
+                                     ToggledColor="Color.Info"
+                                     ToggledChanged="ToggleDrawer" />
+            </MudPaper>
+            @*List*@
+            <MudPaper Class="d-flex flex-column flex-grow-1"
+                      Elevation="0"
+                      Width="100%">
+                @foreach (string Name in Tasks)
+                {
+                    <MudPaper Class="d-flex flex-row justify-space-between"
+                              Elevation="0"
+                              Width="100%">
+                        <MudButton Class="justify-start"
+                                   Size="Size.Small"
+                                   FullWidth="true">
+                            <MudText>@Name</MudText>
+                        </MudButton>
+                        <MudPaper Class="d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIconButton Size="Size.Small"
+                                           Icon="@Icons.Material.Filled.PushPin" />
+                            <MudIconButton Size="Size.Small"
+                                           Icon="@Icons.Material.Filled.Close" />
+                        </MudPaper>
+                    </MudPaper>
+                }
+            </MudPaper>
+            @*AddTask*@
+            <MudPaper Class="d-flex flex-row gap-2 align-center"
+                      Elevation="0"
+                      Width="100%">
+                <MudTextField @bind-Value=@NewTask
+                              Placeholder="+ Add task"
+                              Immediate="true"
+                              DisableUnderLine="true"
+                              FullWidth="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Clearable="true"
+                              TextUpdateSuppression="false"
+                              OnKeyDown="((KeyboardEventArgs e)=>EnterNewTask(e))" />
+            </MudPaper>
+        </MudPaper>
+    </MudDrawerContainer>
+</MudPaper>
+@code
+{
+    private bool DrawerOpen { get; set; } = false;
+    private string NewTask { get; set; } = string.Empty;
+    private string FilterValue { get; set; } = string.Empty;
+    private List<string> Tasks = new List<string>();
+    public void EnterNewTask(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewTask != string.Empty)
+        {
+            Tasks.Add(NewTask);
+            NewTask = string.Empty;
+            StateHasChanged();
+        }
+    }
+    public void EnterFilter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewTask != string.Empty)
+        {
 
+            StateHasChanged();
+        }
+    }
+    private void ToggleDrawer()
+    {
+        DrawerOpen = !DrawerOpen;
+    }
 }
