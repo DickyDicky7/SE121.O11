@@ -5,9 +5,9 @@ if (window.location.hash
                      URLSearchParams(window.location.search);
     history.replaceState({ recoveryCode: currentPageURLSearchParams.get("code"), }, "", window.location.pathname);
 }
-else
-{
+//else
+//{
     document
         .querySelector(".\\.container")
         .innerHTML = `Your recovery code: ${history.state.recoveryCode}`;
-}
+//}
