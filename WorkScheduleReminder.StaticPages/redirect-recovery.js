@@ -8,6 +8,6 @@ if (window.location.hash
 else
 {
     document
-        .querySelector(".container")
+        .querySelector(".\\.container")
         .innerHTML = `Your recovery code: ${history.state.recoveryCode}`;
 }
