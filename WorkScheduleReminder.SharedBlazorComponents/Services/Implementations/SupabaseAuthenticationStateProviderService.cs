@@ -67,7 +67,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
 				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message?["msg"]?.Value<string>() ?? string.Empty);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
 			}
 		}
 
@@ -83,7 +83,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
 				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message?["error_description"]?.Value<string>() ?? string.Empty);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
 			}
 		}
 
@@ -99,7 +99,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
 				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message?["error_description"]?.Value<string>() ?? string.Empty);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
 			}
 		}
 
@@ -113,27 +113,31 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			{
 				snackbar.Add(Message.Error.CANNOT_LOG_IN_(reason1),
 				Severity.Error);
-				return   false ;
+				return
+				  ok1;
 			}
 			(bool ok2, string reason2) = Helper.CheckPasswordFormat(password);
 			if  (!ok2)
 			{
 				snackbar.Add(Message.Error.CANNOT_LOG_IN_(reason2),
 				Severity.Error);
-				return   false ;
+				return
+				  ok2;
 			}
 			(bool ok3, string reason3) = await SignIn_(email, password);
 			if  (!ok3)
 			{
 				snackbar.Add(Message.Error.CANNOT_LOG_IN_(reason3),
 				Severity.Error);
-				return   false ;
+				return
+				  ok3;
 			}
 			else
 			{
 				snackbar.Add(reason3,
 				Severity.Success);
-				return   true    ;
+				return
+				  ok3;
 			}
 		}
 
@@ -148,14 +152,16 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			{
 				snackbar.Add(Message.Error.CANNOT_SIGN_UP(reason1),
 				Severity.Error);
-				return   false ;
+				return
+				  ok1;
 			}
 			(bool ok2, string reason2) = Helper.CheckPasswordFormat(password);
 			if  (!ok2)
 			{
 				snackbar.Add(Message.Error.CANNOT_SIGN_UP(reason2),
 				Severity.Error);
-				return   false ;
+				return
+				  ok2;
 			}
 			if  (password != passwordConfirmed)
 			{
@@ -168,13 +174,15 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			{
 				snackbar.Add(Message.Error.CANNOT_SIGN_UP(reason4),
 				Severity.Error);
-				return   false ;
+				return
+				  ok4;
 			}
 			else
 			{
 				snackbar.Add(reason4,
 				Severity.Success);
-				return   true    ;
+				return
+				  ok4;
 			}
 		}
 
@@ -192,9 +200,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			,
 			});
 			navigationManager.NavigateTo(providerAuthState.Uri.ToString());
-			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithGoogle(
+			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
-			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithGoogle(
+			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
 		}
 
@@ -212,13 +220,13 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			,
 			});
 			navigationManager.NavigateTo(providerAuthState.Uri.ToString());
-			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithGoogle(
+			observableDictionaryTransferService.Remove("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
-			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithGoogle(
+			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
 		}
 
-		public Action<object?> SuccessfullyLogInWithGoogle(string? maybeNullPKCEVerifier)
+		public Action<object?> SuccessfullyLogInWithOAuthVer2(string? maybeNullPKCEVerifier)
 		=>  async (maybeNullAuthenticationCode) =>
 		{
 			string pkceVerifier       = maybeNullPKCEVerifier                 ?? string.Empty;
@@ -228,14 +236,137 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			observableDictionaryTransferService.Remove(nameof(authenticationCode));
 		};
 
-		public async Task ResetPassword(string email)
+		private async Task<(bool ok, string reason)> SendPasswordRecoveryCodeToEmail(string email)
 		{
-			var s=await supabaseClient.Auth.ResetPasswordForEmail(new Supabase.Gotrue.ResetPasswordForEmailOptions(email)
+			try
 			{
-				  RedirectTo = "https://0.0.0.0/", FlowType = Supabase.Gotrue.Constants.OAuthFlowType.Implicit,
-				  
-			});
-			supabaseClient.Auth.Update(new Supabase.Gotrue.UserAttributes() {  });
+				Supabase.Gotrue.
+				ResetPasswordForEmailState
+				resetPasswordForEmailState = await supabaseClient.Auth.
+				ResetPasswordForEmail(new Supabase.Gotrue.ResetPasswordForEmailOptions(email)
+				{
+					FlowType   = Supabase.Gotrue.Constants.OAuthFlowType.Implicit,
+					RedirectTo = "https://work-schedule-reminder.vercel.app/redirect-recovery.html/",
+				});
+				return (ok: true , reason: Message.Success.SUCCESSFULLY_SEND_PASSWORD_RECOVERY_CODE_TO(email));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+			}
+		}
+
+		private async Task<(bool ok, string reason)> CheckPasswordRecoveryCode(string passwordRecoveryCode)
+		{
+			try
+			{
+				string[] partsOfPasswordRecoveryCode =    passwordRecoveryCode.Split('&');
+				await supabaseClient.Auth.SetSession(
+				partsOfPasswordRecoveryCode[0],
+				partsOfPasswordRecoveryCode[1],
+				forceAccessTokenRefresh: true);
+				return (ok: true , reason: Message.Success.SUCCESSFULLY_LOGGING_IN_BY_PASSWORD_RECOVERY_CODE);
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+			}
+			catch (Exception exception)
+			{
+				return (ok: false, reason: Message.Error.INVALID_PASSWORD_RECOVERY_CODE);
+			}
+		}
+
+		private async Task<(bool ok, string reason)> ResetPassword(string newPassword)
+		{
+			try
+			{
+				await supabaseClient.Auth.Update(new Supabase.Gotrue.UserAttributes() { Password = newPassword, });
+				NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+				return (ok: true, reason: Message.Success.SUCCESSFULLY_RESET_PASSWORD
+				(supabaseClient.Auth.CurrentUser?.Email ?? string.Empty));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+			}
+		}
+
+		public async Task<bool> SendPasswordRecoveryCodeToEmail(string email, ISnackbar snackbar)
+		{
+			(bool ok1, string reason1) = await SendPasswordRecoveryCodeToEmail(email);
+			if  (!ok1)
+			{
+				snackbar.Add(Message.Error.CANNOT_SEND_PASSWORD_RECOVERY_CODE(reason1),
+				Severity.Error);
+				return
+				  ok1;
+			}
+			else
+			{
+				snackbar.Add(reason1,
+				Severity.Success);
+				return
+				  ok1;
+			}
+		}
+
+		public async Task<bool> CheckPasswordRecoveryCode(string passwordRecoveryCode, ISnackbar snackbar)
+		{
+			(bool ok1, string reason1) = await CheckPasswordRecoveryCode(passwordRecoveryCode);
+			if  (!ok1)
+			{
+				snackbar.Add(Message.Error.CANNOT_LOG_IN_(reason1),
+				Severity.Error);
+				return
+				  ok1;
+			}
+			else
+			{
+				snackbar.Add(reason1,
+				Severity.Success);
+				return
+				  ok1;
+			}
+		}
+
+		public async Task<bool> ResetPassword(
+		string newPassword                   ,
+		string newPasswordConfirmed          ,
+		ISnackbar snackbar                   )
+		{
+			(bool ok1, string reason1) = Helper.CheckPasswordFormat(newPassword);
+			if  (!ok1)
+			{
+				snackbar.Add(Message.Error.CANNOT_RESET_PASSWORD(reason1),
+				Severity.Error);
+				return
+				  ok1;
+			}
+			if (newPassword != newPasswordConfirmed)
+			{
+				snackbar.Add(Message.Error.CANNOT_RESET_PASSWORD(Message.Error.PASSWORD_AND_PASSWORD_CONFIRMED_NOT_MATCH),
+				Severity.Error);
+				return   false ;
+			}
+			(bool ok2, string reason2) = await ResetPassword(newPassword);
+			if  (!ok2)
+			{
+				snackbar.Add(Message.Error.CANNOT_RESET_PASSWORD(reason2),
+				Severity.Error);
+				return
+				  ok2;
+			}
+			else
+			{
+				snackbar.Add(reason2,
+				Severity.Success);
+				return
+				  ok2;
+			}
 		}
 	}
 }

@@ -22,6 +22,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			public const string EMPTY_EMAIL_ADDRESS        = "Empty email address";
 			public const string WRONG_EMAIL_ADDRESS_FORMAT = "Wrong email address format";
 
+			public const string INVALID_PASSWORD_RECOVERY_CODE = "Invalid password recovery code";
+
 			public const string PASSWORD_AND_PASSWORD_CONFIRMED_NOT_MATCH = "Password and password confirmed don't match each other";
 
 			public static string CANNOT_LOG_IN_(string reason)
@@ -33,6 +35,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 
 			public static string USER_ALREADY_EXISTS(string email)
 			=> $"User with the email {email} already exists";
+
+			public static string CANNOT_RESET_PASSWORD(string reason)
+			=> $"Cannot reset password: {reason}";
+
+			public static string CANNOT_SEND_PASSWORD_RECOVERY_CODE(string reason)
+			=> $"Cannot send password recovery code: {reason}";
 		}
 
 		public static class Normal
@@ -44,9 +52,16 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		{
 			public const string SUCCESSFULLY_LOGGING_IN_ = "Successfully logging in" ;
 			public const string SUCCESSFULLY_LOGGING_OUT = "Successfully logging out";
+			public const string SUCCESSFULLY_LOGGING_IN_BY_PASSWORD_RECOVERY_CODE = "Successfully logging in by password recovery code";
 
 			public static string SUCCESSFULLY_SIGNING_UP(string email)
 			=> $"Successfully signing up, a confirmation email has been sent to {email}";
+
+			public static string SUCCESSFULLY_RESET_PASSWORD(string email)
+			=> $"Successfully reset password, a new password has been set for {email}";
+
+			public static string SUCCESSFULLY_SEND_PASSWORD_RECOVERY_CODE_TO(string email)
+			=> $"Successfully requiring, a password recovery code has been sent to {email}";
 		}
 
 		public static class Warning

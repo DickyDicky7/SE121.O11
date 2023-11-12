@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using Newtonsoft.Json.Linq;
+using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 	{
 		public static Assembly[] DependencyAdditionalAssemblies = new[] { Assembly.GetExecutingAssembly() };
 
-		public static string GetResource(string path)
+		public static string GetResource(this string path)
 		{
 			StringBuilder stringBuilder = new("_content/WorkScheduleReminder.SharedBlazorComponents");
 			return        stringBuilder.Append(path).ToString();
@@ -84,7 +85,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			,
 		};
 
-		public static (bool ok, string reason) CheckEmailFormat(string email)
+		public static (bool ok, string reason) CheckEmailFormat(this string email)
 		{
 			if (string.IsNullOrWhiteSpace(email))
 			{
@@ -100,7 +101,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 				Message.Error.WRONG_EMAIL_ADDRESS_FORMAT);
 		}
 
-		public static (bool ok, string reason) CheckPasswordFormat(string password)
+		public static (bool ok, string reason) CheckPasswordFormat(this string password)
 		{
 			if (string.IsNullOrWhiteSpace(password))
 			{
@@ -109,5 +110,10 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 
 			    return (ok: true , reason: string.Empty);
 		}
+
+		public static string ExtractSupabaseGotrueException(this JObject message)
+		=> message["msg"]?.Value<string>()
+		?? message["error_description"]?.Value<string>()
+		?? string.Empty;
 	}
 }
