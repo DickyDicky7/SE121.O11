@@ -2,8 +2,8 @@ if (window.location.hash
 ||  window.location.search)
 {
     const currentPageURLSearchParams = new
-                     URLSearchParams(window.location.search);
-    history.replaceState({ recoveryCode: currentPageURLSearchParams.get("code"), }, "", window.location.pathname);
+                     URLSearchParams(window.location.hash.substring(1));
+    history.replaceState({ recoveryCode: `${currentPageURLSearchParams.get("access_token")}&${currentPageURLSearchParams.get("refresh_token")}`, }, "", window.location.pathname);
 }
 //else
 //{
