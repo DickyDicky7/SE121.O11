@@ -144,9 +144,9 @@
 
 @code
 {
-    private bool InviteVisible { get; set; } = false;
-    private bool CreateBoardVisible { get; set; } = false;
-    private bool CreateCustomViewVisible { get; set; } = false;
+    public bool InviteVisible { get; set; } = false;
+    public bool CreateBoardVisible { get; set; } = false;
+    public bool CreateCustomViewVisible { get; set; } = false;
     [Parameter]
     public string? Name { get; set; }
     [Parameter]
@@ -180,15 +180,15 @@
         UpdateIcon(newIcon);
         UpdateType(newType);
     }
-    private void ToggleInvite()
+    public void ToggleInvite()
     {
         InviteVisible = !InviteVisible;
     }
-    private void ToggleCreateBoard()
+    public void ToggleCreateBoard()
     {
         CreateBoardVisible = !CreateBoardVisible;
     }
-    private void ToggleCreateCustomView()
+    public void ToggleCreateCustomView()
     {
         CreateCustomViewVisible = !CreateCustomViewVisible;
     }

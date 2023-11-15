@@ -16,96 +16,65 @@
             </MudButton>
         </ActivatorContent>
         <ChildContent>
-            @*Boards and sections*@
-            <MudMenuItem AutoClose="false">
-                <MudMenu AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.CenterLeft">
-                    <ActivatorContent>
-                        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                  Elevation="0">
-                            <MudIcon Size="Size.Small"
-                                     Icon="@Icons.Material.Filled.ViewKanban" />
-                            <MudText>Boards and sections</MudText>
-                        </MudPaper>
-                    </ActivatorContent>
-                    <ChildContent>
-
-                    </ChildContent>
-                </MudMenu>
-            </MudMenuItem>
-            @*Due day*@
-            <MudMenuItem AutoClose="false">
-                <MudMenu AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.TopLeft">
-                    <ActivatorContent>
-                        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                  Elevation="0">
-                            <MudIcon Size="Size.Small"
-                                     Icon="@Icons.Material.Filled.CalendarToday" />
-                            <MudText>Due day</MudText>
-                        </MudPaper>
-                    </ActivatorContent>
-                    <ChildContent>
-                        <DueDay />
-                    </ChildContent>
-                </MudMenu>
-            </MudMenuItem>
-            @*Assignees*@
-            <MudMenuItem AutoClose="false">
-                <MudMenu AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.CenterLeft">
-                    <ActivatorContent>
-                        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                  Elevation="0">
-                            <MudIcon Size="Size.Small"
-                                     Icon="@Icons.Material.Filled.People" />
-                            <MudText>Assignees</MudText>
-                        </MudPaper>
-                    </ActivatorContent>
-                    <ChildContent>
-
-                    </ChildContent>
-                </MudMenu>
-            </MudMenuItem>
-            @*Tags*@
-            <MudMenuItem AutoClose="false">
-                <MudMenu AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.CenterLeft">
-                    <ActivatorContent>
-                        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                  Elevation="0">
-                            <MudIcon Size="Size.Small"
-                                     Icon="@Icons.Material.Filled.Tag" />
-                            <MudText>Tags</MudText>
-                        </MudPaper>
-                    </ActivatorContent>
-                    <ChildContent>
-                        <Tag />
-                    </ChildContent>
-                </MudMenu>
-            </MudMenuItem>
-            @*Messages*@
-            <MudMenuItem AutoClose="false">
-                <MudMenu AnchorOrigin="Origin.CenterRight"
-                         TransformOrigin="Origin.CenterLeft">
-                    <ActivatorContent>
-                        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                  Elevation="0">
-                            <MudIcon Size="Size.Small"
-                                     Icon="@Icons.Material.Filled.Message" />
-                            <MudText>Messages</MudText>
-                        </MudPaper>
-                    </ActivatorContent>
-                    <ChildContent>
-
-                    </ChildContent>
-                </MudMenu>
-            </MudMenuItem>
+            @foreach (MenuItem menuItem in MenuItems)
+            {
+                <MudMenuItem AutoClose="false">
+                    <MudMenu AnchorOrigin="Origin.CenterRight"
+                             TransformOrigin="Origin.TopLeft"
+                             ActivationEvent="MouseEvent.MouseOver">
+                        <ActivatorContent>
+                            <MudPaper Class="d-flex flex-row gap-2 align-center"
+                                      Style="background-color:transparent"
+                                      Elevation="0">
+                                <MudIcon Size="Size.Small"
+                                         Icon=@menuItem.Icon />
+                                <MudText>@menuItem.Name</MudText>
+                            </MudPaper>
+                        </ActivatorContent>
+                        <ChildContent>
+                            @switch (menuItem.Name)
+                            {
+                                case "Sections":
+                                    <FilterSections @onclick:stopPropagation />
+                                    break;
+                                case "Due day":
+                                    <FilterDueDay @onclick:stopPropagation />
+                                    break;
+                                case "Assignees":
+                                    <FilterAssignees @onclick:stopPropagation />
+                                    break;
+                                case "Tags":
+                                    <FilterTag @onclick:stopPropagation />
+                                    break;
+                                case "Messages":
+                                    <FilterMessages @onclick:stopPropagation />
+                                    break;
+                            }
+                        </ChildContent>
+                    </MudMenu>
+                </MudMenuItem>
+            }
         </ChildContent>
     </MudMenu>
 </MudPaper>
 
-@code 
+@code
 {
+    public record MenuItem()
+    {
+        public string Name { get; set; } = null!;
+        public string Icon { get; set; } = null!;
+    }
+    public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        MenuItems.Add(new MenuItem() { Name = "Sections", Icon = Icons.Material.Filled.ViewKanban });
+        MenuItems.Add(new MenuItem() { Name = "Due day", Icon = Icons.Material.Filled.CalendarToday, });
+        MenuItems.Add(new MenuItem() { Name = "Assignees", Icon = Icons.Material.Filled.People });
+        MenuItems.Add(new MenuItem() { Name = "Tags", Icon = Icons.Material.Filled.Tag });
+        MenuItems.Add(new MenuItem() { Name = "Messages", Icon = Icons.Material.Filled.Message });
+
+    }
 }

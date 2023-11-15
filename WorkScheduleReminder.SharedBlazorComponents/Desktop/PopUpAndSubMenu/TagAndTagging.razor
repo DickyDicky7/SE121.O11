@@ -1,7 +1,10 @@
-﻿<MudPaper Class="d-flex flex-column gap-2 pa-2 justify-center"
-          Style="border-radius:20px;"
+﻿<MudPaper @attributes="AdditionalAttributes"
+          Class="d-flex flex-column gap-2 pa-2 justify-center"
+          Style="border-radius:20px;overflow:hidden;"
           Elevation="0"
-          Width="300px" @attributes="AdditionalAttributes">
+          Width="400px"
+          Height="400px"
+          MaxHeight="80vh">
     @if (CurrentMode != Mode.Select)
     {
         @*Navigation bar*@
@@ -9,7 +12,7 @@
                   Elevation="0">
             <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
                            Size="Size.Small"
-                           OnClick="(()=>ChangeMode(Mode.Select))" />
+                           OnClick="(()=>ChangeMode(Mode.Select, string.Empty, Color.Error))" />
             @if (CurrentMode == Mode.Add)
             {
                 <MudText Typo="Typo.h6">Add tag</MudText>
@@ -20,7 +23,7 @@
             }
         </MudPaper>
         @*Enter tag's name*@
-        <MudTextField @bind-Value="TagName"
+        <MudTextField @bind-Value="NewTagName"
                       MaxLength="15"
                       Counter="15"
                       Variant="Variant.Outlined"
@@ -28,18 +31,17 @@
                       Clearable="true"
                       Required="true"
                       AutoFocus="true"
+                      TextUpdateSuppression="false"
                       Label="Name your tag!" />
         @*Choose tag's color*@
         <MudChipSet @bind-SelectedChip="SelectedColoredChip"
+                    Style="display:grid; grid-gap:8px;grid-template-columns:repeat(2,1fr);"
                     Filter="true"
                     Mandatory="true">
-            <MudChip Default="true"
-                     Text="#Tag"
-                     Size="Size.Small"
-                     Color="Color.Error" />
             @foreach (Color color in Colors)
             {
-                <MudChip Text="#Tag"
+                <MudChip Default="@(color == ProcessingTagColor)"
+                         Text="#Tag"
                          Size="Size.Small"
                          Color="color" />
             }
@@ -51,7 +53,7 @@
             <MudButton Class="rounded-pill"
                        Size="Size.Small"
                        FullWidth="true"
-                       Disabled="string.IsNullOrWhiteSpace(TagName)"
+                       Disabled="string.IsNullOrWhiteSpace(NewTagName)"
                        OnClick="SaveTag">
                 <MudText Color="Color.Info">Save</MudText>
             </MudButton>
@@ -66,9 +68,10 @@
                           Width="50%">
                     <MudButton Class="rounded-pill"
                                Size="Size.Small"
+                               Color="Color.Error"
                                FullWidth="true"
                                OnClick="DeleteTag">
-                        <MudText Color="Color.Error">Delete</MudText>
+                        <MudText>Delete</MudText>
                     </MudButton>
                 </MudPaper>
                 <MudPaper Elevation="0"
@@ -76,9 +79,10 @@
                     <MudButton Class="rounded-pill"
                                Size="Size.Small"
                                FullWidth="true"
-                               Disabled="string.IsNullOrWhiteSpace(TagName)"
+                               Color="Color.Info"
+                               Disabled="string.IsNullOrWhiteSpace(NewTagName)"
                                OnClick="SaveTag">
-                        <MudText Color="Color.Info">Save</MudText>
+                        <MudText>Save</MudText>
                     </MudButton>
                 </MudPaper>
             </MudPaper>
@@ -92,19 +96,25 @@
             <MudText Typo="Typo.h6">Select tag(s)</MudText>
             <MudIconButton Icon="@Icons.Material.Filled.Add"
                            Size="Size.Small"
-                           OnClick="(()=>ChangeMode(Mode.Add))" />
+                           OnClick="(()=>ChangeMode(Mode.Add, string.Empty, Color.Error))" />
         </MudPaper>
         @*list of tags*@
-        <MudPaper Elevation="0"
-                  Width="100%">
-            @foreach ((string text, Color color) in TagInfos)
+        <MudPaper Style="overflow:scroll;"
+                  Elevation="0"
+                  Width="100%"
+                  Height="100%">
+            @foreach (Tagging Tagging in Taggings)
             {
                 <MudPaper Class="d-flex flex-row pa-2 justify-space-between"
                           Elevation="0">
-                    <MudText Color="color">@text</MudText>
+                    <MudCheckBox @bind-Checked=@Tagging.Checked
+                                 Size="Size.Small"
+                                 Label="@Tagging.Tag.Name"
+                                 Color="Tagging.Tag.Color" 
+                                 Dense="true"/>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Size="Size.Small"
-                                   OnClick="(()=>ChangeMode(Mode.Edit))" />
+                                   OnClick="(()=>ChangeMode(Mode.Edit, Tagging.Tag.Name, Tagging.Tag.Color))" />
                 </MudPaper>
             }
         </MudPaper>
@@ -124,61 +134,73 @@
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
     public enum Mode { Select, Add, Edit }
     public Mode CurrentMode = Mode.Select;
-
+    //new Tag's info when add/edit
     public MudChip SelectedColoredChip { get; set; } = null!;
-    public string TagName { get; set; } = string.Empty;
-    public string EditingTagName { get; set; } = string.Empty;
-    public Color EditingTagColor { get; set; }
+    public string NewTagName { get; set; } = string.Empty;
+    //processing Tag's info
+    public string ProcessingTagName { get; set; } = string.Empty;
+    public Color ProcessingTagColor { get; set; }
 
-    public List<(string text, Color color)> TagInfos { get; set; } = new();
-    private List<Color> Colors { get; set; } = new List<Color>();
-
-    private void ChangeMode(Mode NextMode)
+    public record Tag
     {
+        public string Name { get; set; } = string.Empty;
+        public Color Color { get; set; }
+    }
+    public record Tagging
+    {
+        public Tag Tag { get; set; } = null!;
+        public bool Checked { get; set; } = false;
+    }
+    public List<Tag> Tags { get; set; } = new();
+    public List<Tagging> Taggings { get; set; } = new();
+    public List<Color> Colors { get; set; } = new List<Color>();
+
+    public void ChangeMode(Mode NextMode, string _ProcessingTagName, Color _ProcessingTagColor)
+    {
+        ProcessingTagName = _ProcessingTagName;
+        ProcessingTagColor = _ProcessingTagColor;
         if (NextMode == Mode.Add)
         {
-            //empty tagname, color default
-            TagName = string.Empty;
+            NewTagName = string.Empty;
         }
         else if (NextMode == Mode.Edit)
         {
-            //tagname = editing tag name, color = editing tag color
-            TagName = EditingTagName;
-
+            NewTagName = ProcessingTagName;
         }
         CurrentMode = NextMode;
     }
-    private void SaveTag()
+    public void SaveTag()
     {
         if (CurrentMode == Mode.Add)
         {
-            if (TagInfos.Contains((text: TagName, SelectedColoredChip.Color)))
+            if (Tags.Contains(new Tag() { Name = NewTagName, Color = SelectedColoredChip.Color }))
             {
                 return;
             }
-            TagInfos.Add((text: TagName, color: SelectedColoredChip.Color));
-            TagName = string.Empty;
+            Tags.Add(new Tag() { Name = NewTagName, Color = SelectedColoredChip.Color });
         }
         else if (CurrentMode == Mode.Edit)
         {
-            int index = TagInfos.FindIndex(x => x == (EditingTagName, EditingTagColor));
-            TagInfos[index] = new(TagName, SelectedColoredChip.Color);
+            int index = Tags.FindIndex(x => x == new Tag() { Name = ProcessingTagName, Color = ProcessingTagColor });
+            Tags[index] = new Tag() { Name = NewTagName, Color = SelectedColoredChip.Color };
         }
         CurrentMode = Mode.Select;
+        ResetTaggings();
     }
-    private void SaveTagging()
+    public void SaveTagging()
     {
 
     }
-    private void DeleteTag()
+    public void DeleteTag()
     {
-        int index = TagInfos.FindIndex(x => x == (EditingTagName, EditingTagColor));
-        TagInfos.RemoveAt(index);
+        Tags.Remove(new Tag() { Name = ProcessingTagName, Color = ProcessingTagColor });
         CurrentMode = Mode.Select;
+        ResetTaggings();
     }
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        Colors.Add(Color.Error);
         Colors.Add(Color.Warning);
         Colors.Add(Color.Success);
         Colors.Add(Color.Info);
@@ -186,5 +208,14 @@
         Colors.Add(Color.Secondary);
         Colors.Add(Color.Tertiary);
         Colors.Add(Color.Dark);
+    }
+    public void ResetTaggings()
+    {
+        //hàm này để xem ui thôi
+        Taggings.Clear();
+        foreach (Tag Tag in Tags)
+        {
+            Taggings.Add(new Tagging() { Tag = Tag });
+        }
     }
 }

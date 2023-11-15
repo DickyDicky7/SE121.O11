@@ -3,16 +3,17 @@
 @switch (RenderComponentType)
 {
 	case ComponentType.LogIn:
-		       <DesktopLogIn  NotifySignUpClicked="OnSignUpClicked" 
-							  NotifyForgotPasswordClicked="OnForgotPasswordClicked"/>
-		 break;
+               <DesktopLogIn NotifySignUp________Clicked="OnSignUp________Clicked"
+                             NotifyForgotPasswordClicked="OnForgotPasswordClicked" />
+         break;
 
 	case ComponentType.SignUp:
-		       <DesktopSignUp NotifyBack__Clicked="OnBack__Clicked" />
-		 break;
+		       <DesktopSignUp         NotifyBackClicked="OnBackClicked" />
+         break;
+
 	case ComponentType.ForgotPassword:
-			   <DesktopForgotPassword NotifyBack__Clicked="OnBack__Clicked" />
-		 break;
+               <DesktopForgotPassword NotifyBackClicked="OnBackClicked" />
+         break;
 }
 
 @code
@@ -22,7 +23,8 @@
 	public      ComponentType RenderComponentType { get; set; }
 	=           ComponentType . LogIn;
 
-	public void OnSignUpClicked() => RenderComponentType = ComponentType.SignUp;
-	public void OnBack__Clicked() => RenderComponentType = ComponentType. LogIn;
+	public void OnBackClicked() => RenderComponentType = ComponentType.LogIn;
+	public void OnSignUp________Clicked() => RenderComponentType = ComponentType.SignUp;
 	public void OnForgotPasswordClicked() => RenderComponentType = ComponentType.ForgotPassword;
+
 }

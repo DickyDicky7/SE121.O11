@@ -11,7 +11,7 @@
         </MudText>
         <MudSwitch @bind-Checked=@Private
                    Label="@(Private == true ? "Private" : "Public")"
-                   Color="Color.Tertiary" 
+                   Color="Color.Tertiary"
                    ThumbIcon="@Icons.Material.Filled.Lock" />
     </MudPaper>
     <MudTextField @bind-Value=@BoardName
@@ -60,7 +60,8 @@
               Style="overflow:scroll"
               Elevation="0">
         <MudChipSet @bind-SelectedChip=SelectedChip
-                    Mandatory="true">
+                    Mandatory="true"
+                    Style="display:grid; grid-gap:8px;grid-template-columns:repeat(3,1fr);">
             <MudChip Default="true"
                      Text="None"
                      Size="Size.Small"
@@ -89,15 +90,15 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string BoardName { get; set; } = string.Empty;
-    private List<string> Sections { get; set; } = new List<string>();
-    private MudChip SelectedChip { get; set; } = null!;
-    private bool Private { get; set; } = false;
+    public string BoardName { get; set; } = string.Empty;
+    public List<string> Sections { get; set; } = new List<string>();
+    public MudChip SelectedChip { get; set; } = null!;
+    public bool Private { get; set; } = false;
 
-    private string NewSectionName { get; set; } = string.Empty;
-    private List<(string, string)> IconToSelect = new List<(string, string)>();
+    public string NewSectionName { get; set; } = string.Empty;
+    public List<(string, string)> IconToSelect = new List<(string, string)>();
 
-    private void AddSection(KeyboardEventArgs e)
+    public void AddSection(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" && NewSectionName != string.Empty && NewSectionName != null)
         {
@@ -106,11 +107,11 @@
             StateHasChanged();
         }
     }
-    private void DeleteSection(string Section)
+    public void DeleteSection(string Section)
     {
         Sections.Remove(Section);
     }
-    private void CreateNewBoard()
+    public void CreateNewBoard()
     {
         /*what u need here:
         * BoardName

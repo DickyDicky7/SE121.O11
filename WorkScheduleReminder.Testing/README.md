@@ -1,3 +1,9 @@
+# Members:
+| Student ID | Name                  |
+|------------|-----------------------|
+| 21520147   | Pham Tuan Anh         |
+| 21521812   | Nguyen Thanh Thien An |
+
 # Using CLI:
 - Change directory to **WorkScheduleReminder.Testing**.
 - Enter **```$ dotnet tool restore```** to install stryker locally.

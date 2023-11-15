@@ -3,22 +3,28 @@
 @switch (RenderComponentType)
 {
 	case ComponentType.LogIn:
-		        <MobileLogIn  NotifySignUpClicked="OnSignUpClicked" />
-		 break;
+                <MobileLogIn NotifySignUp________Clicked="OnSignUp________Clicked"
+                             NotifyForgotPasswordClicked="OnForgotPasswordClicked" />
+         break;
 
 	case ComponentType.SignUp:
-		        <MobileSignUp NotifyBack__Clicked="OnBack__Clicked" />
-		 break;
+                <MobileSignUp         NotifyBackClicked="OnBackClicked" />
+         break;
+
+	case ComponentType.ForgotPassword:
+                <MobileForgotPassword NotifyBackClicked="OnBackClicked" />
+         break;
 }
 
 @code
 {
 
-	public enum ComponentType { LogIn, SignUp, };
+	public enum ComponentType { LogIn, SignUp, ForgotPassword };
 	public      ComponentType RenderComponentType { get; set; }
 	=           ComponentType . LogIn;
 
-	public void OnSignUpClicked() => RenderComponentType = ComponentType.SignUp;
-	public void OnBack__Clicked() => RenderComponentType = ComponentType. LogIn;
+	public void OnBackClicked() => RenderComponentType = ComponentType.LogIn;
+	public void OnSignUp________Clicked() => RenderComponentType = ComponentType.SignUp;
+	public void OnForgotPasswordClicked() => RenderComponentType = ComponentType.ForgotPassword;
 
 }

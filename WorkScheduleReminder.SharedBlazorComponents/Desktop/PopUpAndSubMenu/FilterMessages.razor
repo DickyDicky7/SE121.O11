@@ -1,0 +1,42 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column gap-2 pa-2"
+          Style="border-radius:20px;"
+          Elevation="0"
+          Width="250px">
+    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+              Elevation="0"
+              Width="100%">
+        <MudText Style="margin:4px">
+            Unread
+        </MudText>
+        <MudCheckBox @bind-Checked=UnreadChecked
+                     CheckedIcon="@Icons.Material.Filled.Check"
+                     UncheckedIcon="@Icons.Material.Filled.Close"
+                     Size="Size.Small"
+                     Color="Color.Info"
+                     UnCheckedColor="Color.Error"
+                     Dense="true" DisableRipple="true" />
+    </MudPaper>
+    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+              Elevation="0"
+              Width="100%">
+        <MudText Style="margin:4px">
+            Mention
+        </MudText>
+        <MudCheckBox @bind-Checked=MentionChecked
+                     CheckedIcon="@Icons.Material.Filled.Check"
+                     UncheckedIcon="@Icons.Material.Filled.Close"
+                     Size="Size.Small"
+                     Color="Color.Info"
+                     UnCheckedColor="Color.Error"
+                     Dense="true" DisableRipple="true" />
+    </MudPaper>
+</MudPaper>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public bool UnreadChecked { get; set; } = false;
+    public bool MentionChecked { get; set; } = false;
+}

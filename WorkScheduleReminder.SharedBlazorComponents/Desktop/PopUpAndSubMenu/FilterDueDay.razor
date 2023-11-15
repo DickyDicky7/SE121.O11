@@ -1,0 +1,105 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column flex-wrap gap-2 pa-2"
+          Style="border-radius:20px;"
+          Elevation="0"
+          Width="500px">
+    <MudDateRangePicker @bind-DateRange="DateRange"
+                        PickerVariant="PickerVariant.Inline"
+                        AutoClose="false"
+                        Editable="true"
+                        Label="Choose due day"
+                        DateFormat="dd/MM/yyyy"
+                        TitleDateFormat="dd/MM/yyyy">
+    </MudDateRangePicker>
+    <MudPaper Class="pa-2"
+              Style="display:grid; grid-template-columns:repeat(2,1fr); grid-gap:8px;"
+              Elevation="0"
+              Width="100%">
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetDateRange(DateTime.MinValue, DateTime.Now.Date))">
+            <MudText>
+                Overdue
+            </MudText>
+        </MudButton>
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetDateRange(DateTime.Now.Date, DateTime.Now.Date))">
+            <MudText>Today</MudText>
+        </MudButton>
+        <MudButton Class="d-flex flex-wrap rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetWeekRange(DateTime.Now.Date))">
+            <MudText>
+                This week
+            </MudText>
+        </MudButton>
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetWeekRange(DateTime.Now.AddDays(7).Date))">
+            <MudText>
+                Next week
+            </MudText>
+        </MudButton>
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetMonthRange(DateTime.Now.Date))">
+            <MudText>
+                This month
+            </MudText>
+        </MudButton>
+        <MudButton Class="rounded-pill"
+                   Size="Size.Small"
+                   Variant="Variant.Text"
+                   OnClick="(() => SetMonthRange(DateTime.Now.AddDays(DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).Date))">
+            <MudText>
+                Next month
+            </MudText>
+        </MudButton>
+    </MudPaper>
+    <MudButton Class="rounded-pill"
+               Size="Size.Small"
+               Variant="Variant.Text"
+               Color="Color.Error"
+               OnClick="(() => { DateRange = new(); })">
+        <MudText>
+            Clear
+        </MudText>
+    </MudButton>
+</MudPaper>
+
+@code
+{
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public DateRange DateRange { get; set; } = new DateRange();
+    public MudChip SelectedChip { get; set; } = null!;
+
+    public void SetDateRange(DateTime begin, DateTime end)
+    {
+        DateRange = new DateRange(begin, end);
+    }
+
+    /* INPUT A DAY OF A WEEK */
+    public void SetWeekRange(DateTime dateTime)
+    {
+        int startOfWeek = (7 + (dateTime.DayOfWeek - DayOfWeek.Sunday)) % 7;
+        int endOfWeek = (7 + (DayOfWeek.Saturday - dateTime.DayOfWeek)) % 7;
+        SetDateRange(dateTime.AddDays(-1 * startOfWeek).Date, dateTime.AddDays(1 * endOfWeek).Date);
+    }
+
+    /* INPUT A DAY OF A MONTH */
+    public void SetMonthRange(DateTime dateTime)
+    {
+        int daysInMonth = DateTime.DaysInMonth(dateTime.Year, dateTime.Month);
+        DateTime endOfMonth = new DateTime(dateTime.Year, dateTime.Month, daysInMonth);
+        DateTime startOfMonth = new DateTime(dateTime.Year, dateTime.Month, 1);
+        SetDateRange(startOfMonth, endOfMonth);
+    }
+}

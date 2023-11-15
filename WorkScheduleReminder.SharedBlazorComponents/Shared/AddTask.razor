@@ -28,12 +28,12 @@
 	[Parameter]
 	public string AddTaskValue { get; set; } = null!;
 
-	private string customClass_ = "    ";
-	private string customHeight = "auto";
-	private string chosenHeight = "90px";
+	public string customClass_ = "    ";
+	public string customHeight = "auto";
+	public string chosenHeight = "90px";
 
-	private bool open = false;
-	private Task OnClick(MouseEventArgs mouseEventArgs)
+	public bool open = false;
+	public Task OnClick(MouseEventArgs mouseEventArgs)
 	{
 		    open = 
 		   !open;

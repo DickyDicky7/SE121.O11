@@ -1,5 +1,7 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
-@inject ISnackbar  Snackbar
+
+@inject NavigationManager NavigationManager
+@inject ISnackbar         Snackbar
 @inject SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 
 <MudPaper Class="d-flex flex-column"
@@ -18,7 +20,7 @@
 					   Size="Size.Large"
 					   Href="login"
 					   Color="Color.Primary"
-					   OnClick="NotifyBack__Clicked" />
+					   OnClick="NotifyBackClicked" />
 	</MudPaper>
 	<MudPaper Class="d-flex justify-center"
 			  Elevation="0"
@@ -79,7 +81,7 @@
 @code
 {
 	[Parameter]
-	public EventCallback NotifyBack__Clicked { get; set; }
+	public EventCallback NotifyBackClicked { get; set; }
 
 	public string Email             { get; set; } = string.Empty;
 	public string Password          { get; set; } = string.Empty;
@@ -123,10 +125,15 @@
 		}
 	}
 
-	public async Task   SignUp()
-	{   if(await Common.SignUp(SupabaseAuthenticationStateProviderService, Email, Password, PasswordConfirmed, Snackbar))
+	public async Task SignUp()
+	{   if(await SupabaseAuthenticationStateProviderService
+	    .             SignUp(
+	       Email            ,
+	       Password         ,
+	       PasswordConfirmed,
+	       Snackbar         ))
 		{
-           await NotifyBack__Clicked.InvokeAsync();
+           await NotifyBackClicked.InvokeAsync();
 		}
 	}
 }

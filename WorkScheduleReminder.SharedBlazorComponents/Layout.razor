@@ -5,6 +5,7 @@
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop
 
 @implements IDisposable
+@inject     ISnackbar Snackbar_
 @inject     Supabase.Client SupabaseClient
 
 <MudThemeProvider Theme="Helper.CustomThemes[1]" /><MudDialogProvider /><MudSnackbarProvider />
@@ -37,7 +38,7 @@
 					 break;
 
 				case Helper.DeviceType.Desktop:
-					<DesktopParentAuthorized MainChildContent="@ChildContent"/>
+					<DesktopParentNotAuthorized />
 					 break;
 
 				case Helper.DeviceType.Unknown:
@@ -57,7 +58,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await base.OnInitializedAsync();
+		await base.OnInitializedAsync  ();
+		SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
+		SupabaseClient.Auth.LoadSession();
 	}
 
 	protected void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
@@ -66,22 +69,25 @@
 		switch (authState)
 		{
 			case Constants.AuthState.Shutdown:
-				 break;
+                 break;
 
 			case Constants.AuthState.SignedIn:
-				 break;
+                 Snackbar_.Add
+        (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
+                .Success);
+                 break;
 
 			case Constants.AuthState.SignedOut:
-				 break;
+                 break;
 
 			case Constants.AuthState.UserUpdated:
-				 break;
+                 break;
 
 			case Constants.AuthState.TokenRefreshed:
-				 break;
+                 break;
 
 			case Constants.AuthState.PasswordRecovery:
-				 break;
+                 break;
 		}
 	}
 

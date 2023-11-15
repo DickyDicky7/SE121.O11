@@ -1,81 +1,231 @@
 ﻿<MudPaper @attributes=@AdditionalAttributes
-		  Class="d-flex flex-column flex-wrap gap-2 pa-2 justify-center"
-		  Style="border-radius:20px"
-		  Elevation="0">
-	<MudText Style="font-weight:500; font-size:large;">Reminder</MudText>
-	<MudTimePicker @bind-Time=Time
-				   AmPm="true"
-				   Label="Time"
-				   PickerVariant="PickerVariant.Dialog"
-				   AnchorOrigin="Origin.BottomCenter"
-				   TransformOrigin="Origin.TopCenter"
-				   Variant="Variant.Outlined" />
-	<MudDatePicker @bind-Date=@Date
-				   DateFormat="dd/MM/yyyy"
-				   Label="Date"
-				   ImmediateText="true"
-				   PickerVariant="PickerVariant.Dialog"
-				   AnchorOrigin="Origin.BottomCenter"
-				   TransformOrigin="Origin.TopCenter"
-				   Variant="Variant.Outlined" />
-	<MudChipSet @bind-SelectedChip="@SelectedChip" @bind-SelectedChip:after="OnSelectedChipChanged"
-				Filter="true"
-				Class="d-flex flex-column gap-2 pa-2">
-		<MudPaper Class="d-flex flex-grow-1 pa-2 justify-space-between"
-				  Elevation="0"
-				  Width="100%">
-			<MudChip Class="d-flex flex-wrap rounded-pill"
-					 Size="Size.Small"
-					 Variant="Variant.Text"
-					 Text="Daily" />
-			<MudChip Class="d-flex flex-wrap rounded-pill"
-					 Size="Size.Small"
-					 Variant="Variant.Text"
-					 Text="Weekly" />
-		</MudPaper>
-		<MudPaper Class="d-flex flex-grow-1 pa-2 justify-space-between"
-				  Elevation="0"
-				  Width="100%">
-			<MudChip Class="d-flex flex-wrap rounded-pill"
-					 Size="Size.Small"
-					 Variant="Variant.Text"
-					 Text="Monthly" />
-			<MudChip Class="d-flex flex-wrap rounded-pill"
-					 Size="Size.Small"
-					 Variant="Variant.Text"
-					 Text="Yearly" />
-		</MudPaper>
-	</MudChipSet>
-	@if (Recurring == "Weekly")
-	{
-		<MudText>aaaa</MudText>
-	}
-	@if (Recurring == "Monthly")
-	{
-		<MudText>bbbb</MudText>
-	}
-	<MudSwitch @bind-Checked="@TaskNeverEnd"
-			   Label="Task never end"
-			   Color="Color.Tertiary"
-			   ThumbIcon="@Icons.Material.Filled.Workspaces" />
+          Class="d-flex flex-column flex-wrap gap-2 pa-2 justify-center"
+          Style="border-radius:20px"
+          Elevation="0"
+          Width="500px">
+    @*Reminder*@
+    <MudText Style="font-weight:bold; font-size:large;">Reminder</MudText>
+    <MudPaper Class="d-flex flex-row pa-2 gap-2"
+              Elevation="0"
+              Width="100%">
+        <MudTimePicker @bind-Time=Time
+                       AmPm="true"
+                       Label="Time"
+                       PickerVariant="PickerVariant.Dialog"
+                       AnchorOrigin="Origin.BottomCenter"
+                       TransformOrigin="Origin.TopCenter"
+                       Variant="Variant.Outlined" />
+        <MudDatePicker @bind-Date=@Date
+                       DateFormat="dd/MM/yyyy"
+                       Label="Date"
+                       ImmediateText="true"
+                       PickerVariant="PickerVariant.Dialog"
+                       AnchorOrigin="Origin.BottomCenter"
+                       TransformOrigin="Origin.TopCenter"
+                       Variant="Variant.Outlined" />
+    </MudPaper>
+    @*Recurring*@
+    @if (RecurringChip != null)
+    {
+        <MudText Style="font-weight:bold; font-size:large;">Recurring</MudText>
+        <MudChipSet @bind-SelectedChip="@RecurringChip" @bind-SelectedChip:after="SetRecurringMode"
+                    Style="display:grid; grid-gap:8px;grid-template-columns:repeat(2,1fr); grid-gap:8px">
+            <MudChip Class="rounded-pill"
+                     Variant="Variant.Text"
+                     Text="Daily"
+                     SelectedColor="Color.Info" />
+            <MudChip Class="rounded-pill"
+                     Variant="Variant.Text"
+                     Text="Weekly"
+                     SelectedColor="Color.Info" />
+            <MudChip Class="rounded-pill"
+                     Variant="Variant.Text"
+                     Text="Monthly"
+                     SelectedColor="Color.Info" />
+            <MudChip Class="rounded-pill"
+                     Variant="Variant.Text"
+                     Text="Yearly"
+                     SelectedColor="Color.Info" />
+        </MudChipSet>
+        @if (RecurringMode != "None")
+        {
+            @*Start recurring*@
+            <MudPaper Class="d-flex flex-row pa-2 gap-2"
+                      Elevation="0"
+                      Width="100%">
+                <MudTimePicker @bind-Time=@StartTime
+                               AmPm="true"
+                               Label="Start time"
+                               PickerVariant="PickerVariant.Dialog"
+                               AnchorOrigin="Origin.BottomCenter"
+                               TransformOrigin="Origin.TopCenter"
+                               Variant="Variant.Outlined" />
+                <MudDatePicker @bind-Date=@StartDate
+                               DateFormat="dd/MM/yyyy"
+                               Label="Start date"
+                               ImmediateText="true"
+                               PickerVariant="PickerVariant.Dialog"
+                               AnchorOrigin="Origin.BottomCenter"
+                               TransformOrigin="Origin.TopCenter"
+                               Variant="Variant.Outlined" />
+            </MudPaper>
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>Repeat every</MudText>
+                <MudPaper Class="d-flex flex-row gap-2 pa-2 align-center"
+                          Elevation="0">
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@Icons.Material.Filled.ArrowLeft"
+                                   Disabled="@(RecurringValue == 1)"
+                                   OnClick="(()=>{RecurringValue--;})" />
+                    <MudText>@RecurringValue</MudText>
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@Icons.Material.Filled.ArrowRight"
+                                   Disabled="@(RecurringValue == 30)"
+                                   OnClick="(()=>{RecurringValue++;})" />
+                </MudPaper>
+                <MudText>@RecurringMode</MudText>
+            </MudPaper>
+            if (RecurringMode == "Weekly")
+            {
+                <MudPaper Class="d-flex flex-column gap-2"
+                          Elevation="0"
+                          Width="100%">
+                    <MudText>Repeat on</MudText>
+                    <MudChipSet @bind-SelectedChips="@WeeklyRepeatChips"
+                                MultiSelection="true">
+                        <MudPaper Class="d-flex flex-row justify-space-between"
+                                  Elevation="0"
+                                  Width="100%">
+                            @foreach (string RepeatValue in WeeklyRepeatValues)
+                            {
+                                <MudChip Class="rounded-pill"
+                                         Variant="Variant.Text"
+                                         Text="@RepeatValue"
+                                         SelectedColor="Color.Info" />
+                            }
+                        </MudPaper>
+                    </MudChipSet>
+                </MudPaper>
+            }
+            <MudSwitch @bind-Checked="@TaskNeverEnd"
+                       Label="Task never end"
+                       Color="Color.Tertiary"
+                       ThumbIcon="@Icons.Material.Filled.Stop" />
+            if (TaskNeverEnd == false)
+            {
+                @*End recurring*@
+                <MudPaper Class="d-flex flex-row pa-2 gap-2"
+                          Elevation="0"
+                          Width="100%">
+                    <MudTimePicker @bind-Time=@EndTime
+                                   AmPm="true"
+                                   Label="End time"
+                                   PickerVariant="PickerVariant.Dialog"
+                                   AnchorOrigin="Origin.BottomCenter"
+                                   TransformOrigin="Origin.TopCenter"
+                                   Variant="Variant.Outlined" />
+                    <MudDatePicker @bind-Date=@EndDate
+                                   DateFormat="dd/MM/yyyy"
+                                   Label="End date"
+                                   ImmediateText="true"
+                                   PickerVariant="PickerVariant.Dialog"
+                                   AnchorOrigin="Origin.BottomCenter"
+                                   TransformOrigin="Origin.TopCenter"
+                                   Variant="Variant.Outlined" />
+                </MudPaper>
+            }
+        }
+        <MudPaper Class="d-flex flex-row"
+                  Elevation="0"
+                  Width="100%">
+            <MudPaper Elevation="0"
+                      Width="50%">
+                <MudButton Class="rounded-pill"
+                           Size="Size.Small"
+                           FullWidth="true"
+                           Color="Color.Error"
+                           Disabled="@New"
+                           OnClick="Delete">
+                    <MudText>Delete</MudText>
+                </MudButton>
+            </MudPaper>
+            <MudPaper Elevation="0"
+                      Width="50%">
+                <MudButton Class="rounded-pill"
+                           Size="Size.Small"
+                           FullWidth="true"
+                           Color="Color.Info"
+                           OnClick="Save">
+                    <MudText>Save</MudText>
+                </MudButton>
+            </MudPaper>
+        </MudPaper>
+    }
 </MudPaper>
 
 @code
 {
-	[Parameter(CaptureUnmatchedValues = true)]
-	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter]
+    public bool New { get; set; } = true;
 
-	public TimeSpan? Time { get; set; } = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
-	public DateTime? Date { get; set; } = DateTime.Today;
+    public TimeSpan? Time { get; set; } = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+    public DateTime? Date { get; set; } = DateTime.Today;
+    public TimeSpan? StartTime { get; set; } = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+    public DateTime? StartDate { get; set; } = DateTime.Today;
+    public TimeSpan? EndTime { get; set; } = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
+    public DateTime? EndDate { get; set; } = DateTime.Today.AddMonths(1);
 
-	public static MudChip? SelectedChip { get; set; }
-	public string Recurring { get; set; } = "None";
+    public MudChip? RecurringChip { get; set; }
+    public MudChip[]? WeeklyRepeatChips { get; set; }
+    public string RecurringMode { get; set; } = "None";
+    public string RecurringString { get; set; } = string.Empty;
+    public int RecurringValue { get; set; } = 1;
+    public bool TaskNeverEnd { get; set; } = true;
+    public List<string> WeeklyRepeatValues = new List<string> { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
-	public void OnSelectedChipChanged()
-	{
-		Recurring = SelectedChip?.Text
-		?? "None";
-	}
+    public void SetRecurringMode()
+    {
+        RecurringMode = RecurringChip?.Text ?? "None";
+        switch (RecurringMode)
+        {
+            case "Daily":
+                RecurringMode = "day(s)";
+                break;
+            case "Weekly":
+                RecurringMode = "week(s)";
+                break;
+            case "Monthly":
+                RecurringMode = "month(s)";
+                break;
+            case "Yearly":
+                RecurringMode = "year(s)";
+                break;
+            default:
+                RecurringMode = string.Empty;
+                break;
+        }
+    }
+    public void Delete()
+    {
 
-	public bool TaskNeverEnd { get; set; } = false;
+    }
+    public void Save()
+    {
+        /*what u need here:
+         * Time
+         * Date
+         * StartTime
+         * StartDate
+         * EndTime (if needed)
+         * EndDate (if needed)
+         * RecurringMode
+         * SelectedChips (this use for chosen weekly repeat value)
+         * RecurringValue
+         * TaskNeverEnd
+         */
+    }
 }

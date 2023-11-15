@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@page "/"
 @page "/myday"
 
 <MudPaper Class="d-flex flex-row"
@@ -12,6 +13,7 @@
                    Class=""
                    Style="background-color:transparent"
                    Elevation="0"
+                   Width="300px"
                    Height="100%"
                    Anchor="Anchor.Right"
                    Variant="@DrawerVariant.Persistent">
@@ -25,13 +27,14 @@
                               Margin="Margin.Dense"
                               OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
             </MudDrawerHeader>
-            @foreach (int i in Enumerable.Range(0, 10))
+            @foreach (string Task in SuggestedTasks)
             {
                 <MudButton Class="border-2 justify-start align-center"
                            Size="Size.Medium"
                            FullWidth="true"
-                           StartIcon="@Icons.Material.Filled.Add">
-                    @i
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="()=>AddSuggestedTask(Task)">
+                    @Task
                 </MudButton>
             }
         </MudDrawer>
@@ -64,7 +67,8 @@
                               Width="100%">
                         <MudButton Class="justify-start"
                                    Size="Size.Small"
-                                   FullWidth="true">
+                                   FullWidth="true"
+                                   OnClick="()=>OnTaskClick(Name)">
                             <MudText>@Name</MudText>
                         </MudButton>
                         <MudPaper Class="d-flex flex-row gap-2"
@@ -72,7 +76,8 @@
                             <MudIconButton Size="Size.Small"
                                            Icon="@Icons.Material.Filled.PushPin" />
                             <MudIconButton Size="Size.Small"
-                                           Icon="@Icons.Material.Filled.Close" />
+                                           Icon="@Icons.Material.Filled.Close"
+                                           OnClick="()=>RemoveSuggestedTask(Name)" />
                         </MudPaper>
                     </MudPaper>
                 }
@@ -95,12 +100,31 @@
         </MudPaper>
     </MudDrawerContainer>
 </MudPaper>
+<MudOverlay Visible="@TaskDetailVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+</MudOverlay>
 @code
 {
-    private bool DrawerOpen { get; set; } = false;
-    private string NewTask { get; set; } = string.Empty;
-    private string FilterValue { get; set; } = string.Empty;
-    private List<string> Tasks = new List<string>();
+    public string CurrentTitle { get; set; } = string.Empty;
+    public bool TaskDetailVisible { get; set; } = false;
+    public bool DrawerOpen { get; set; } = false;
+    public string NewTask { get; set; } = string.Empty;
+    public string FilterValue { get; set; } = string.Empty;
+    public List<string> SuggestedTasks { get; set; } = new List<string>();
+    public List<string> Tasks = new List<string>();
+    public void AddSuggestedTask(string Name)
+    {
+        SuggestedTasks.Remove(Name);
+        Tasks.Add(Name);
+    }
+    public void RemoveSuggestedTask(string Name)
+    {
+        Tasks.Remove(Name);
+        SuggestedTasks.Add(Name);
+    }
     public void EnterNewTask(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" && NewTask != string.Empty)
@@ -118,8 +142,28 @@
             StateHasChanged();
         }
     }
-    private void ToggleDrawer()
+    public void OnTaskClick(string TaskTitle)
+    {
+        TaskDetailVisible = !TaskDetailVisible;
+        CurrentTitle = TaskTitle;
+    }
+    public void ToggleDrawer()
     {
         DrawerOpen = !DrawerOpen;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SuggestedTasks.Add("a");
+        SuggestedTasks.Add("s");
+        SuggestedTasks.Add("d");
+        SuggestedTasks.Add("f");
+        SuggestedTasks.Add("q");
+        SuggestedTasks.Add("w");
+        SuggestedTasks.Add("e");
+        SuggestedTasks.Add("r");
+        SuggestedTasks.Add("t");
+        SuggestedTasks.Add("y");
+        SuggestedTasks.Add("u");
     }
 }

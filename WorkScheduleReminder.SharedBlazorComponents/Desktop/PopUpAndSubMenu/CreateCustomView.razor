@@ -1,16 +1,125 @@
-﻿
-<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column gap-2 pa-2"
-          Style="overflow:hidden; border-radius:20px;"
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column pa-2 align-center justify-space-between"
+          Style="border-radius:20px;"
           Elevation="0"
-          Width="500px">
-    <MudText Style="font-size:xx-large;font-weight:bold">
-        HEHE
+          Height="60vh">
+    <MudText Style="font-weight:bold; font-size:x-large;">
+        Create a view organized by
     </MudText>
+    <MudChipSet @bind-SelectedChip=SelectedChip
+                Mandatory="true">
+        <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                  Elevation="0"
+                  Width="100%">
+            <MudChip Style="font-weight:bold;font-size:larger;width:250px;"
+                     Size="Size.Large"
+                     SelectedColor="Color.Info"
+                     Variant="Variant.Outlined"
+                     Text="People"
+                     Icon="@Icons.Material.Filled.People" />
+            <MudChip Style="font-weight:bold;font-size:larger;width:250px;"
+                     Size="Size.Large"
+                     SelectedColor="Color.Info"
+                     Variant="Variant.Outlined"
+                     Text="Due day"
+                     Icon="@Icons.Material.Filled.Today" />
+            <MudChip Style="font-weight:bold;font-size:larger;width:250px;"
+                     Size="Size.Large"
+                     SelectedColor="Color.Info"
+                     Variant="Variant.Outlined"
+                     Text="Boards and Sections"
+                     Icon="@Icons.Material.Filled.Dashboard" />
+        </MudPaper>
+    </MudChipSet>
+    @if (SelectedChip != null)
+    {
+        <MudPaper Class="d-flex flex-column gap-2 justify-center align-center"
+                  Elevation="0"
+                  Width="100%">
+            <MudPaper Class="d-flex flex-row gap-2 align-center"
+                      Elevation="0">
+                <MudText Style="font-weight:bold;font-size:larger;">
+                    Sources
+                </MudText>
+                <MudSelect @bind-bind-Value=ChoosingSource @bind-SelectedValues=ChoosingSources
+                           T="string"
+                           Label="Click to select source"
+                           Variant="Variant.Outlined"
+                           Margin="Margin.Dense"
+                           Dense="true"
+                           AnchorOrigin="Origin.BottomCenter"
+                           TransformOrigin="Origin.TopCenter"
+                           MultiSelection="true"
+                           SelectAll="true"
+                           SelectAllText="WorkSpace">
+                    @foreach (string Sources in SourcesChoice)
+                    {
+                        <MudSelectItem Value="Sources" />
+                    }
+                </MudSelect>
+            </MudPaper>
+            @if (SelectedChip.Text == "Due day")
+            {
+                <MudPaper Class="d-flex flex-row gap-2 align-center"
+                          Elevation="0">
+                    <MudText Style="font-weight:bold;font-size:larger;">
+                        Duration
+                    </MudText>
+                    <MudSelect @bind-Value=ChoosingDuration
+                               T="string"
+                               Label="Click to select duration"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               Dense="true"
+                               AnchorOrigin="Origin.BottomCenter"
+                               TransformOrigin="Origin.TopCenter">
+                        @foreach (string Duration in DurationChoice)
+                        {
+                            <MudSelectItem Value="Duration" />
+                        }
+                    </MudSelect>
+                </MudPaper>
+            }
+        </MudPaper>
+
+    }
+    <MudButton Class="d-flex flex-wrap rounded-pill"
+               Size="Size.Large"
+               Color="Color.Info"
+               Variant="Variant.Filled"
+               Disabled="@(SelectedChip == null)">
+        <MudText>Create</MudText>
+    </MudButton>
 </MudPaper>
 
 
 @code {
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public MudChip SelectedChip { get; set; } = null!;
+    public string ChoosingSource { get; set; } = string.Empty;
+    public IEnumerable<string> ChoosingSources { get; set; } = new HashSet<string>();
+    public string ChoosingDuration { get; set; } = string.Empty;
+
+    public List<string> SourcesChoice { get; set; } = new List<string>();
+    public List<string> DurationChoice { get; set; } = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        DurationChoice.Add("Next 7 days");
+        DurationChoice.Add("Next 7 days");
+        DurationChoice.Add("Next 14 days");
+        DurationChoice.Add("Next 4 weeks");
+        DurationChoice.Add("Next 3 months");
+        DurationChoice.Add("Next 6 months");
+        DurationChoice.Add("Next 12 months");
+
+        SourcesChoice.Add("A");
+        SourcesChoice.Add("B");
+        SourcesChoice.Add("C");
+        SourcesChoice.Add("D");
+        SourcesChoice.Add("E");
+    }
 }

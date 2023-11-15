@@ -85,8 +85,7 @@
         </LoadingContent>
     </MudDataGrid>
 </MudPaper>
-<MudOverlay Class="border-2"
-            Visible="@TaskDetailVisible"
+<MudOverlay Visible="@TaskDetailVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
@@ -95,13 +94,13 @@
 </MudOverlay>
 
 @code {
-    private string NewTask { get; set; } = string.Empty;
-    private bool[] ColumnsVisibility = new bool[5] { true, true, true, true, true };
-    private bool TaskDetailVisible { get; set; } = false;
-    private string CurrentTitle { get; set; } = string.Empty;
+    public string NewTask { get; set; } = string.Empty;
+    public bool[] ColumnsVisibility = new bool[5] { true, true, true, true, true };
+    public bool TaskDetailVisible { get; set; } = false;
+    public string CurrentTitle { get; set; } = string.Empty;
     public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
     public IEnumerable<Task> Tasks = null!;
-    private List<Task> Temp = new List<Task>();
+    public List<Task> Temp = new List<Task>();
     protected override void OnInitialized()
     {
         foreach (int i in Enumerable.Range(0, 30))

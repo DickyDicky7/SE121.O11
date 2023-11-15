@@ -1,6 +1,7 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu;
-@using WorkScheduleReminder.SharedBlazorComponents.Desktop.MainContent;
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop.MainContent
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponent
+
 <MudLayout>
     <MudPaper Class="@($"d-flex flex-row {Theme}")"
               Elevation="0"
@@ -27,14 +28,14 @@
 @code
 {
 
-    [Parameter]
-    public RenderFragment? MainChildContent { get; set; }
+	[Parameter]
+	public RenderFragment? MainChildContent { get; set; }
 
     public string? ActiveName { get; set; }
     public string? ActiveIcon { get; set; }
     public Helper.ViewType ActiveType { get; set; }
 
-    private string Theme { get; set; } = "mud-theme-info";
+    public string Theme { get; set; } = "mud-theme-info";
     protected override Task OnParametersSetAsync()
     {
         if (ActiveType == Helper.ViewType.MyDay)

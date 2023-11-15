@@ -1,0 +1,72 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column gap-2 pa-2"
+          Style="border-radius:20px;overflow:scroll"
+          Elevation="0"
+          Width="250px"
+          Height="500px">
+    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+              Elevation="0"
+              Width="100%">
+        <MudText Style="margin:4px">
+            Unassigned
+        </MudText>
+        <MudCheckBox @bind-Checked=UnassignedChecked
+                     CheckedIcon="@Icons.Material.Filled.Check"
+                     UncheckedIcon="@Icons.Material.Filled.Close"
+                     Size="Size.Small"
+                     Color="Color.Info"
+                     UnCheckedColor="Color.Error"
+                     Dense="true" DisableRipple="true" />
+    </MudPaper>
+    @foreach (AssigneeChecked assigneeChecked in AssigneeFilterList)
+    {
+        <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                  Elevation="0"
+                  Width="100%">
+            <MudText Style="margin:4px">
+                @assigneeChecked.Name
+            </MudText>
+            <MudCheckBox @bind-Checked=assigneeChecked.Checked
+                         CheckedIcon="@Icons.Material.Filled.Check"
+                         UncheckedIcon="@Icons.Material.Filled.Close"
+                         Size="Size.Small"
+                         Color="Color.Info"
+                         UnCheckedColor="Color.Error"
+                         Dense="true" DisableRipple="true" />
+        </MudPaper>
+    }
+</MudPaper>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public bool UnassignedChecked { get; set; } = false;
+    public record AssigneeChecked()
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool Checked { get; set; } = false;
+    }
+    public List<AssigneeChecked> AssigneeFilterList = new List<AssigneeChecked>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hihi" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hehe" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "haha" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "huhu" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hihi" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hehe" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "haha" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "huhu" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hihi" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hehe" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "haha" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "huhu" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hihi" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "hehe" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "haha" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "huhu" });
+    }
+}

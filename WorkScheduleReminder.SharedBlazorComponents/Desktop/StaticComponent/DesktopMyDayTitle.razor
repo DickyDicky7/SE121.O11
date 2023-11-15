@@ -10,7 +10,7 @@
 @code {
     [Parameter]
     public string Name { get; set; } = "Master";
-    private string Greeting { get; set; } = string.Empty;
+    public string Greeting { get; set; } = string.Empty;
     protected override void OnInitialized()
     {
         if (DateTime.Now.Hour < 12)

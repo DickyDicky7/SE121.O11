@@ -4,7 +4,7 @@
           Style="border-radius:20px;"
           Elevation="0"
           Width="500px"
-          Height="80%" @attributes="AdditionalAttributes">
+          MaxHeight="90vh" @attributes="AdditionalAttributes">
     @*link and buttons*@
     <MudPaper Class="d-flex flex-row pa-2"
               Elevation="0"
@@ -41,7 +41,7 @@
     @*title*@
     <MudText Class="mx-2"
              Typo="Typo.h4"
-			 Style="font-weight:bold;">
+             Style="font-weight:bold;">
         @Title
     </MudText>
     @*remind me and tag*@
@@ -51,14 +51,14 @@
                    Size=Size.Small
                    StartIcon="@Icons.Material.Filled.Alarm"
                    Color="Color.Default"
-				   OnClick="ToggleReminderVisible">
+                   OnClick="ToggleReminderVisible">
             Remind me
         </MudButton>
         <MudButton Class="rounded-pill align-content-start"
                    Size=Size.Small
                    StartIcon="@Icons.Material.Filled.Tag"
                    Color="Color.Default"
-				   OnClick="ToggleTagVisible">
+                   OnClick="ToggleTagVisible">
             Tag
         </MudButton>
     </MudPaper>
@@ -66,7 +66,7 @@
     <MudPaper Class="d-flex flex-column gap-1 px-2"
               Elevation="0">
         <MudText Typo="Typo.subtitle1">Note</MudText>
-		<MudTextField @bind-Value="Note"
+        <MudTextField @bind-Value="Note"
                       Class=""
                       Placeholder="Name your subtask"
                       Immediate="true"
@@ -77,50 +77,91 @@
     </MudPaper>
     @*subtasks*@
     <MudPaper Class="d-flex flex-column gap-1 px-2"
+              Style="overflow:hidden"
               Elevation="0">
         <MudText Typo="Typo.subtitle1">SubTasks</MudText>
-		<MudTextField @bind-Value="NewSubTask"
+        <MudPaper Class="d-flex flex-column"
+                  Style="overflow:scroll"
+                  Elevation="0"
+                  Width="100%"
+                  MaxHeight="150px">
+            @foreach (SubTask subTask in SubTasks)
+            {
+                <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                          Elevation="0"
+                          Width="100%">
+                    <MudCheckBox @bind-Checked=subTask.Complete
+                                 Size="Size.Small"
+                                 Label="@subTask.Name" 
+                                 Dense="true"/>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Disabled="@(!subTask.Complete)"
+                                   Size="Size.Small"
+                                   OnClick="(()=>DeleteSubTask(subTask.Name))" />
+                </MudPaper>
+            }
+        </MudPaper>
+        <MudTextField @bind-Value="NewSubTask"
                       Class=""
                       Placeholder="Name your subtask"
                       Immediate="true"
                       DisableUnderLine="true"
                       FullWidth="true"
                       Variant="Variant.Outlined"
-                      Margin="Margin.Dense" />
-        @*for go here*@
+                      Margin="Margin.Dense"
+                      TextUpdateSuppression="false"
+                      OnKeyDown="((KeyboardEventArgs e)=>AddSubtask(e))" />
     </MudPaper>
     @*attachments*@
     <MudPaper Class="d-flex flex-column gap-1 px-2"
+              Style="overflow:hidden"
               Elevation="0">
         <MudText Typo="Typo.subtitle1">Attachments</MudText>
-        <MudFileUpload Class="flex-1"
-                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20"
-                       InputStyle="opacity:0"
-                       T="IReadOnlyList<IBrowserFile>"
-                       OnFilesChanged="OnInputFileChanged"
-                       AppendMultipleFiles="true"
-                       Hidden="false"
-        @ondragenter=@SetDragClass @ondragleave=@ClearDragClass @ondragend=@ClearDragClass>
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
+                       FilesChanged="FilesChanged"
+                       AppendMultipleFiles="true">
             <ButtonTemplate>
-                <MudPaper Class="@DragClass"
-                          Elevation="0"
-                          Outlined="true"
-                          Width="100%">
-					<MudText>
-                        Drag or drop files here or click
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.CloudUpload"
+                           FullWidth="true"
+                           for="@context">
+                    <MudText>
+                        Upload Files
                     </MudText>
-                </MudPaper>
+                </MudButton>
             </ButtonTemplate>
         </MudFileUpload>
-        @foreach (IBrowserFile file in FileList)
-        {
-            <MudChip Text="@file.Name" />
-        }
+        <MudPaper Class="d-flex flex-column"
+                  Style="overflow:scroll"
+                  Elevation="0"
+                  Width="100%"
+                  MaxHeight="150px">
+            @foreach (IBrowserFile File in FileList)
+            {
+                <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                          Elevation="0"
+                          Width="100%">
+                    <MudPaper Class="d-flex flex-row align-center"
+                              Elevation="0">
+                        <MudIconButton Size="Size.Small"
+                                       Icon="@Icons.Material.Filled.CloudDownload" />
+                        <MudText>
+                            @File.Name
+                        </MudText>
+                    </MudPaper>
+                    <MudIconButton Size="Size.Small"
+                                   Icon="@Icons.Material.Filled.Delete" 
+                                   OnClick="@(()=>DeleteFile(@File))"/>
+                </MudPaper>
+            }
+        </MudPaper>
         <MudButton Class="rounded-pill"
                    Size="Size.Small"
                    Color="Color.Error"
                    Disabled="@(!FileList.Any())"
-                   OnClick="Clear">
+                   OnClick="ClearFileList">
             Clear
         </MudButton>
     </MudPaper>
@@ -129,72 +170,78 @@
             Visible="ReminderVisible"
             DarkBackground="true"
             AutoClose="true"
-            ZIndex="10"
-			OnClick="ToggleReminderVisible">
+            ZIndex="30"
+            OnClick="ToggleReminderVisible">
     <Reminder @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
             Visible="TagVisible"
             DarkBackground="true"
             AutoClose="true"
-            ZIndex="10"
-			OnClick="ToggleTagVisible">
-    <Tag @onclick:stopPropagation />
+            ZIndex="30"
+            OnClick="ToggleTagVisible">
+    <TagAndTagging @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-    public bool      TagVisible { get; set; } = false;
+    public bool TagVisible { get; set; } = false;
     public bool ReminderVisible { get; set; } = false;
     [Parameter]
     public string Title { get; set; } = string.Empty;
     [Parameter]
-	public string Note       { get; set; } = string.Empty;
+    public string Note { get; set; } = string.Empty;
     [Parameter]
-	public string NewSubTask { get; set; } = string.Empty;
+    public string NewSubTask { get; set; } = string.Empty;
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public const string DEFAULT_DRAG_CLASS = "relative rounded-lg border-dashed border-2 pa-2 z-10";
-	public string DragClass { get; set; }  = DEFAULT_DRAG_CLASS;
-	public List<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
-
-	public void OnInputFileChanged(InputFileChangeEventArgs inputFileChangeEventArgs)
+    public record SubTask
     {
-        ClearDragClass();
-		IReadOnlyList<IBrowserFile>   files =
-		inputFileChangeEventArgs.GetMultipleFiles();
-		foreach (     IBrowserFile file in  files)
+        public string Name { get; set; } = string.Empty;
+        public bool Complete { get; set; } = false;
+    }
+    public List<SubTask> SubTasks { get; set; } = new();
+
+    public IList<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
+
+    public void FilesChanged(IReadOnlyList<IBrowserFile> Files)
+    {
+        foreach (IBrowserFile File in Files)
         {
-            FileList.Add(file);
+            FileList.Add(File);
         }
     }
-
-	public void Clear()
+    public void ClearFileList()
     {
         FileList.Clear();
-        ClearDragClass();
-	}
-
-	public void SetDragClass()
-	{
-		DragClass = $"{DEFAULT_DRAG_CLASS} mud-border-primary";
-	}
-
-	public void ClearDragClass()
-	{
-		DragClass =    DEFAULT_DRAG_CLASS;
+    }
+    public void DeleteFile(IBrowserFile File)
+    {
+        FileList.Remove(File);
     }
 
-	public void ToggleTagVisible()
+    public void ToggleTagVisible()
     {
-		TagVisible = !
-		TagVisible;
+        TagVisible = !
+        TagVisible;
     }
 
-	public void ToggleReminderVisible()
+    public void ToggleReminderVisible()
     {
-		ReminderVisible = !
-		ReminderVisible;
+        ReminderVisible = !
+        ReminderVisible;
+    }
+    public void DeleteSubTask(string _Name)
+    {
+        SubTasks.Remove(new SubTask() { Name = _Name, Complete = true });
+    }
+    public void AddSubtask(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewSubTask != string.Empty)
+        {
+            SubTasks.Add(new SubTask() { Name = NewSubTask });
+            NewSubTask = string.Empty;
+        }
     }
 }
