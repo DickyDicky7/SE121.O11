@@ -41,7 +41,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		{
 			var tagByGroup = new TagByGroup();
 
-			Assert.That(tagByGroup.GroupId, Is.Null);
+			Assert.That(tagByGroup.GroupId, Is.EqualTo(Guid.Parse("00000000-0000-0000-0000-000000000000")));
 		}
 	}
 }
