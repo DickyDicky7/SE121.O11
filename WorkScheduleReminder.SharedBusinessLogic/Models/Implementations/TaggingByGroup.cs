@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("taggings_by_groups__")]
-	public class TaggingByGroup : CustomBaseModelTableJ
+	public class TaggingByGroup : CustomBaseModelTableJ, ITagging
 	{
 	public       TaggingByGroup() : base()
 		{

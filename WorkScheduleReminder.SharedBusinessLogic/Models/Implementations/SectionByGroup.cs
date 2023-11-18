@@ -3,10 +3,10 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
-	[Table("tags_by_groups__")]
-	public class TagByGroup : CustomBaseModelTableN, ITag
+	[Table("sections_by_groups__")]
+	public class SectionByGroup : CustomBaseModelTableN, ISection
 	{
-	public       TagByGroup() : base()
+	public       SectionByGroup() : base()
 		{
 		}
 
@@ -16,7 +16,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:      typeof(Group  ),
 			       columnName: nameof(GroupId),
-			       foreignKey: "tags_by_groups___group___id_fkey")]
+			       foreignKey: "sections_by_groups___group___id_fkey")]
 		public Group Group   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "name")]

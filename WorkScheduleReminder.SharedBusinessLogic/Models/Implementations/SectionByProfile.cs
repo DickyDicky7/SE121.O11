@@ -3,10 +3,10 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
-	[Table("tags_by_profiles")]
-	public class TagByProfile : CustomBaseModelTableN, ITag
+	[Table("sections_by_profiles")]
+	public class SectionByProfile : CustomBaseModelTableN, ISection
 	{
-	public       TagByProfile() : base()
+	public       SectionByProfile() : base()
 		{
 		}
 
@@ -22,7 +22,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:      typeof(Profile  ),
 			       columnName: nameof(ProfileId),
-			       foreignKey: "tags_by_profiles_profile_id_fkey")]
+			       foreignKey: "sections_by_profiles_profile_id_fkey")]
 		public Profile Profile   { get; set; } = default!;
 	}
 }

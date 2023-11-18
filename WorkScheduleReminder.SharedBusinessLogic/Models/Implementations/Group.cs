@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("groups__")]
-	public class Group : CustomBaseModelTableN
+	public class Group : CustomBaseModelTableN, IGroup
 	{
 	public       Group() : base() 
 		{

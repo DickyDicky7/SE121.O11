@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("profiles")]
-	public class Profile : CustomBaseModelTableN
+	public class Profile : CustomBaseModelTableN, IProfile
 	{
 	public       Profile() : base()
 		{

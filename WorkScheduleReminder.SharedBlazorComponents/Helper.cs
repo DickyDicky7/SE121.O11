@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
@@ -115,5 +116,14 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		=> message["msg"]?.Value<string>()
 		?? message["error_description"]?.Value<string>()
 		?? string.Empty;
+
+		public static async Task<string> GetUserFriendlyContentFromRawContentInDatabaseMessages
+		(this Supabase.Client supabaseClient, string rawContent)
+		{
+			string result = (await
+			supabaseClient.Rpc("database_messages_get_user_friendly_content_from_raw_content",
+			new() { { "_raw_content_", rawContent } }))?.Content ?? string.Empty;
+			return JsonConvert.DeserializeObject<string>(result) ?? string.Empty;
+		}
 	}
 }

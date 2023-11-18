@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("taggings_by_profiles")]
-	public class TaggingByProfile : CustomBaseModelTableJ
+	public class TaggingByProfile : CustomBaseModelTableJ, ITagging
 	{
 	public       TaggingByProfile() : base()
 		{

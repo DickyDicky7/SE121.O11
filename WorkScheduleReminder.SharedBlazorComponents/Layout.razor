@@ -61,6 +61,7 @@
 		await base.OnInitializedAsync  ();
 		SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
 		SupabaseClient.Auth.LoadSession();
+		await SupabaseClient.Auth.RetrieveSessionAsync();
 	}
 
 	protected void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
@@ -69,25 +70,25 @@
 		switch (authState)
 		{
 			case Constants.AuthState.Shutdown:
-                 break;
+				break;
 
 			case Constants.AuthState.SignedIn:
-                 Snackbar_.Add
-        (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
-                .Success);
-                 break;
+				Snackbar_.Add
+				(Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
+						.Success);
+				break;
 
 			case Constants.AuthState.SignedOut:
-                 break;
+				break;
 
 			case Constants.AuthState.UserUpdated:
-                 break;
+				break;
 
 			case Constants.AuthState.TokenRefreshed:
-                 break;
+				break;
 
 			case Constants.AuthState.PasswordRecovery:
-                 break;
+				break;
 		}
 	}
 

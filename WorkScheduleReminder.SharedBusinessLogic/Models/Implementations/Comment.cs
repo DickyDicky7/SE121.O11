@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("comments")]
-	public class Comment : CustomBaseModelTableN
+	public class Comment : CustomBaseModelTableN, IComment
 	{
 	public       Comment() : base() 
 		{

@@ -4,7 +4,7 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
 	[Table("members")]
-	public class Member : CustomBaseModelTableJ
+	public class Member : CustomBaseModelTableJ, IMember
 	{
 	public       Member() : base()
 		{
