@@ -3,10 +3,10 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
-	[Table("groups__")]
-	public class Group : CustomBaseModelTableN, IGroup
+	[Table("boards__")]
+	public class Board : CustomBaseModelTableN, IBoard
 	{
-	public       Group() : base() 
+	public       Board() : base() 
 		{
 		}
 
@@ -19,7 +19,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:      typeof(Profile), 
 			       columnName: nameof(OwnerId),
-			       foreignKey: "groups___owner_id_fkey")]
+			       foreignKey: "boards___owner_id_fkey")]
 		public Profile Owner   { get; set; } = default!;
 	}
 }

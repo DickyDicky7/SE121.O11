@@ -8,21 +8,21 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 	{
 	public       Member() : base()
 		{
-			PrimaryKeyPropertyName1 = nameof(  GroupId);
+			PrimaryKeyPropertyName1 = nameof(  BoardId);
 			PrimaryKeyPropertyName2 = nameof(ProfileId);
 		}
 
-		[PrimaryKey(columnName: "group___id")]
-		public Guid   GroupId { get; set; }
+		[PrimaryKey(columnName: "board___id")]
+		public Guid   BoardId { get; set; }
 
 		[PrimaryKey(columnName: "profile_id")]
 		public Guid ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Group  ),
-			       columnName: nameof(GroupId),
-			       foreignKey: "members_group___id_fkey")]
-		public   Group   Group { get; set; } = default!;
+			       model:      typeof(Board  ),
+			       columnName: nameof(BoardId),
+			       foreignKey: "members_board___id_fkey")]
+		public   Board   Board { get; set; } = default!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 			       model:      typeof(Profile  ),

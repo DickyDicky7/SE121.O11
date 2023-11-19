@@ -43,17 +43,17 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Column(columnName: "attachments")]
 		public string Attachments { get; set; } = default!;
 
-		[Column(columnName: "group___id")]
-		public Guid?   GroupId { get; set; }
+		[Column(columnName: "board___id")]
+		public Guid?   BoardId { get; set; }
 
 		[Column(columnName: "profile_id")]
 		public Guid? ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-				   model:      typeof(Group  ),
-				   columnName: nameof(GroupId),
-				   foreignKey: "tasks_group___id_fkey")]
-		public   Group?   Group { get; set; }
+				   model:      typeof(Board  ),
+				   columnName: nameof(BoardId),
+				   foreignKey: "tasks_board___id_fkey")]
+		public   Board?   Board { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
 				   model:      typeof(Profile  ),

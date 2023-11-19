@@ -3,21 +3,21 @@ using     WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 {
-	[Table("sections_by_groups__")]
-	public class SectionByGroup : CustomBaseModelTableN, ISection
+	[Table("tags_by_boards__")]
+	public class TagByBoard : CustomBaseModelTableN, ITag
 	{
-	public       SectionByGroup() : base()
+	public       TagByBoard() : base()
 		{
 		}
 
-		[PrimaryKey(columnName: "group___id")]
-		public Guid  GroupId { get; set; }
+		[PrimaryKey(columnName: "board___id")]
+		public Guid  BoardId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Group  ),
-			       columnName: nameof(GroupId),
-			       foreignKey: "sections_by_groups___group___id_fkey")]
-		public Group Group   { get; set; } = default!;
+			       model:      typeof(Board  ),
+			       columnName: nameof(BoardId),
+			       foreignKey: "tags_by_boards___board___id_fkey")]
+		public Board Board   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "name")]
 		public string Name     { get; set; } = default!;
