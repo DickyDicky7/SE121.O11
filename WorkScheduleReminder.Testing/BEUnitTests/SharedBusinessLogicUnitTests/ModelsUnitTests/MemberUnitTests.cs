@@ -14,7 +14,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	{
 		[Test]
 		[Parallelizable]
-		public void PrimaryKeyPropertyName1_MustBeNameOfGroupId()
+		public void PrimaryKeyPropertyName1_MustBeNameOfBoardId()
 		{
 			/* --- ARRANGE --- */
 			var member = new Member();
@@ -23,7 +23,7 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 			var primaryKeyPropertyName1 = member.PrimaryKeyPropertyName1; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.That(primaryKeyPropertyName1, Is.EqualTo(nameof(member.GroupId)));
+			Assert.That(primaryKeyPropertyName1, Is.EqualTo(nameof(member.BoardId)));
 		}
 
 		[Test]

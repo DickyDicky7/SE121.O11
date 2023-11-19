@@ -10,20 +10,20 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	[TestFixture]
 	[Parallelizable]
 	[FixtureLifeCycle(LifeCycle.SingleInstance)]
-	public class TaggingByProfileUnitTests
+	public class TaggingByBoardUnitTests
 	{
 		[Test]
 		[Parallelizable]
-		public void GetPrimaryKeyPropertyName1_MustReturnNameOfTagByProfileId()
+		public void GetPrimaryKeyPropertyName1_MustReturnNameOfTagByBoardId()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName1 = taggingByProfile.PrimaryKeyPropertyName1; /* <-- HERE <-- */
+			var primaryKeyPropertyName1 = taggingByBoard.PrimaryKeyPropertyName1; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.That(primaryKeyPropertyName1, Is.EqualTo(nameof(taggingByProfile.TagByProfileId)));
+			Assert.That(primaryKeyPropertyName1, Is.EqualTo(nameof(taggingByBoard.TagByBoardId)));
 		}
 
 		[Test]
@@ -31,13 +31,13 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName2_MustReturnNameOfTaskId()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName2 = taggingByProfile.PrimaryKeyPropertyName2; /* <-- HERE <-- */
+			var primaryKeyPropertyName2 = taggingByBoard.PrimaryKeyPropertyName2; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.That(primaryKeyPropertyName2, Is.EqualTo(nameof(taggingByProfile.TaskId)));
+			Assert.That(primaryKeyPropertyName2, Is.EqualTo(nameof(taggingByBoard.TaskId)));
 		}
 
 		[Test]
@@ -45,10 +45,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName3_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName3 = taggingByProfile.PrimaryKeyPropertyName3; /* <-- HERE <-- */
+			var primaryKeyPropertyName3 = taggingByBoard.PrimaryKeyPropertyName3; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName3, Is.Empty);
@@ -59,10 +59,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName4_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName4 = taggingByProfile.PrimaryKeyPropertyName4; /* <-- HERE <-- */
+			var primaryKeyPropertyName4 = taggingByBoard.PrimaryKeyPropertyName4; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName4, Is.Empty);
@@ -73,10 +73,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName5_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName5 = taggingByProfile.PrimaryKeyPropertyName5; /* <-- HERE <-- */
+			var primaryKeyPropertyName5 = taggingByBoard.PrimaryKeyPropertyName5; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName5, Is.Empty);
@@ -87,10 +87,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName6_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName6 = taggingByProfile.PrimaryKeyPropertyName6; /* <-- HERE <-- */
+			var primaryKeyPropertyName6 = taggingByBoard.PrimaryKeyPropertyName6; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName6, Is.Empty);
@@ -101,10 +101,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName7_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName7 = taggingByProfile.PrimaryKeyPropertyName7; /* <-- HERE <-- */
+			var primaryKeyPropertyName7 = taggingByBoard.PrimaryKeyPropertyName7; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName7, Is.Empty);
@@ -115,10 +115,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetPrimaryKeyPropertyName8_MustReturnEmptyString()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var primaryKeyPropertyName8 = taggingByProfile.PrimaryKeyPropertyName8; /* <-- HERE <-- */
+			var primaryKeyPropertyName8 = taggingByBoard.PrimaryKeyPropertyName8; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(primaryKeyPropertyName8, Is.Empty);
@@ -129,10 +129,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetTaskId_MustReturnEmptyGuid()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var taskId = taggingByProfile.TaskId; /* <-- HERE <-- */
+			var taskId = taggingByBoard.TaskId; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(taskId, Is.EqualTo(Guid.Empty));
@@ -140,16 +140,16 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 
 		[Test]
 		[Parallelizable]
-		public void GetTagByProfileId_MustReturnEmptyGuid()
+		public void GetTagByBoardId_MustReturnEmptyGuid()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var tagByProfileId = taggingByProfile.TagByProfileId; /* <-- HERE <-- */
+			var tagByBoardId = taggingByBoard.TagByBoardId; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.That(tagByProfileId, Is.EqualTo(Guid.Empty));
+			Assert.That(tagByBoardId, Is.EqualTo(Guid.Empty));
 		}
 
 		[Test]
@@ -157,10 +157,10 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		public void GetTask_MustReturnNull()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var task = taggingByProfile.Task; /* <-- HERE <-- */
+			var task = taggingByBoard.Task; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
 			Assert.That(task, Is.Null);
@@ -168,16 +168,16 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 
 		[Test]
 		[Parallelizable]
-		public void GetTagByProfile_MustReturnNull()
+		public void GetTagByBoard_MustReturnNull()
 		{
 			/* --- ARRANGE --- */
-			var taggingByProfile = new TaggingByProfile();
+			var taggingByBoard = new TaggingByBoard();
 
 			/* --- ACT --- */
-			var tagByProfile = taggingByProfile.TagByProfile; /* <-- HERE <-- */
+			var tagByBoard = taggingByBoard.TagByBoard; /* <-- HERE <-- */
 
 			/* --- ASSERT --- */
-			Assert.That(tagByProfile, Is.Null);
+			Assert.That(tagByBoard, Is.Null);
 		}
 	}
 }

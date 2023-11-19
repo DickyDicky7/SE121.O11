@@ -13,7 +13,8 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 	public class ProfileUnitTests
 	{
 		[Test]
-		public void GetUserName_MustBeNull()
+		[Parallelizable]
+		public void GetUserName_MustReturnNull()
 		{
 			var profile = new Profile();
 
@@ -21,7 +22,8 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		}
 
 		[Test]
-		public void GetFullName_MustBeNull()
+		[Parallelizable]
+		public void GetFullName_MustReturnNull()
 		{
 			var profile = new Profile();
 
@@ -29,7 +31,8 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		}
 
 		[Test]
-		public void GetWebsite_MustBeNull()
+		[Parallelizable]
+		public void GetWebsite_MustReturnNull()
 		{
 			var profile = new Profile();
 
@@ -37,7 +40,8 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 		}
 
 		[Test]
-		public void GetAvatar_MustBeNull()
+		[Parallelizable]
+		public void GetAvatar_MustReturnNull()
 		{
 			var profile = new Profile();
 

@@ -51,5 +51,33 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 				yield return new TestCaseData(Mock.Of<CustomBaseModel>(), Mock.Of<CustomBaseModel>()).Returns(true);
 			}
 		}
+
+		[Test]
+		[Parallelizable]
+		public void GetCreatedTimeStamp_MustDateTimeOffsetMinValue()
+		{
+			/* --- ARRANGE --- */
+			var customBaseModel = Mock.Of<CustomBaseModel>();
+
+			/* --- ACT --- */
+			var createdTimeStamp = customBaseModel.CreatedTimeStamp; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(createdTimeStamp, Is.EqualTo(DateTimeOffset.MinValue));
+		}
+
+		[Test]
+		[Parallelizable]
+		public void GetUpdatedTimeStamp_MustReturnDateTimeOffsetMinValue()
+		{
+			/* --- ARRANGE --- */
+			var customBaseModel = Mock.Of<CustomBaseModel>();
+
+			/* --- ACT --- */
+			var updatedTimeStamp = customBaseModel.UpdatedTimeStamp; /* <-- HERE <-- */
+
+			/* --- ASSERT --- */
+			Assert.That(updatedTimeStamp, Is.EqualTo(DateTimeOffset.MinValue));
+		}
 	}
 }
