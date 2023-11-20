@@ -32,11 +32,11 @@ namespace WorkScheduleReminder.Testing.BEUnitTests.SharedBusinessLogicUnitTests.
 
 		[Test]
 		[Parallelizable]
-		public void GetWebsite_MustReturnNull()
+		public void GetEmail_MustReturnNull()
 		{
 			var profile = new Profile();
 
-			Assert.That(profile.Website, Is.Null);
+			Assert.That(profile.Email, Is.Null);
 		}
 
 		[Test]
