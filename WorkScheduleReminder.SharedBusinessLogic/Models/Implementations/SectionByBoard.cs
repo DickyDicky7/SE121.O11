@@ -14,9 +14,9 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid  BoardId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Board  ),
-			       columnName: nameof(BoardId),
-			       foreignKey: "sections_by_boards___board___id_fkey")]
+                   model:      typeof(Board  ),
+                   columnName: nameof(BoardId),
+                   foreignKey: "sections_by_boards___board___id_fkey")]
 		public Board Board   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "name")]

@@ -20,9 +20,9 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid    ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Profile  ),
-			       columnName: nameof(ProfileId),
-			       foreignKey: "sections_by_profiles_profile_id_fkey")]
+                   model:      typeof(Profile  ),
+                   columnName: nameof(ProfileId),
+                   foreignKey: "sections_by_profiles_profile_id_fkey")]
 		public Profile Profile   { get; set; } = default!;
 	}
 }

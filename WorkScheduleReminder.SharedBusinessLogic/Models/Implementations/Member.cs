@@ -19,15 +19,15 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Board  ),
-			       columnName: nameof(BoardId),
-			       foreignKey: "members_board___id_fkey")]
+                   model:      typeof(Board  ),
+                   columnName: nameof(BoardId),
+                   foreignKey: "members_board___id_fkey")]
 		public   Board   Board { get; set; } = default!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Profile  ),
-			       columnName: nameof(ProfileId),
-			       foreignKey: "members_profile_id_fkey")]
+                   model:      typeof(Profile  ),
+                   columnName: nameof(ProfileId),
+                   foreignKey: "members_profile_id_fkey")]
 		public Profile Profile { get; set; } = default!;
 
 		[Column(columnName: "role")]

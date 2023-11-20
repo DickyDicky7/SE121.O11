@@ -50,15 +50,15 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid? ProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-				   model:      typeof(Board  ),
-				   columnName: nameof(BoardId),
-				   foreignKey: "tasks_board___id_fkey")]
+                   model:      typeof(Board  ),
+                   columnName: nameof(BoardId),
+                   foreignKey: "tasks_board___id_fkey")]
 		public   Board?   Board { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-				   model:      typeof(Profile  ),
-				   columnName: nameof(ProfileId),
-				   foreignKey: "tasks_profile_id_fkey")]
+                   model:      typeof(Profile  ),
+                   columnName: nameof(ProfileId),
+                   foreignKey: "tasks_profile_id_fkey")]
 		public Profile? Profile { get; set; }
 	}
 }

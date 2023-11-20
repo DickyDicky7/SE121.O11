@@ -16,18 +16,18 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid TaskId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(Task  ),
-			       columnName: nameof(TaskId),
-			       foreignKey: "taggings_by_boards___task_id_fkey")]
+                   model:      typeof(Task  ),
+                   columnName: nameof(TaskId),
+                   foreignKey: "taggings_by_boards___task_id_fkey")]
 		public Task Task   { get; set; } = default!;
 
 		[PrimaryKey(columnName: "tag_by_board___id")]
 		public Guid       TagByBoardId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-			       model:      typeof(TagByBoard  ),
-			       columnName: nameof(TagByBoardId),
-			       foreignKey: "taggings_by_boards___tag_by_board___id_fkey")]
+                   model:      typeof(TagByBoard  ),
+                   columnName: nameof(TagByBoardId),
+                   foreignKey: "taggings_by_boards___tag_by_board___id_fkey")]
 		public TagByBoard TagByBoard   { get; set; } = default!;
 	}
 }
