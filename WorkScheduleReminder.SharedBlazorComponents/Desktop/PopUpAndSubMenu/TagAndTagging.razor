@@ -105,13 +105,17 @@
                   Height="100%">
             @foreach (Tagging Tagging in Taggings)
             {
-                <MudPaper Class="d-flex flex-row pa-2 justify-space-between"
-                          Elevation="0">
-                    <MudCheckBox @bind-Checked=@Tagging.Checked
-                                 Size="Size.Small"
-                                 Label="@Tagging.Tag.Name"
-                                 Color="Tagging.Tag.Color" 
-                                 Dense="true"/>
+                <MudPaper Class="d-flex flex-row pa-2 justify-space-between align-center"
+                          Elevation="0"
+                          Width="100%">
+                    <MudPaper Class="d-flex flex-row pa-1 align-center"
+                              Elevation="0">
+                        <MudCheckBox @bind-Checked=@Tagging.Checked
+                                     Size="Size.Small"
+                                     Color="Tagging.Tag.Color"
+                                     Dense="true" />
+                        <MudText Color="Tagging.Tag.Color">@Tagging.Tag.Name</MudText>
+                    </MudPaper>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Size="Size.Small"
                                    OnClick="(()=>ChangeMode(Mode.Edit, Tagging.Tag.Name, Tagging.Tag.Color))" />

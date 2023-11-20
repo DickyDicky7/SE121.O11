@@ -25,28 +25,28 @@
                        Variant="Variant.Outlined" />
     </MudPaper>
     @*Recurring*@
+    <MudText Style="font-weight:bold; font-size:large;">Recurring</MudText>
+    <MudChipSet @bind-SelectedChip="@RecurringChip" @bind-SelectedChip:after="SetRecurringMode"
+                Style="display:grid; grid-gap:8px;grid-template-columns:repeat(2,1fr); grid-gap:8px">
+        <MudChip Class="rounded-pill"
+                 Variant="Variant.Text"
+                 Text="Daily"
+                 SelectedColor="Color.Info" />
+        <MudChip Class="rounded-pill"
+                 Variant="Variant.Text"
+                 Text="Weekly"
+                 SelectedColor="Color.Info" />
+        <MudChip Class="rounded-pill"
+                 Variant="Variant.Text"
+                 Text="Monthly"
+                 SelectedColor="Color.Info" />
+        <MudChip Class="rounded-pill"
+                 Variant="Variant.Text"
+                 Text="Yearly"
+                 SelectedColor="Color.Info" />
+    </MudChipSet>
     @if (RecurringChip != null)
     {
-        <MudText Style="font-weight:bold; font-size:large;">Recurring</MudText>
-        <MudChipSet @bind-SelectedChip="@RecurringChip" @bind-SelectedChip:after="SetRecurringMode"
-                    Style="display:grid; grid-gap:8px;grid-template-columns:repeat(2,1fr); grid-gap:8px">
-            <MudChip Class="rounded-pill"
-                     Variant="Variant.Text"
-                     Text="Daily"
-                     SelectedColor="Color.Info" />
-            <MudChip Class="rounded-pill"
-                     Variant="Variant.Text"
-                     Text="Weekly"
-                     SelectedColor="Color.Info" />
-            <MudChip Class="rounded-pill"
-                     Variant="Variant.Text"
-                     Text="Monthly"
-                     SelectedColor="Color.Info" />
-            <MudChip Class="rounded-pill"
-                     Variant="Variant.Text"
-                     Text="Yearly"
-                     SelectedColor="Color.Info" />
-        </MudChipSet>
         @if (RecurringMode != "None")
         {
             @*Start recurring*@
@@ -137,32 +137,32 @@
                 </MudPaper>
             }
         }
-        <MudPaper Class="d-flex flex-row"
-                  Elevation="0"
-                  Width="100%">
-            <MudPaper Elevation="0"
-                      Width="50%">
-                <MudButton Class="rounded-pill"
-                           Size="Size.Small"
-                           FullWidth="true"
-                           Color="Color.Error"
-                           Disabled="@New"
-                           OnClick="Delete">
-                    <MudText>Delete</MudText>
-                </MudButton>
-            </MudPaper>
-            <MudPaper Elevation="0"
-                      Width="50%">
-                <MudButton Class="rounded-pill"
-                           Size="Size.Small"
-                           FullWidth="true"
-                           Color="Color.Info"
-                           OnClick="Save">
-                    <MudText>Save</MudText>
-                </MudButton>
-            </MudPaper>
-        </MudPaper>
     }
+    <MudPaper Class="d-flex flex-row"
+              Elevation="0"
+              Width="100%">
+        <MudPaper Elevation="0"
+                  Width="50%">
+            <MudButton Class="rounded-pill"
+                       Size="Size.Small"
+                       FullWidth="true"
+                       Color="Color.Error"
+                       Disabled="@New"
+                       OnClick="Delete">
+                <MudText>Delete</MudText>
+            </MudButton>
+        </MudPaper>
+        <MudPaper Elevation="0"
+                  Width="50%">
+            <MudButton Class="rounded-pill"
+                       Size="Size.Small"
+                       FullWidth="true"
+                       Color="Color.Info"
+                       OnClick="Save">
+                <MudText>Save</MudText>
+            </MudButton>
+        </MudPaper>
+    </MudPaper>
 </MudPaper>
 
 @code

@@ -26,15 +26,14 @@
                 Share
             </MudText>
         </MudButton>
-        <MudOverlay Visible="IsVisible"
-                    DarkBackground="true"
-                    AutoClose="true"
-                    OnClick="ToggleVisible">
-            <Invite @onclick:stopPropagation />
-        </MudOverlay>
     }
 </MudPaper>
-
+<MudOverlay Visible="IsVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleVisible">
+    <Invite @onclick:stopPropagation />
+</MudOverlay>
 @code
 {
     [Parameter]

@@ -8,12 +8,12 @@
           Width="100%"
           Height="100%">
     <MudDrawerContainer Class="mud-height-full mud-width-full"
-                        Style="background-color:transparent">
+                        Style="background-color:transparent;overflow:hidden;">
         <MudDrawer @bind-Open="@DrawerOpen"
-                   Class=""
-                   Style="background-color:transparent"
+                   Class="gap-2 pa-2"
+                   Style="background-color:transparent;overflow:hidden;"
                    Elevation="0"
-                   Width="300px"
+                   Width="350px"
                    Height="100%"
                    Anchor="Anchor.Right"
                    Variant="@DrawerVariant.Persistent">
@@ -27,16 +27,26 @@
                               Margin="Margin.Dense"
                               OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
             </MudDrawerHeader>
-            @foreach (string Task in SuggestedTasks)
-            {
-                <MudButton Class="border-2 justify-start align-center"
-                           Size="Size.Medium"
-                           FullWidth="true"
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="()=>AddSuggestedTask(Task)">
-                    @Task
-                </MudButton>
-            }
+            <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                      Style="overflow:scroll"
+                      Elevation="0"
+                      Width="100%"
+                      Height="100%">
+                @foreach (string Task in SuggestedTasks)
+                {
+                    <MudPaper Class="d-flex flex-row"
+                              Elevation="0"
+                              Width="100%">
+                        <MudButton Class="justify-start align-center"
+                                   Size="Size.Medium"
+                                   FullWidth="true"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   OnClick="()=>AddSuggestedTask(Task)">
+                            <MudText>@Task</MudText>
+                        </MudButton>
+                    </MudPaper>
+                }
+            </MudPaper>
         </MudDrawer>
         <MudPaper Class="d-flex flex-column gap-2 pa-2"
                   Elevation="0"
@@ -57,7 +67,8 @@
                                      ToggledChanged="ToggleDrawer" />
             </MudPaper>
             @*List*@
-            <MudPaper Class="d-flex flex-column flex-grow-1"
+            <MudPaper Class="d-flex flex-column flex-grow-1 gap-2 pa-2"
+                      Style="overflow-y:scroll;"
                       Elevation="0"
                       Width="100%">
                 @foreach (string Name in Tasks)
@@ -83,7 +94,7 @@
                 }
             </MudPaper>
             @*AddTask*@
-            <MudPaper Class="d-flex flex-row gap-2 align-center"
+            <MudPaper Class="d-flex flex-row align-center"
                       Elevation="0"
                       Width="100%">
                 <MudTextField @bind-Value=@NewTask
