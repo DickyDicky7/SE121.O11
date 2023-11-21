@@ -13,6 +13,9 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Column(columnName: "name")]
 		public string Name { get; set; } = default!;
 
+		[Column(columnName: "type")]
+		public string Type { get; set; } = default!;
+
 		[Column(columnName: "profile_id")]
 		public Guid ProfileId { get; set; }
 

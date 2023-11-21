@@ -31,7 +31,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Profile Profile { get; set; } = default!;
 
 		[Column(columnName: "role")]
-		public string Role { get; set; } = default!;
+		public string     Role { get; set; } = default!;
+
+		[Column(columnName: "settings")]
+		public string Settings { get; set; } = default!;
 
 		[Column(columnName: "invitation_accepted")]
 		public  bool? InvitationAccepted { get; set; }
