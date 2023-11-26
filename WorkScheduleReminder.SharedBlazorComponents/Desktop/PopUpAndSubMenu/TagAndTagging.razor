@@ -15,11 +15,15 @@
                            OnClick="(()=>ChangeMode(Mode.Select, string.Empty, Color.Error))" />
             @if (CurrentMode == Mode.Add)
             {
-                <MudText Typo="Typo.h6">Add tag</MudText>
+                <MudText Style="font-size:larger;font-weight:bold">
+                    Add tag
+                </MudText>
             }
             else
             {
-                <MudText Typo="Typo.h6">Edit tag</MudText>
+                <MudText Style="font-size:larger;font-weight:bold">
+                    Edit tag
+                </MudText>
             }
         </MudPaper>
         @*Enter tag's name*@
@@ -43,7 +47,9 @@
                 <MudChip Default="@(color == ProcessingTagColor)"
                          Text="#Tag"
                          Size="Size.Small"
-                         Color="color" />
+                         Color="color" 
+                         SelectedColor="color"
+                         Variant="Variant.Text"/>
             }
         </MudChipSet>
         @*Action button(s)*@
@@ -93,7 +99,9 @@
         @*Navigation bar*@
         <MudPaper Class="d-flex flex-row justify-space-between"
                   Elevation="0">
-            <MudText Typo="Typo.h6">Select tag(s)</MudText>
+            <MudText Style="font-size:larger;font-weight:bold">
+                @(EnableTagging == true ? "Select tag(s)" : "View tag")
+            </MudText>
             <MudIconButton Icon="@Icons.Material.Filled.Add"
                            Size="Size.Small"
                            OnClick="(()=>ChangeMode(Mode.Add, string.Empty, Color.Error))" />
@@ -110,10 +118,13 @@
                           Width="100%">
                     <MudPaper Class="d-flex flex-row pa-1 align-center"
                               Elevation="0">
-                        <MudCheckBox @bind-Checked=@Tagging.Checked
-                                     Size="Size.Small"
-                                     Color="Tagging.Tag.Color"
-                                     Dense="true" />
+                        @if (EnableTagging == true)
+                        {
+                            <MudCheckBox @bind-Checked=@Tagging.Checked
+                                         Size="Size.Small"
+                                         Color="Tagging.Tag.Color"
+                                         Dense="true" />
+                        }
                         <MudText Color="Tagging.Tag.Color">@Tagging.Tag.Name</MudText>
                     </MudPaper>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
@@ -123,12 +134,15 @@
             }
         </MudPaper>
         @*Action button*@
-        <MudButton Class="rounded-pill"
-                   Size="Size.Small"
-                   FullWidth="true"
-                   OnClick="SaveTagging">
-            <MudText Color="Color.Info">Save</MudText>
-        </MudButton>
+        if (EnableTagging == true)
+        {
+            <MudButton Class="rounded-pill"
+                       Size="Size.Small"
+                       FullWidth="true"
+                       OnClick="SaveTagging">
+                <MudText Color="Color.Info">Save</MudText>
+            </MudButton>
+        }
     }
 </MudPaper>
 
@@ -136,6 +150,8 @@
 {
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter]
+    public bool EnableTagging { get; set; } = true;
     public enum Mode { Select, Add, Edit }
     public Mode CurrentMode = Mode.Select;
     //new Tag's info when add/edit

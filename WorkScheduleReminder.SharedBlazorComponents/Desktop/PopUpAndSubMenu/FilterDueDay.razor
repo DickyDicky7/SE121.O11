@@ -3,8 +3,11 @@
           Style="border-radius:20px;"
           Elevation="0"
           Width="500px">
+    <MudText Style="font-size:larger;font-weight:bold">
+        Filter by due day
+    </MudText>
     <MudDateRangePicker @bind-DateRange="DateRange"
-                        PickerVariant="PickerVariant.Inline"
+                        PickerVariant="PickerVariant.Dialog"
                         AutoClose="false"
                         Editable="true"
                         Label="Choose due day"

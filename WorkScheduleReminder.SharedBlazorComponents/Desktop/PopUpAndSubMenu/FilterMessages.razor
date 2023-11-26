@@ -3,33 +3,52 @@
           Style="border-radius:20px;"
           Elevation="0"
           Width="250px">
-    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+    <MudText Style="font-size:larger;font-weight:bold">
+        Filter by messages
+    </MudText>
+    <MudPaper Class="d-flex flex-row"
               Elevation="0"
               Width="100%">
-        <MudText Style="margin:4px">
-            Unread
-        </MudText>
-        <MudCheckBox @bind-Checked=UnreadChecked
-                     CheckedIcon="@Icons.Material.Filled.Check"
-                     UncheckedIcon="@Icons.Material.Filled.Close"
-                     Size="Size.Small"
-                     Color="Color.Info"
-                     UnCheckedColor="Color.Error"
-                     Dense="true" DisableRipple="true" />
+        <MudButton Class="rounded pill"
+                   FullWidth="true"
+                   OnClick="()=>{UnreadChecked=!UnreadChecked;}">
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Style="background-color:transparent"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>Unread</MudText>
+                <MudCheckBox @bind-Checked=UnreadChecked
+                             ReadOnly="true"
+                             CheckedIcon="@Icons.Material.Filled.Check"
+                             UncheckedIcon="null"
+                             Size="Size.Small"
+                             Color="Color.Info"
+                             Dense="true"
+                             DisableRipple="true" />
+            </MudPaper>
+        </MudButton>
     </MudPaper>
-    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+    <MudPaper Class="d-flex flex-row"
               Elevation="0"
               Width="100%">
-        <MudText Style="margin:4px">
-            Mention
-        </MudText>
-        <MudCheckBox @bind-Checked=MentionChecked
-                     CheckedIcon="@Icons.Material.Filled.Check"
-                     UncheckedIcon="@Icons.Material.Filled.Close"
-                     Size="Size.Small"
-                     Color="Color.Info"
-                     UnCheckedColor="Color.Error"
-                     Dense="true" DisableRipple="true" />
+        <MudButton Class="rounded pill"
+                   FullWidth="true"
+                   OnClick="()=>{MentionChecked=!MentionChecked;}">
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Style="background-color:transparent"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>Mention</MudText>
+                <MudCheckBox @bind-Checked=MentionChecked
+                             ReadOnly="true"
+                             CheckedIcon="@Icons.Material.Filled.Check"
+                             UncheckedIcon="null"
+                             Size="Size.Small"
+                             Color="Color.Info"
+                             Dense="true"
+                             DisableRipple="true" />
+            </MudPaper>
+        </MudButton>
     </MudPaper>
 </MudPaper>
 

@@ -16,65 +16,70 @@
             </MudButton>
         </ActivatorContent>
         <ChildContent>
-            @foreach (MenuItem menuItem in MenuItems)
+            @foreach (MenuItem Item in MenuItems)
             {
-                <MudMenuItem AutoClose="false">
-                    <MudMenu AnchorOrigin="Origin.CenterRight"
-                             TransformOrigin="Origin.TopLeft"
-                             ActivationEvent="MouseEvent.MouseOver">
-                        <ActivatorContent>
-                            <MudPaper Class="d-flex flex-row gap-2 align-center"
-                                      Style="background-color:transparent"
-                                      Elevation="0">
-                                <MudIcon Size="Size.Small"
-                                         Icon=@menuItem.Icon />
-                                <MudText>@menuItem.Name</MudText>
-                            </MudPaper>
-                        </ActivatorContent>
-                        <ChildContent>
-                            @switch (menuItem.Name)
-                            {
-                                case "Sections":
-                                    <FilterSections @onclick:stopPropagation />
-                                    break;
-                                case "Due day":
-                                    <FilterDueDay @onclick:stopPropagation />
-                                    break;
-                                case "Assignees":
-                                    <FilterAssignees @onclick:stopPropagation />
-                                    break;
-                                case "Tags":
-                                    <FilterTag @onclick:stopPropagation />
-                                    break;
-                                case "Messages":
-                                    <FilterMessages @onclick:stopPropagation />
-                                    break;
-                            }
-                        </ChildContent>
-                    </MudMenu>
+                <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                             AutoClose="true">
+                    <MudPaper Class="d-flex flex-row gap-2 align-center"
+                              Style="background-color:transparent"
+                              Elevation="0">
+                        <MudIcon Size="Size.Small"
+                                 Icon=@Item.Icon />
+                        <MudText>@Item.Name</MudText>
+                    </MudPaper>
                 </MudMenuItem>
             }
         </ChildContent>
     </MudMenu>
 </MudPaper>
-
+@foreach (MenuItem Item in MenuItems)
+{
+    <MudOverlay Visible=Item.Visible
+                DarkBackground="true"
+                AutoClose="true"
+                OnClick="()=>{Item.Visible=!Item.Visible;}">
+        @Item.Child
+    </MudOverlay>
+}
 @code
 {
     public record MenuItem()
     {
         public string Name { get; set; } = null!;
         public string Icon { get; set; } = null!;
+        public bool Visible { get; set; } = false;
+        public RenderFragment Child { get; set; } = null!;
     }
     public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        MenuItems.Add(new MenuItem() { Name = "Sections", Icon = Icons.Material.Filled.ViewKanban });
-        MenuItems.Add(new MenuItem() { Name = "Due day", Icon = Icons.Material.Filled.CalendarToday, });
-        MenuItems.Add(new MenuItem() { Name = "Assignees", Icon = Icons.Material.Filled.People });
-        MenuItems.Add(new MenuItem() { Name = "Tags", Icon = Icons.Material.Filled.Tag });
-        MenuItems.Add(new MenuItem() { Name = "Messages", Icon = Icons.Material.Filled.Message });
+        MenuItems.Add(new MenuItem()
+            {
+                Name = "Sections",
+                Icon = Icons.Material.Filled.ViewKanban,
+                Child =@<FilterSections @onclick:stopPropagation /> });
+        MenuItems.Add(new MenuItem()
+            {
+                Name = "Due day",
+                Icon = Icons.Material.Filled.CalendarToday,
+                Child =@<FilterDueDay @onclick:stopPropagation />});
+        MenuItems.Add(new MenuItem()
+            {
+                Name = "Assignees",
+                Icon = Icons.Material.Filled.People,
+                Child =@<FilterAssignees @onclick:stopPropagation />});
+        MenuItems.Add(new MenuItem()
+            {
+                Name = "Tags",
+                Icon = Icons.Material.Filled.Tag,
+                Child =@<FilterTag @onclick:stopPropagation /> });
+        MenuItems.Add(new MenuItem()
+            {
+                Name = "Messages",
+                Icon = Icons.Material.Filled.Message,
+                Child =@<FilterMessages @onclick:stopPropagation /> });
 
     }
 }

@@ -9,10 +9,6 @@
         <MudText Style="font-weight:bold; font-size:larger">
             Name your board
         </MudText>
-        <MudSwitch @bind-Checked=@Private
-                   Label="@(Private == true ? "Private" : "Public")"
-                   Color="Color.Tertiary"
-                   ThumbIcon="@Icons.Material.Filled.Lock" />
     </MudPaper>
     <MudTextField @bind-Value=@BoardName
                   Placeholder="Board's name'"
@@ -60,19 +56,20 @@
               Style="overflow:scroll"
               Elevation="0">
         <MudChipSet @bind-SelectedChip=SelectedChip
-                    Mandatory="true"
                     Style="display:grid; grid-gap:8px;grid-template-columns:repeat(3,1fr);">
             <MudChip Default="true"
                      Text="None"
                      Size="Size.Small"
                      Icon="@Icons.Material.Filled.QuestionMark"
-                     SelectedColor="Color.Primary" />
+                     Variant="Variant.Text"
+                     SelectedColor="Color.Info" />
             @foreach ((string, string) Icon in IconToSelect)
             {
                 <MudChip Text=@Icon.Item2
                          Size="Size.Small"
                          Icon=@Icon.Item1
-                         SelectedColor="Color.Primary" />
+                         Variant="Variant.Text"
+                         SelectedColor="Color.Info" />
             }
         </MudChipSet>
     </MudPaper>
@@ -93,7 +90,6 @@
     public string BoardName { get; set; } = string.Empty;
     public List<string> Sections { get; set; } = new List<string>();
     public MudChip SelectedChip { get; set; } = null!;
-    public bool Private { get; set; } = false;
 
     public string NewSectionName { get; set; } = string.Empty;
     public List<(string, string)> IconToSelect = new List<(string, string)>();
@@ -117,12 +113,10 @@
         * BoardName
         * Sections
         * SelectedChip.Icon
-        * Private
         */
         BoardName = string.Empty;
         Sections.Clear();
         NewSectionName = string.Empty;
-        Private = false;
     }
     protected override void OnInitialized()
     {

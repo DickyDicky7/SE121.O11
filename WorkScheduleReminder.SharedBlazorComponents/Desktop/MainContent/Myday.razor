@@ -111,7 +111,7 @@
         </MudPaper>
     </MudDrawerContainer>
 </MudPaper>
-<MudOverlay Visible="@TaskDetailVisible"
+<MudOverlay Visible="@TaskDetailVisible" VisibleChanged="SaveTask"
             DarkBackground="true"
             AutoClose="true"
             OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
@@ -161,6 +161,10 @@
     public void ToggleDrawer()
     {
         DrawerOpen = !DrawerOpen;
+    }
+    public void SaveTask()
+    {
+        
     }
     protected override void OnInitialized()
     {

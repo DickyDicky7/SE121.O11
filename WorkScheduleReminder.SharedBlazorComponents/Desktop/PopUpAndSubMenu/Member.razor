@@ -3,63 +3,30 @@
           Style="border-radius:20px; overflow:hidden;"
           Elevation="0"
           Width="500px">
-    <MudText Class="mx-2"
-             Style="font-weight:bold"
-             Typo="Typo.h5">
+    <MudText Style="font-size:larger;font-weight:bold">
         Invite
     </MudText>
-    @*Invite with email*@
-    <MudPaper Class="d-flex flex-column gap-1 px-2"
+    <MudPaper Class="d-flex flex-row gap-1 px-2"
               Elevation="0"
               Width="100%">
-        <MudText Typo="Typo.subtitle1">
-            Invite with email
-        </MudText>
-        <MudPaper Class="d-flex flex-row gap-1 px-2"
-                  Elevation="0"
-                  Width="100%">
-            <MudTextField @bind-Value="Email"
-                          Class="d-flex flex-grow-1"
-                          Immediate="true"
-                          Placeholder="Enter email"
-                          DisableUnderLine="true"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense" />
-            <MudButton Class="d-flex flex-wrap"
-                       Size="Size.Small"
-                       Color="Color.Info"
-                       OnClick="InviteByEmail">
-                Invite
-            </MudButton>
-        </MudPaper>
+        <MudTextField @bind-Value="Email"
+                      Class="d-flex flex-grow-1"
+                      Immediate="true"
+                      Placeholder="Enter email"
+                      DisableUnderLine="true"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense" />
+        <MudButton Class="d-flex flex-wrap"
+                   Size="Size.Small"
+                   Color="Color.Info"
+                   OnClick="InviteByEmail">
+            Invite
+        </MudButton>
     </MudPaper>
-    @*Invite with link*@
-    <MudPaper Class="d-flex flex-column gap-1 px-2"
-              Elevation="0"
-              Width="100%">
-        <MudText Typo="Typo.subtitle1">
-            Invite with link
-        </MudText>
-        <MudPaper Class="d-flex flex-row gap-1 px-2"
-                  Elevation="0"
-                  Width="100%">
-            <MudText Class="d-flex flex-grow-1 align-center">
-                @Link
-            </MudText>
-            <MudButton Class="d-flex flex-wrap"
-                       Size="Size.Small"
-                       Color="Color.Info"
-                       OnClick="InviteByLink">
-                Copy
-            </MudButton>
-        </MudPaper>
-    </MudPaper>
-    <MudText Class="mx-2"
-             Style="font-weight:bold"
-             Typo="Typo.h5">
+    <MudText Style="font-size:larger;font-weight:bold">
         Permission
     </MudText>
-    <MudPaper Class="d-flex flex-column gap-1 px-2"
+    <MudPaper Class="d-flex flex-column gap-1"
               Style="overflow-y:scroll"
               Elevation="0"
               Width="100%"

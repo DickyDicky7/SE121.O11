@@ -54,7 +54,7 @@
             DarkBackground="true"
             AutoClose="true"
             OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" WorkspaceTask="true"/>
 </MudOverlay>
 
 @code

@@ -19,20 +19,20 @@
     else if (Type == Helper.ViewType.WorkspaceView)
     {
         <MudButton Class=""
-                   StartIcon="@Icons.Material.Filled.Share"
+                   StartIcon="@Icons.Material.Filled.People"
                    Size="Size.Small"
-                   OnClick="ToggleVisible">
+                   OnClick="ToggleMemberVisible">
             <MudText>
-                Share
+                Member
             </MudText>
         </MudButton>
     }
 </MudPaper>
-<MudOverlay Visible="IsVisible"
+<MudOverlay Visible="MemberVisible"
             DarkBackground="true"
             AutoClose="true"
-            OnClick="ToggleVisible">
-    <Invite @onclick:stopPropagation />
+            OnClick="ToggleMemberVisible">
+    <Member @onclick:stopPropagation />
 </MudOverlay>
 @code
 {
@@ -42,7 +42,7 @@
     public bool SwitchChecked { get; set; } = false;
 
     public string Text { get; set; } = "Individual";
-    public bool IsVisible { get; set; } = false;
+    public bool MemberVisible { get; set; } = false;
 
     public void OnSwitchCheckedChanged(bool _)
     {
@@ -58,9 +58,9 @@
         }
     }
 
-    public void ToggleVisible()
+    public void ToggleMemberVisible()
     {
-        IsVisible = !
-        IsVisible;
+        MemberVisible = !
+        MemberVisible;
     }
 }

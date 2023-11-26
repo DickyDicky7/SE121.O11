@@ -3,7 +3,7 @@
           Style="overflow-y:scroll"
           Elevation="0"
           Height="100%"
-          Width="250px">
+          Width="300px">
     <MudButton Size="Size.Large"
                FullWidth="true">
         <MudPaper Class="d-flex flex-row gap-2 align-center"
@@ -57,14 +57,17 @@
                          DisableGutters="true"
                          Dense="true">
                 <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center gap-2"
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
                               Elevation="0"
                               Width="100%">
-                        <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
-                                 Size="Size.Medium" />
-                        <MudText Style="font-family:inherit;font-weight:bolder;">
-                            Custom views
-                        </MudText>
+                        <MudPaper Class=" d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
+                                     Size="Size.Medium" />
+                            <MudText Style="font-weight:bolder;">
+                                Custom views
+                            </MudText>
+                        </MudPaper>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="ToggleCreateCustomView" />
@@ -79,7 +82,7 @@
                                    FullWidth="true"
                                    Href="test"
                                    OnClick="@(()=>Update(View.Name, @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
-                            <MudText>
+                            <MudText Style="overflow:hidden">
                                 @View.Name
                             </MudText>
                         </MudButton>
@@ -92,14 +95,17 @@
                          DisableGutters="true"
                          Dense="true">
                 <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center gap-2"
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
                               Elevation="0"
                               Width="100%">
-                        <MudIcon Icon="@Icons.Material.Filled.Workspaces"
-                                 Size="Size.Medium" />
-                        <MudText Style="font-family:inherit;font-weight:bolder;">
-                            Workspaces
-                        </MudText>
+                        <MudPaper Class="d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIcon Icon="@Icons.Material.Filled.Workspaces"
+                                     Size="Size.Medium" />
+                            <MudText Style="font-weight:bolder;">
+                                Workspaces
+                            </MudText>
+                        </MudPaper>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="ToggleCreateBoard" />
@@ -117,7 +123,7 @@
                                    FullWidth="true"
                                    Href="table"
                                    OnClick="@(()=>Update(board.Name, board.Icon,Helper.ViewType.WorkspaceView))">
-                            <MudText>
+                            <MudText Style="overflow:hidden">
                                 @board.Name
                             </MudText>
                         </MudButton>
@@ -127,13 +133,13 @@
         </MudList>
     </MudPaper>
 </MudPaper>
-<MudOverlay Class="border-2"
+@* <MudOverlay Class="border-2"
             Visible="InviteVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="ToggleInvite">
     <Invite @onclick:stopPropagation />
-</MudOverlay>
+</MudOverlay> *@
 <MudOverlay Class="border-2"
             Visible="CreateBoardVisible"
             DarkBackground="true"

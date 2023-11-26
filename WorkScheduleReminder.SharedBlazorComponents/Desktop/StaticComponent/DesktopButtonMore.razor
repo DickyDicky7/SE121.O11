@@ -1,4 +1,5 @@
-﻿<MudPaper Class="d-flex flex-row flex-wrap align-center"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+<MudPaper Class="d-flex flex-row flex-wrap align-center"
           Elevation="0">
     <MudMenu Class=""
              Size="Size.Small"
@@ -15,33 +16,36 @@
         <ChildContent>
             @if (Type == Helper.ViewType.DefaultView)
             {
-                @foreach (string Item in DefaultViewItem)
+                @foreach (MenuItem Item in DefaultViewItem)
                 {
-                    <MudMenuItem AutoClose=false>
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
                         <MudText Style="background-color:transparent">
-                            @Item
+                            @Item.Name
                         </MudText>
                     </MudMenuItem>
                 }
             }
             else if (Type == Helper.ViewType.CustomView)
             {
-                @foreach (string Item in CustomViewItem)
+                @foreach (MenuItem Item in CustomViewItem)
                 {
-                    <MudMenuItem AutoClose=false>
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
                         <MudText Style="background-color:transparent">
-                            @Item
+                            @Item.Name
                         </MudText>
                     </MudMenuItem>
                 }
             }
             else if (Type == Helper.ViewType.WorkspaceView)
             {
-                @foreach (string Item in WorkspaceItem)
+                @foreach (MenuItem Item in WorkspaceItem)
                 {
-                    <MudMenuItem AutoClose=false>
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
                         <MudText Style="background-color:transparent">
-                            @Item
+                            @Item.Name
                         </MudText>
                     </MudMenuItem>
                 }
@@ -49,35 +53,91 @@
         </ChildContent>
     </MudMenu>
 </MudPaper>
-
+@foreach (MenuItem Item in DefaultViewItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
+@foreach (MenuItem Item in CustomViewItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
+@foreach (MenuItem Item in WorkspaceItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
 
 @code
 {
     [Parameter]
     public Helper.ViewType Type { get; set; }
 
-    public List<string> DefaultViewItem { get; set; } = new List<string>();
-    public List<string> CustomViewItem { get; set; } = new List<string>();
-    public List<string> WorkspaceItem { get; set; } = new List<string>();
+    public record MenuItem
+    {
+        public string Name { get; set; } = null!;
+        public bool Visible { get; set; } = false;
+        public RenderFragment Child { get; set; } = null!;
+    }
+    public List<MenuItem> DefaultViewItem { get; set; } = new List<MenuItem>();
+    public List<MenuItem> CustomViewItem { get; set; } = new List<MenuItem>();
+    public List<MenuItem> WorkspaceItem { get; set; } = new List<MenuItem>();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        DefaultViewItem.Add("Clear completed");
-        DefaultViewItem.Add("Multi-select");
-        DefaultViewItem.Add("Print");
+        DefaultViewItem.Add(new MenuItem() { Name = "Clear completed" });
+        DefaultViewItem.Add(new MenuItem() { Name = "Multi-select" });
+        DefaultViewItem.Add(new MenuItem() { Name = "Print" });
 
-        CustomViewItem.Add("Edit");
-        CustomViewItem.Add("Delete");
+        CustomViewItem.Add(new MenuItem()
+            {
+                Name = "Edit",
+                Child =@<CreateCustomView @onclick:stopPropagation /> });
+        CustomViewItem.Add(new MenuItem()
+            {
+                Name = "Delete",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this view" Action="Delete" /> });
 
-        WorkspaceItem.Add("Board activity");
-        WorkspaceItem.Add("Board tags");
-        WorkspaceItem.Add("Sections");
-        WorkspaceItem.Add("make private");
-        WorkspaceItem.Add("Multi-select");
-        WorkspaceItem.Add("View archived items");
-        WorkspaceItem.Add("Save as template");
-        WorkspaceItem.Add("Archive board");
-        WorkspaceItem.Add("Leave board");
+        WorkspaceItem.Add(new MenuItem() { Name = "Board activity" });
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Board tags",
+                Child =@<TagAndTagging @onclick:stopPropagation EnableTagging=false />});
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Board Section",
+                Child =@<BoardSection @onclick:stopPropagation /> });
+        WorkspaceItem.Add(new MenuItem() { Name = "Multi-select" });
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Leave board",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to leave this board" Action="Leave" />});
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Delete board",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this board" Action="Delete" /> });
     }
 }
