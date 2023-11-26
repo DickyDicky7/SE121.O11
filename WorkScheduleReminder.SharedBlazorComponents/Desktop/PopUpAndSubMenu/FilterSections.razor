@@ -1,0 +1,74 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column gap-2 pa-2"
+          Style="border-radius:20px;overflow:scroll"
+          Elevation="0"
+          Width="250px"
+          Height="300px">
+    <MudText Style="font-size:larger;font-weight:bold">
+        Filter by sections
+    </MudText>
+    <MudPaper Class="d-flex flex-column"
+              Style="overflow-y:scroll"
+              Elevation="0"
+              Width="100%"
+              Height="100%">
+        @foreach (SectionChecked sectionChecked in SectionFilterList)
+        {
+            <MudPaper Class="d-flex flex-row"
+                      Elevation="0"
+                      Width="100%">
+                <MudButton Class="rounded pill"
+                           FullWidth="true"
+                           OnClick="()=>{sectionChecked.Checked=!sectionChecked.Checked;}">
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                              Style="background-color:transparent"
+                              Elevation="0"
+                              Width="100%">
+                        <MudText>@sectionChecked.Name</MudText>
+                        <MudCheckBox @bind-Checked=sectionChecked.Checked
+                                     ReadOnly="true"
+                                     CheckedIcon="@Icons.Material.Filled.Check"
+                                     UncheckedIcon="null"
+                                     Size="Size.Small"
+                                     Color="Color.Info"
+                                     Dense="true"
+                                     DisableRipple="true" />
+                    </MudPaper>
+                </MudButton>
+            </MudPaper>
+        }
+    </MudPaper>
+</MudPaper>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public record SectionChecked()
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool Checked { get; set; } = false;
+    }
+    public List<SectionChecked> SectionFilterList = new List<SectionChecked>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 1" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 2" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 3" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 4" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 5" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 6" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 7" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 8" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 9" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 10" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 11" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 12" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 13" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 14" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 15" });
+        SectionFilterList.Add(new SectionChecked() { Name = "Section 16" });
+    }
+}

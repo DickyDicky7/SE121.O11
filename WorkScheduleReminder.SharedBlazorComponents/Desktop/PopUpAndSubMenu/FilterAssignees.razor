@@ -1,0 +1,97 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column gap-2 pa-2"
+          Style="border-radius:20px;overflow:hidden"
+          Elevation="0"
+          Width="250px"
+          Height="300px">
+    <MudText Style="font-size:larger;font-weight:bold">
+        Filter by assignees
+    </MudText>
+    <MudPaper Class="d-flex flex-column"
+              Style="overflow-y:scroll"
+              Elevation="0"
+              Width="100%"
+              Height="100%">
+        <MudPaper Class="d-flex flex-row"
+                  Elevation="0"
+                  Width="100%">
+            <MudButton Class="rounded pill"
+                       FullWidth="true"
+                       OnClick="()=>{UnassignedChecked=!UnassignedChecked;}">
+                <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                          Style="background-color:transparent"
+                          Elevation="0"
+                          Width="100%">
+                    <MudText>Unassigned</MudText>
+                    <MudCheckBox @bind-Checked=UnassignedChecked
+                                 ReadOnly="true"
+                                 CheckedIcon="@Icons.Material.Filled.Check"
+                                 UncheckedIcon="null"
+                                 Size="Size.Small"
+                                 Color="Color.Info"
+                                 Dense="true"
+                                 DisableRipple="true" />
+                </MudPaper>
+            </MudButton>
+        </MudPaper>
+        @foreach (AssigneeChecked assigneeChecked in AssigneeFilterList)
+        {
+            <MudPaper Class="d-flex flex-row"
+                      Elevation="0"
+                      Width="100%">
+                <MudButton Class="rounded pill"
+                           FullWidth="true"
+                           OnClick="()=>{assigneeChecked.Checked=!assigneeChecked.Checked;}">
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                              Style="background-color:transparent"
+                              Elevation="0"
+                              Width="100%">
+                        <MudText>@assigneeChecked.Name</MudText>
+                        <MudCheckBox @bind-Checked=assigneeChecked.Checked
+                                     ReadOnly="true"
+                                     CheckedIcon="@Icons.Material.Filled.Check"
+                                     UncheckedIcon="null"
+                                     Size="Size.Small"
+                                     Color="Color.Info"
+                                     Dense="true"
+                                     DisableRipple="true" />
+                    </MudPaper>
+                </MudButton>
+            </MudPaper>
+        }
+    </MudPaper>
+</MudPaper>
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public bool UnassignedChecked { get; set; } = false;
+    public record AssigneeChecked()
+    {
+        public string Name { get; set; } = string.Empty;
+        public bool Checked { get; set; } = false;
+    }
+    public List<AssigneeChecked> AssigneeFilterList = new List<AssigneeChecked>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 1" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 2" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 3" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 4" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 5" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 6" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 7" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 8" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 9" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 10" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 11" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 12" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 13" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 14" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 15" });
+        AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 16" });
+    }
+}

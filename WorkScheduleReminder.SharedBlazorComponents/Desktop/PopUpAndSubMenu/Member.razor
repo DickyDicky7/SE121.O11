@@ -1,0 +1,149 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column flex-wrap gap-2 pa-2 align-content-start"
+          Style="border-radius:20px; overflow:hidden;"
+          Elevation="0"
+          Width="500px">
+    <MudText Style="font-size:larger;font-weight:bold">
+        Invite
+    </MudText>
+    <MudPaper Class="d-flex flex-row gap-1 px-2"
+              Elevation="0"
+              Width="100%">
+        <MudTextField @bind-Value="Email"
+                      Class="d-flex flex-grow-1"
+                      Immediate="true"
+                      Placeholder="Enter email"
+                      DisableUnderLine="true"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense" />
+        <MudButton Class="d-flex flex-wrap"
+                   Size="Size.Small"
+                   Color="Color.Info"
+                   OnClick="InviteByEmail">
+            Invite
+        </MudButton>
+    </MudPaper>
+    <MudText Style="font-size:larger;font-weight:bold">
+        Permission
+    </MudText>
+    <MudPaper Class="d-flex flex-column gap-1"
+              Style="overflow-y:scroll"
+              Elevation="0"
+              Width="100%"
+              Height="150px">
+        @*for go here*@
+        @foreach (Teammate Mate in Teammates)
+        {
+            <MudPaper Class="d-flex flex-row gap-1 px-2"
+                      Elevation="0"
+                      Width="100%">
+                <MudAvatar>
+                    <MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+                </MudAvatar>
+                <MudText Class="d-flex flex-grow-1 align-center">
+                    @Mate.Name
+                </MudText>
+                <MudMenu Class=""
+                         Size="Size.Small"
+                         FullWidth="false"
+                         DisableElevation="true"
+                         Dense="true"
+                         AnchorOrigin="Origin.BottomCenter"
+                         TransformOrigin="Origin.TopCenter"
+                         MaxHeight="250">
+                    <ActivatorContent>
+                        <MudText>
+                            @Mate.CurrentRole
+                        </MudText>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <MudMenuItem AutoClose="false"
+                                     OnClick="@(()=>SetAdmin(@Mate))">
+                            <MudText>
+                                Admin
+                            </MudText>
+                        </MudMenuItem>
+                        <MudMenuItem AutoClose="false"
+                                     OnClick="@(()=>SetMember(@Mate))">
+                            <MudText>
+                                Member
+                            </MudText>
+                        </MudMenuItem>
+                        <MudMenuItem AutoClose="false"
+                                     OnClick="@(()=>SetGuest(@Mate))">
+                            <MudText>
+                                Guest
+                            </MudText>
+                        </MudMenuItem>
+                        <MudMenuItem AutoClose="false"
+                                     OnClick="@(()=>RemoveTeammate(@Mate))">
+                            <MudText>
+                                Remove
+                            </MudText>
+                        </MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            </MudPaper>
+        }
+    </MudPaper>
+</MudPaper>
+
+@code
+{
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public string Email { get; set; } = string.Empty;
+    public string Link { get; set; } = "http//";
+    public string Permission { get; set; } = "Admin";
+
+    public enum Role
+    {
+        Admin, Member, Guest
+    }
+    public record Teammate()
+    {
+        public string Name { get; set; } = string.Empty;
+        public Role CurrentRole { get; set; } = Role.Guest;
+    }
+    public List<Teammate> Teammates { get; set; } = new List<Teammate>();
+
+    public void InviteByEmail()
+    {
+
+    }
+
+    public void InviteByLink()
+    {
+
+    }
+    public void SetAdmin(Teammate _Mate)
+    {
+        _Mate.CurrentRole = Role.Admin;
+    }
+    public void SetMember(Teammate _Mate)
+    {
+        _Mate.CurrentRole = Role.Member;
+    }
+    public void SetGuest(Teammate _Mate)
+    {
+        _Mate.CurrentRole = Role.Guest;
+    }
+    public void RemoveTeammate(Teammate _Mate)
+    {
+        Teammates.Remove(_Mate);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Teammates.Add(new Teammate() { Name = "Person A", CurrentRole = Role.Admin });
+        Teammates.Add(new Teammate() { Name = "Person B", CurrentRole = Role.Member });
+        Teammates.Add(new Teammate() { Name = "Person C", CurrentRole = Role.Member });
+        Teammates.Add(new Teammate() { Name = "Person D", CurrentRole = Role.Member });
+        Teammates.Add(new Teammate() { Name = "Person E", CurrentRole = Role.Member });
+        Teammates.Add(new Teammate() { Name = "Person F", CurrentRole = Role.Guest });
+        Teammates.Add(new Teammate() { Name = "Person G", CurrentRole = Role.Guest });
+        Teammates.Add(new Teammate() { Name = "Person H", CurrentRole = Role.Guest });
+    }
+}

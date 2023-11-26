@@ -1,32 +1,75 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
 @page "/table"
-<MudPaper Class="pa-3"
-          Style="background-color:transparent; overflow-y:scroll;"
+<MudPaper Class="pa-2"
+          Style="background-color:transparent; overflow:hidden;"
           Elevation="0"
           Width="100%"
           Height="100%">
-    @*Editing (create a custom button ?),
-    grouping (this),
-    sorting (alphabetically(this)),
-    resizing (this),
-    column re-ordering (this),
-    row hidden (toggle by switch),
-    filtering (by default toolbar)*@
-    <MudDataGrid T="Task"
+    @*Editing (OK),
+    grouping (OK),
+    sorting (alphabetically(OK)),
+    resizing (OK),
+    column re-ordering (?),
+    row hidden (toggle by switch(OK)),
+    filtering (by default toolbar(?))*@
+    <MudDataGrid Style="height:100%; overflow-x:scroll;overflow-y:hidden;"
+                 T="Task"
                  Items="Tasks"
+                 Height="100%"
                  FixedHeader="true"
+                 Virtualize="true"
                  Groupable="true"
                  SortMode="SortMode.Multiple"
-
-                 Virtualize="true"
-                 >
-
+                 ColumnResizeMode="ResizeMode.Column"
+                 DragDropColumnReordering="true"
+                 DragIndicatorIcon="@Icons.Material.Filled.DragIndicator"
+                 ApplyDropClassesOnDragStarted="true">
+        <ToolBarContent>
+            <MudPaper Class="d-flex flex-row gap-2 py-3 align-center"
+                      Elevation="0"
+                      Width="100%">
+                <MudSwitch @bind-Checked="@ColumnsVisibility[0]"
+                           Size="Size.Small"
+                           Label="Title"
+                           Color="Color.Success" />
+                <MudSwitch @bind-Checked="@ColumnsVisibility[1]"
+                           Size="Size.Small"
+                           Label="Tag"
+                           Color="Color.Success" />
+                <MudSwitch @bind-Checked="@ColumnsVisibility[2]"
+                           Size="Size.Small"
+                           Label="Assignees"
+                           Color="Color.Success" />
+                <MudSwitch @bind-Checked="@ColumnsVisibility[3]"
+                           Size="Size.Small"
+                           Label="DueDay"
+                           Color="Color.Success" />
+                <MudTextField @bind-Value=@NewTask
+                              Placeholder="+ Add task"
+                              Immediate="true"
+                              DisableUnderLine="true"
+                              FullWidth="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Clearable="true"
+                              TextUpdateSuppression="false"
+                              OnKeyDown="((KeyboardEventArgs e)=>OnKeyDown(e))" />
+            </MudPaper>
+        </ToolBarContent>
         <Columns>
-            <PropertyColumn Property="x=>x.Title" />
-            <PropertyColumn Property="x=>x.Tag" />
-            <PropertyColumn Property="x=>x.Assignees" />
-            <PropertyColumn Property="x=>x.DueDay" />
-            <TemplateColumn>
+            <PropertyColumn Property="x=>x.Title"
+                            Hidden="@(!ColumnsVisibility[0])"
+                            StickyLeft="true"
+                            Groupable="false" />
+            <PropertyColumn Property="x=>x.Tag"
+                            Hidden="@(!ColumnsVisibility[1])" />
+            <PropertyColumn Property="x=>x.Assignees"
+                            Hidden="@(!ColumnsVisibility[2])" />
+            <PropertyColumn Property="x=>x.DueDay"
+                            Hidden="@(!ColumnsVisibility[3])" />
+            <TemplateColumn StickyRight="true"
+                            Groupable="false"
+                            Sortable="false">
                 <CellTemplate>
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Size="Size.Small"
@@ -37,11 +80,12 @@
         <NoRecordsContent>
             <MudText>There's nothing here :(</MudText>
         </NoRecordsContent>
-
+        <LoadingContent>
+            <MudText>Loading...</MudText>
+        </LoadingContent>
     </MudDataGrid>
 </MudPaper>
-<MudOverlay Class="border-2"
-            Visible="@TaskDetailVisible"
+<MudOverlay Visible="@TaskDetailVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
@@ -50,17 +94,18 @@
 </MudOverlay>
 
 @code {
-    private bool TaskDetailVisible { get; set; } = false;
-    private string CurrentTitle { get; set; } = string.Empty;
+    public string NewTask { get; set; } = string.Empty;
+    public bool[] ColumnsVisibility = new bool[5] { true, true, true, true, true };
+    public bool TaskDetailVisible { get; set; } = false;
+    public string CurrentTitle { get; set; } = string.Empty;
     public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
     public IEnumerable<Task> Tasks = null!;
+    public List<Task> Temp = new List<Task>();
     protected override void OnInitialized()
     {
-        List<Task> Temp = new List<Task>();
-
-        foreach(int i in Enumerable.Range(0,30))  
+        foreach (int i in Enumerable.Range(0, 30))
         {
-            Temp.Add(new Task(i.ToString(), (30 - i).ToString(), 45 - i, DateTime.Now.AddDays(i)));
+            //Temp.Add(new Task(i.ToString(), (30 - i).ToString(), 45 - i, DateTime.Now.AddDays(i)));
         }
         Tasks = Temp;
     }
@@ -68,5 +113,14 @@
     {
         TaskDetailVisible = !TaskDetailVisible;
         CurrentTitle = TaskTitle;
+    }
+    public void OnKeyDown(KeyboardEventArgs keyboardEvent)
+    {
+        if (keyboardEvent.Code == "Enter" && NewTask != string.Empty)
+        {
+            Temp.Add(new Task(NewTask, "hehe", 666, DateTime.Now));
+            NewTask = string.Empty;
+            StateHasChanged();
+        }
     }
 }

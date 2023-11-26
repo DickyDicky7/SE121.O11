@@ -1,109 +1,143 @@
-﻿<MudPaper Class="d-flex flex-row flex-wrap align-center"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+<MudPaper Class="d-flex flex-row flex-wrap align-center"
           Elevation="0">
-    @if (Type == Helper.ViewType.DefaultView)
-    {
-        <MudMenu Class=""
-                 Size="Size.Small"
-                 FullWidth="false"
-                 DisableElevation="true"
-                 Dense="true"
-                 AnchorOrigin="Origin.BottomCenter"
-                 TransformOrigin="Origin.TopCenter"
-                 MaxHeight="250">
-            <ActivatorContent>
-                <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                               Size="Size.Small" />
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Class="">
-                    Clear completed
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Multi-select
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Print
-                </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    }
-    else if (Type == Helper.ViewType.CustomView)
-    {
-        <MudMenu Class=""
-                 Size="Size.Small"
-                 FullWidth="false"
-                 DisableElevation="true"
-                 Dense="true"
-                 AnchorOrigin="Origin.BottomCenter"
-                 TransformOrigin="Origin.TopCenter"
-                 MaxHeight="250">
-            <ActivatorContent>
-                <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                               Size="Size.Small" />
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Class="">
-                    Edit
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Delete
-                </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    }
-    else if (Type == Helper.ViewType.WorkspaceView)
-    {
-        <MudMenu Class=""
-                 Size="Size.Small"
-                 FullWidth="false"
-                 DisableElevation="true"
-                 Dense="true"
-                 AnchorOrigin="Origin.BottomCenter"
-                 TransformOrigin="Origin.TopCenter"
-                 MaxHeight="250">
-            <ActivatorContent>
-                <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                               Size="Size.Small" />
-            </ActivatorContent>
-            <ChildContent>
-                <MudMenuItem Class="">
-                    Weekend
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Board Activity
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Board tags
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Sections
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Make private
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Multi-select
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    View archived items
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Save as template
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Leave board
-                </MudMenuItem>
-                <MudMenuItem Class="">
-                    Archive board
-                </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
-    }
+    <MudMenu Class=""
+             Size="Size.Small"
+             FullWidth="false"
+             DisableElevation="true"
+             Dense="true"
+             AnchorOrigin="Origin.BottomCenter"
+             TransformOrigin="Origin.TopCenter"
+             MaxHeight="250">
+        <ActivatorContent>
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                           Size="Size.Small" />
+        </ActivatorContent>
+        <ChildContent>
+            @if (Type == Helper.ViewType.DefaultView)
+            {
+                @foreach (MenuItem Item in DefaultViewItem)
+                {
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
+                        <MudText Style="background-color:transparent">
+                            @Item.Name
+                        </MudText>
+                    </MudMenuItem>
+                }
+            }
+            else if (Type == Helper.ViewType.CustomView)
+            {
+                @foreach (MenuItem Item in CustomViewItem)
+                {
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
+                        <MudText Style="background-color:transparent">
+                            @Item.Name
+                        </MudText>
+                    </MudMenuItem>
+                }
+            }
+            else if (Type == Helper.ViewType.WorkspaceView)
+            {
+                @foreach (MenuItem Item in WorkspaceItem)
+                {
+                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
+                                 AutoClose=true>
+                        <MudText Style="background-color:transparent">
+                            @Item.Name
+                        </MudText>
+                    </MudMenuItem>
+                }
+            }
+        </ChildContent>
+    </MudMenu>
 </MudPaper>
-
+@foreach (MenuItem Item in DefaultViewItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
+@foreach (MenuItem Item in CustomViewItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
+@foreach (MenuItem Item in WorkspaceItem)
+{
+    if (Item.Child != null)
+    {
+        <MudOverlay Visible=Item.Visible
+                    DarkBackground="true"
+                    AutoClose="true"
+                    OnClick="()=>{Item.Visible=!Item.Visible;}">
+            @Item.Child
+        </MudOverlay>
+    }
+}
 
 @code
 {
     [Parameter]
     public Helper.ViewType Type { get; set; }
+
+    public record MenuItem
+    {
+        public string Name { get; set; } = null!;
+        public bool Visible { get; set; } = false;
+        public RenderFragment Child { get; set; } = null!;
+    }
+    public List<MenuItem> DefaultViewItem { get; set; } = new List<MenuItem>();
+    public List<MenuItem> CustomViewItem { get; set; } = new List<MenuItem>();
+    public List<MenuItem> WorkspaceItem { get; set; } = new List<MenuItem>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        DefaultViewItem.Add(new MenuItem() { Name = "Clear completed" });
+        DefaultViewItem.Add(new MenuItem() { Name = "Multi-select" });
+        DefaultViewItem.Add(new MenuItem() { Name = "Print" });
+
+        CustomViewItem.Add(new MenuItem()
+            {
+                Name = "Edit",
+                Child =@<CreateCustomView @onclick:stopPropagation /> });
+        CustomViewItem.Add(new MenuItem()
+            {
+                Name = "Delete",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this view" Action="Delete" /> });
+
+        WorkspaceItem.Add(new MenuItem() { Name = "Board activity" });
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Board tags",
+                Child =@<TagAndTagging @onclick:stopPropagation EnableTagging=false />});
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Board Section",
+                Child =@<BoardSection @onclick:stopPropagation /> });
+        WorkspaceItem.Add(new MenuItem() { Name = "Multi-select" });
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Leave board",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to leave this board" Action="Leave" />});
+        WorkspaceItem.Add(new MenuItem()
+            {
+                Name = "Delete board",
+                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this board" Action="Delete" /> });
+    }
 }

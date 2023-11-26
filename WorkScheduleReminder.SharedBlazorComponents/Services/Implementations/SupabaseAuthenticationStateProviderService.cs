@@ -24,7 +24,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 		}
 
 		private readonly Supabase.Client supabaseClient;
-		private readonly SharedBusinessLogic.Services.Implementations
+        private readonly SharedBusinessLogic.Services.Implementations
 		.ObservableDictionaryTransferService observableDictionaryTransferService;
 
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -45,7 +45,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 				   (claimsPrincipal);
 		}
 
-		private async Task<(bool ok, string reason)> SignUp_(string email, string password)
+        private async Task<(bool ok, string reason)> SignUp_(string email, string password)
 		{
 			try
 			{
@@ -71,7 +71,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 		}
 
-		private async Task<(bool ok, string reason)> SignIn_(string email, string password)
+        private async Task<(bool ok, string reason)> SignIn_(string email, string password)
 		{
 			try
 			{
@@ -87,7 +87,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 		}
 
-		private async Task<(bool ok, string reason)> SignOut()
+        private async Task<(bool ok, string reason)> SignOut()
 		{
 			try
 			{

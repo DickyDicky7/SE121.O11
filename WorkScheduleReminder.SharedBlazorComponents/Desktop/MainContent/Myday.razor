@@ -1,5 +1,184 @@
-﻿
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+@page "/"
+@page "/myday"
 
-@code {
+<MudPaper Class="d-flex flex-row"
+          Style="background-color:transparent;overflow:hidden;position:relative;"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    <MudDrawerContainer Class="mud-height-full mud-width-full"
+                        Style="background-color:transparent;overflow:hidden;">
+        <MudDrawer @bind-Open="@DrawerOpen"
+                   Class="gap-2 pa-2"
+                   Style="background-color:transparent;overflow:hidden;"
+                   Elevation="0"
+                   Width="350px"
+                   Height="100%"
+                   Anchor="Anchor.Right"
+                   Variant="@DrawerVariant.Persistent">
+            <MudDrawerHeader>
+                <MudTextField @bind-Value=@FilterValue
+                              Placeholder="Filter"
+                              Immediate="true"
+                              DisableUnderLine="true"
+                              FullWidth="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
+            </MudDrawerHeader>
+            <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                      Style="overflow:scroll"
+                      Elevation="0"
+                      Width="100%"
+                      Height="100%">
+                @foreach (string Task in SuggestedTasks)
+                {
+                    <MudPaper Class="d-flex flex-row"
+                              Elevation="0"
+                              Width="100%">
+                        <MudButton Class="justify-start align-center"
+                                   Size="Size.Medium"
+                                   FullWidth="true"
+                                   StartIcon="@Icons.Material.Filled.Add"
+                                   OnClick="()=>AddSuggestedTask(Task)">
+                            <MudText>@Task</MudText>
+                        </MudButton>
+                    </MudPaper>
+                }
+            </MudPaper>
+        </MudDrawer>
+        <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                  Elevation="0"
+                  Height="100%">
+            @*Day*@
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText Style="font-weight:bold;font-size:large;">
+                    @($"{DateTime.Now.DayOfWeek} {DateTime.Now.Day} {DateTime.Now.ToString("MMM")}")
+                </MudText>
+                <MudToggleIconButton Icon="@Icons.Material.Filled.Lightbulb"
+                                     ToggledIcon="@Icons.Material.Filled.Lightbulb"
+                                     Size="Size.Small"
+                                     ToggledSize="Size.Small"
+                                     Color="Color.Default"
+                                     ToggledColor="Color.Info"
+                                     ToggledChanged="ToggleDrawer" />
+            </MudPaper>
+            @*List*@
+            <MudPaper Class="d-flex flex-column flex-grow-1 gap-2 pa-2"
+                      Style="overflow-y:scroll;"
+                      Elevation="0"
+                      Width="100%">
+                @foreach (string Name in Tasks)
+                {
+                    <MudPaper Class="d-flex flex-row justify-space-between"
+                              Elevation="0"
+                              Width="100%">
+                        <MudButton Class="justify-start"
+                                   Size="Size.Small"
+                                   FullWidth="true"
+                                   OnClick="()=>OnTaskClick(Name)">
+                            <MudText>@Name</MudText>
+                        </MudButton>
+                        <MudPaper Class="d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIconButton Size="Size.Small"
+                                           Icon="@Icons.Material.Filled.PushPin" />
+                            <MudIconButton Size="Size.Small"
+                                           Icon="@Icons.Material.Filled.Close"
+                                           OnClick="()=>RemoveSuggestedTask(Name)" />
+                        </MudPaper>
+                    </MudPaper>
+                }
+            </MudPaper>
+            @*AddTask*@
+            <MudPaper Class="d-flex flex-row align-center"
+                      Elevation="0"
+                      Width="100%">
+                <MudTextField @bind-Value=@NewTask
+                              Placeholder="+ Add task"
+                              Immediate="true"
+                              DisableUnderLine="true"
+                              FullWidth="true"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Clearable="true"
+                              TextUpdateSuppression="false"
+                              OnKeyDown="((KeyboardEventArgs e)=>EnterNewTask(e))" />
+            </MudPaper>
+        </MudPaper>
+    </MudDrawerContainer>
+</MudPaper>
+<MudOverlay Visible="@TaskDetailVisible" VisibleChanged="SaveTask"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+</MudOverlay>
+@code
+{
+    public string CurrentTitle { get; set; } = string.Empty;
+    public bool TaskDetailVisible { get; set; } = false;
+    public bool DrawerOpen { get; set; } = false;
+    public string NewTask { get; set; } = string.Empty;
+    public string FilterValue { get; set; } = string.Empty;
+    public List<string> SuggestedTasks { get; set; } = new List<string>();
+    public List<string> Tasks = new List<string>();
+    public void AddSuggestedTask(string Name)
+    {
+        SuggestedTasks.Remove(Name);
+        Tasks.Add(Name);
+    }
+    public void RemoveSuggestedTask(string Name)
+    {
+        Tasks.Remove(Name);
+        SuggestedTasks.Add(Name);
+    }
+    public void EnterNewTask(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewTask != string.Empty)
+        {
+            Tasks.Add(NewTask);
+            NewTask = string.Empty;
+            StateHasChanged();
+        }
+    }
+    public void EnterFilter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewTask != string.Empty)
+        {
 
+            StateHasChanged();
+        }
+    }
+    public void OnTaskClick(string TaskTitle)
+    {
+        TaskDetailVisible = !TaskDetailVisible;
+        CurrentTitle = TaskTitle;
+    }
+    public void ToggleDrawer()
+    {
+        DrawerOpen = !DrawerOpen;
+    }
+    public void SaveTask()
+    {
+        
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SuggestedTasks.Add("a");
+        SuggestedTasks.Add("s");
+        SuggestedTasks.Add("d");
+        SuggestedTasks.Add("f");
+        SuggestedTasks.Add("q");
+        SuggestedTasks.Add("w");
+        SuggestedTasks.Add("e");
+        SuggestedTasks.Add("r");
+        SuggestedTasks.Add("t");
+        SuggestedTasks.Add("y");
+        SuggestedTasks.Add("u");
+    }
 }

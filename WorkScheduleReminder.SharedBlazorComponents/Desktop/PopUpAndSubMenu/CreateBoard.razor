@@ -1,0 +1,138 @@
+﻿<MudPaper @attributes=AdditionalAttributes
+          Class="d-flex flex-column pa-2 gap-2"
+          Style="overflow:hidden; border-radius:20px"
+          Elevation="0"
+          Width="500px">
+    <MudPaper Class="d-flex flex-row align-center justify-space-between"
+              Elevation="0"
+              Width="100%">
+        <MudText Style="font-weight:bold; font-size:larger">
+            Name your board
+        </MudText>
+    </MudPaper>
+    <MudTextField @bind-Value=@BoardName
+                  Placeholder="Board's name'"
+                  Immediate="true"
+                  DisableUnderLine="true"
+                  FullWidth="true"
+                  Variant="Variant.Outlined"
+                  Margin="Margin.Dense"
+                  Clearable="true" />
+    <MudText Style="font-weight:bold; font-size:larger">
+        Add your custom sections
+    </MudText>
+    <MudPaper Class="d-flex flex-column gap-1"
+              Style="overflow:scroll"
+              Elevation="0"
+              MaxHeight="100px">
+        @foreach (string Section in Sections)
+        {
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>
+                    @Section
+                </MudText>
+                <MudIconButton Size="Size.Small"
+                               Icon="@Icons.Material.Filled.Delete"
+                               OnClick="()=>DeleteSection(Section)" />
+            </MudPaper>
+        }
+    </MudPaper>
+    <MudTextField @bind-Value=@NewSectionName
+                  Placeholder="New Section"
+                  Immediate="true"
+                  DisableUnderLine="true"
+                  FullWidth="true"
+                  Variant="Variant.Outlined"
+                  Margin="Margin.Dense"
+                  Clearable="true"
+                  TextUpdateSuppression="false"
+                  OnKeyDown="((KeyboardEventArgs e)=>AddSection(e))" />
+    <MudText Style="font-weight:bold; font-size:larger">
+        Choose your display icon
+    </MudText>
+    <MudPaper Class="d-flex flex-column gap-2"
+              Style="overflow:scroll"
+              Elevation="0">
+        <MudChipSet @bind-SelectedChip=SelectedChip
+                    Style="display:grid; grid-gap:8px;grid-template-columns:repeat(3,1fr);">
+            <MudChip Default="true"
+                     Text="None"
+                     Size="Size.Small"
+                     Icon="@Icons.Material.Filled.QuestionMark"
+                     Variant="Variant.Text"
+                     SelectedColor="Color.Info" />
+            @foreach ((string, string) Icon in IconToSelect)
+            {
+                <MudChip Text=@Icon.Item2
+                         Size="Size.Small"
+                         Icon=@Icon.Item1
+                         Variant="Variant.Text"
+                         SelectedColor="Color.Info" />
+            }
+        </MudChipSet>
+    </MudPaper>
+    <MudButton Class="rounded-pill justify-self-center"
+               Size="Size.Small"
+               Color="Color.Info"
+               IconSize="Size.Small"
+               OnClick="CreateNewBoard">
+        <MudText>Create</MudText>
+    </MudButton>
+</MudPaper>
+
+@code
+{
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    public string BoardName { get; set; } = string.Empty;
+    public List<string> Sections { get; set; } = new List<string>();
+    public MudChip SelectedChip { get; set; } = null!;
+
+    public string NewSectionName { get; set; } = string.Empty;
+    public List<(string, string)> IconToSelect = new List<(string, string)>();
+
+    public void AddSection(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" && NewSectionName != string.Empty && NewSectionName != null)
+        {
+            Sections.Add(NewSectionName);
+            NewSectionName = string.Empty;
+            StateHasChanged();
+        }
+    }
+    public void DeleteSection(string Section)
+    {
+        Sections.Remove(Section);
+    }
+    public void CreateNewBoard()
+    {
+        /*what u need here:
+        * BoardName
+        * Sections
+        * SelectedChip.Icon
+        */
+        BoardName = string.Empty;
+        Sections.Clear();
+        NewSectionName = string.Empty;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        IconToSelect.Add((Icons.Material.Filled.Business, "Business"));
+        IconToSelect.Add((Icons.Material.Filled.Book, "Education"));
+        IconToSelect.Add((Icons.Material.Filled.Engineering, "Engineering"));
+        IconToSelect.Add((Icons.Material.Filled.Speaker, "Marketing"));
+        IconToSelect.Add((Icons.Material.Filled.Support, "Support"));
+        IconToSelect.Add((Icons.Material.Filled.Draw, "Creativity"));
+        IconToSelect.Add((Icons.Material.Filled.Man, "Human resource"));
+        IconToSelect.Add((Icons.Material.Filled.Settings, "Operations"));
+        IconToSelect.Add((Icons.Material.Filled.PointOfSale, "Sales"));
+        IconToSelect.Add((Icons.Material.Filled.Money, "Finance"));
+        IconToSelect.Add((Icons.Material.Filled.LocalGroceryStore, "Personal"));
+        IconToSelect.Add((Icons.Material.Filled.Group, "Team management"));
+        IconToSelect.Add((Icons.Material.Filled.Checklist, "Project management"));
+    }
+}

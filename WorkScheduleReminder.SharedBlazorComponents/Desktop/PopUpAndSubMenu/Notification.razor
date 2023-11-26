@@ -1,41 +1,49 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
           Class="d-flex flex-column gap-2 pa-2"
-          Style="border-radius: 20px;"
+          Style="overflow:hidden;border-radius:20px;"
           Elevation="0"
-          Width="450px"
+          Width="500px"
           Height="80vh">
-    <MudPaper Class="d-flex flex-row pa-2"
+    <MudPaper Class="d-flex flex-row align-center justify-space-between"
               Elevation="0"
               Width="100%">
-        <MudPaper Class=""
-                  Elevation="0"
-                  Width="50%">
-            <MudSwitch Checked="SwitchChecked"
-                       Label="@SwitchText"
-                       Color="Color.Tertiary"
-					   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
-        </MudPaper>
+        <MudSwitch Checked="SwitchChecked"
+                   Size="Size.Medium"
+                   Label="@SwitchText"
+                   Color="Color.Tertiary"
+                   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
         <MudPaper Class="d-flex gap-2"
-                  Elevation="0"
-                  Width="50%">
+                  Elevation="0">
             <MudButton Class="rounded-pill"
-                       Size="Size.Small">
+                       Size="Size.Small"
+                       OnClick="MarkAllAsRead">
                 <MudText>Mark all as read</MudText>
             </MudButton>
             <MudButton Class="rounded-pill"
-                       Size="Size.Small">
+                       Size="Size.Small"
+                       OnClick="ClearAll">
                 <MudText>Clear all</MudText>
             </MudButton>
         </MudPaper>
     </MudPaper>
-    <MudPaper Class="d-flex flex-column pa-2"
+    <MudPaper Class="d-flex flex-column pa-2 gap-2"
+              Style="overflow:scroll;"
               Elevation="0"
-              Width="100%">
-        @*ex item*@
-        <MudPaper Class="d-flex flex-grow-1 pa-2 rounded-pill">
-            <MudText Class="d-flex flex-grow-1">abc</MudText>
-        </MudPaper>
+              Width="100%"
+              Height="100%">
         @*for go here*@
+        @foreach (int i in Enumerable.Range(0, 30))
+        {
+            <MudPaper Class="d-flex align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText Style="font-size:large">
+                    Notification @i
+                </MudText>
+                <MudIconButton Size="Size.Medium"
+                               Icon="@Icons.Material.Filled.MoreHoriz" />
+            </MudPaper>
+        }
     </MudPaper>
 </MudPaper>
 
@@ -44,10 +52,10 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public bool   SwitchChecked { get; set; } = false;
-	public string SwitchText    { get; set; } = "Unread";
+    public bool SwitchChecked { get; set; } = false;
+    public string SwitchText { get; set; } = "Unread";
 
-	public void OnSwitchCheckedChanged(bool _)
+    public void OnSwitchCheckedChanged(bool _)
     {
         SwitchChecked = !SwitchChecked;
         if (SwitchChecked)
@@ -58,5 +66,13 @@
         {
             SwitchText = "Unread";
         }
+    }
+    public void MarkAllAsRead()
+    {
+
+    }
+    public void ClearAll()
+    {
+
     }
 }

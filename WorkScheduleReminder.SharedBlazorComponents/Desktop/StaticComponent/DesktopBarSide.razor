@@ -1,8 +1,9 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
 <MudPaper Class="d-flex flex-column gap-2 pa-2"
+          Style="overflow-y:scroll"
           Elevation="0"
           Height="100%"
-          Width="250px">
+          Width="300px">
     <MudButton Size="Size.Large"
                FullWidth="true">
         <MudPaper Class="d-flex flex-row gap-2 align-center"
@@ -30,8 +31,8 @@
                        StartIcon="@Icons.Material.Filled.Today"
                        Size="Size.Medium"
                        FullWidth="true"
-                       Href="kanban"
-                       OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.DefaultView))">
+                       Href="myday"
+                       OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.MyDay))">
                 <MudText Style="font-family:inherit">My day</MudText>
             </MudButton>
             <MudButton Class="justify-start"
@@ -56,29 +57,36 @@
                          DisableGutters="true"
                          Dense="true">
                 <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center gap-2"
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
                               Elevation="0"
                               Width="100%">
-                        <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
-                                 Size="Size.Medium" />
-                        <MudText Style="font-family:inherit;font-weight:bolder;">
-                            Custom views
-                        </MudText>
+                        <MudPaper Class=" d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
+                                     Size="Size.Medium" />
+                            <MudText Style="font-weight:bolder;">
+                                Custom views
+                            </MudText>
+                        </MudPaper>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small" />
+                                       Size="Size.Small"
+                                       OnClick="ToggleCreateCustomView" />
                     </MudPaper>
                 </ChildContent>
                 <NestedList>
-                    @*example item*@
-                    <MudButton Class="justify-start"
-                               StartIcon="@Icons.Material.Filled.Today"
-                               Size="Size.Medium"
-                               FullWidth="true"
-                               Href="calendar/hehe"
-                               OnClick="@(()=>Update("Example Custom View", @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
-                        <MudText Style="font-family:inherit">Example custom view</MudText>
-                    </MudButton>
-                    @*for go here*@
+                    @foreach (CustomView View in CustomViewList)
+                    {
+                        <MudButton Class="justify-start"
+                                   StartIcon="@Icons.Material.Filled.Today"
+                                   Size="Size.Medium"
+                                   FullWidth="true"
+                                   Href="test"
+                                   OnClick="@(()=>Update(View.Name, @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
+                            <MudText Style="overflow:hidden">
+                                @View.Name
+                            </MudText>
+                        </MudButton>
+                    }
                 </NestedList>
             </MudListItem>
             @*workspace*@
@@ -87,48 +95,71 @@
                          DisableGutters="true"
                          Dense="true">
                 <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center gap-2"
+                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
                               Elevation="0"
                               Width="100%">
-                        <MudIcon Icon="@Icons.Material.Filled.Workspaces"
-                                 Size="Size.Medium" />
-                        <MudText Style="font-family:inherit;font-weight:bolder;">
-                            Workspaces
-                        </MudText>
+                        <MudPaper Class="d-flex flex-row gap-2"
+                                  Elevation="0">
+                            <MudIcon Icon="@Icons.Material.Filled.Workspaces"
+                                     Size="Size.Medium" />
+                            <MudText Style="font-weight:bolder;">
+                                Workspaces
+                            </MudText>
+                        </MudPaper>
                         <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small" />
-                        <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
                                        Size="Size.Small"
-                                       OnClick="(()=>{InviteVisible=!InviteVisible;})" />
+                                       OnClick="ToggleCreateBoard" />
+                        @* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                        Size="Size.Small"
+                        OnClick="ToggleInvite" /> *@
                     </MudPaper>
                 </ChildContent>
                 <NestedList>
-                    @*example item*@
-                    <MudButton Class="justify-start"
-                               StartIcon="@Icons.Material.Filled.Today"
-                               Size="Size.Medium"
-                               FullWidth="true"
-                               Href="table"
-                               OnClick="@(()=>Update("Example Board", @Icons.Material.Filled.Today,Helper.ViewType.WorkspaceView))">
-                        <MudText Style="font-family:inherit">Example Board</MudText>
-                    </MudButton>
-                    @*for go here*@
+                    @foreach (Board board in BoardList)
+                    {
+                        <MudButton Class="justify-start"
+                                   StartIcon="@board.Icon"
+                                   Size="Size.Medium"
+                                   FullWidth="true"
+                                   Href="table"
+                                   OnClick="@(()=>Update(board.Name, board.Icon,Helper.ViewType.WorkspaceView))">
+                            <MudText Style="overflow:hidden">
+                                @board.Name
+                            </MudText>
+                        </MudButton>
+                    }
                 </NestedList>
             </MudListItem>
         </MudList>
     </MudPaper>
 </MudPaper>
-<MudOverlay Class="border-2"
+@* <MudOverlay Class="border-2"
             Visible="InviteVisible"
             DarkBackground="true"
             AutoClose="true"
-            OnClick="(()=>{InviteVisible=!InviteVisible;})">
+            OnClick="ToggleInvite">
     <Invite @onclick:stopPropagation />
+</MudOverlay> *@
+<MudOverlay Class="border-2"
+            Visible="CreateBoardVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleCreateBoard">
+    <CreateBoard @onclick:stopPropagation />
+</MudOverlay>
+<MudOverlay Class="border-2"
+            Visible="CreateCustomViewVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleCreateCustomView">
+    <CreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-    private bool InviteVisible { get; set; } = false;
+    public bool InviteVisible { get; set; } = false;
+    public bool CreateBoardVisible { get; set; } = false;
+    public bool CreateCustomViewVisible { get; set; } = false;
     [Parameter]
     public string? Name { get; set; }
     [Parameter]
@@ -141,6 +172,20 @@
     public EventCallback<string> IconChanged { get; set; }
     [Parameter]
     public EventCallback<Helper.ViewType> TypeChanged { get; set; }
+
+    public record CustomView
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+    public record Board
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
+    }
+    public List<CustomView> CustomViewList { get; set; } = new List<CustomView>();
+    public List<Board> BoardList { get; set; } = new List<Board>();
+
+
     Task UpdateName(string newName)
     {
         Name = newName;
@@ -162,5 +207,25 @@
         UpdateIcon(newIcon);
         UpdateType(newType);
     }
+    public void ToggleInvite()
+    {
+        InviteVisible = !InviteVisible;
+    }
+    public void ToggleCreateBoard()
+    {
+        CreateBoardVisible = !CreateBoardVisible;
+    }
+    public void ToggleCreateCustomView()
+    {
+        CreateCustomViewVisible = !CreateCustomViewVisible;
+    }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CustomViewList.Add(new CustomView() { Name = "CustomView1" });
+        CustomViewList.Add(new CustomView() { Name = "CustomView2" });
+        BoardList.Add(new Board() { Name = "Board1", Icon = Icons.Material.Filled.Abc });
+        BoardList.Add(new Board() { Name = "Board2", Icon = Icons.Material.Filled.Abc });
+    }
 }

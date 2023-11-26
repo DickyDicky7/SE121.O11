@@ -24,7 +24,7 @@
                       MaxHeight="100%">
                 @foreach (Task task in Section.Item2)
                 {
-                    
+
                     <MudButton Class=""
                                FullWidth="true"
                                Size="Size.Medium"
@@ -50,24 +50,22 @@
         </MudPaper>
     }
 </MudPaper>
-<MudOverlay Class="border-2"
-            Visible="@TaskDetailVisible"
+<MudOverlay Visible="@TaskDetailVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" WorkspaceTask="true"/>
 </MudOverlay>
 
 @code
 {
-    MudButton temp;
     [Parameter]
     public string? Page { get; set; }
-    private string NewTask { get; set; } = string.Empty;
-    private List<(string, List<Task>)> Sections = new List<(string, List<Task>)>();
+    public string NewTask { get; set; } = string.Empty;
+    public List<(string, List<Task>)> Sections = new List<(string, List<Task>)>();
 
-    private string CurrentTitle { get; set; } = string.Empty;
-    private bool TaskDetailVisible { get; set; } = false;
+    public string CurrentTitle { get; set; } = string.Empty;
+    public bool TaskDetailVisible { get; set; } = false;
     public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
     public List<Task> Tasks = new List<Task>();
     protected override void OnParametersSet()
@@ -81,19 +79,19 @@
         }
         InitSection();
     }
-    private void OnTaskClick(string TaskTitle)
+    public void OnTaskClick(string TaskTitle)
     {
         TaskDetailVisible = !TaskDetailVisible;
         CurrentTitle = TaskTitle;
     }
-    private void InitSection()
+    public void InitSection()
     {
         if (Page == "next7days")
         {
-            foreach(int i in Enumerable.Range(0,7))
+            foreach (int i in Enumerable.Range(0, 7))
             {
                 List<Task> temp = new List<Task>();
-                foreach(Task task in Tasks)
+                foreach (Task task in Tasks)
                 {
                     if (task.DueDay == DateTime.Now.AddDays(i).Date)
                     {
@@ -120,17 +118,17 @@
             List<Task> tomorrow = new List<Task>();
             List<Task> upcoming = new List<Task>();
             List<Task> someday = new List<Task>();
-            foreach(Task task in Tasks)
+            foreach (Task task in Tasks)
             {
-                if(task.DueDay == DateTime.Now.Date)
+                if (task.DueDay == DateTime.Now.Date)
                 {
                     today.Add(task);
                 }
-                else if(task.DueDay == DateTime.Now.AddDays(1).Date)
+                else if (task.DueDay == DateTime.Now.AddDays(1).Date)
                 {
                     tomorrow.Add(task);
                 }
-                else if(task.DueDay >= DateTime.Now.AddDays(2).Date &&
+                else if (task.DueDay >= DateTime.Now.AddDays(2).Date &&
                         task.DueDay <= DateTime.Now.AddDays(6).Date)
                 {
                     upcoming.Add(task);
@@ -138,7 +136,7 @@
                 else
                 {
                     someday.Add(task);
-                } 
+                }
             }
             Sections.Add(("Today", today));
             Sections.Add(("Tomorrow", tomorrow));
@@ -147,7 +145,9 @@
         }
         else
         {
-            
+            Sections.Add(("Planning", Tasks));
+            Sections.Add(("Executing", Tasks));
+            Sections.Add(("Complete", Tasks));
         }
     }
 }

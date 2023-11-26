@@ -6,18 +6,25 @@
     @* Toolbar1 *@
     <MudPaper Class="d-flex flex-row flex-wrap gap-2"
               Elevation="0">
-        <DesktopViewTitle Name="@ActiveName"
-                          Icon="@ActiveIcon" />
-        <DesktopButtonShare Type="@ActiveType" />
-        @if (ActiveType == Helper.ViewType.WorkspaceView)
+        @if (ActiveType != Helper.ViewType.MyDay)
         {
-            <DesktopButtonView />
+            <DesktopViewTitle Name="@ActiveName"
+                              Icon="@ActiveIcon" />
+            <DesktopButtonMember Type="@ActiveType" />
+            @if (ActiveType == Helper.ViewType.WorkspaceView)
+            {
+                <DesktopButtonView />
+            }
+            @if (ActiveType == Helper.ViewType.CustomView || ActiveType == Helper.ViewType.WorkspaceView)
+            {
+                <DesktopButtonFilter />
+            }
+            <DesktopButtonMore Type="@ActiveType" />
         }
-        @if (ActiveType == Helper.ViewType.CustomView || ActiveType == Helper.ViewType.WorkspaceView)
+        else
         {
-            <DesktopButtonFilter />
+            <DesktopMyDayTitle />
         }
-        <DesktopButtonMore Type="@ActiveType" />
     </MudPaper>
     @* Toolbar2 *@
     <MudPaper Class="d-flex flex-row flex-wrap gap-2 py-2"
@@ -31,7 +38,8 @@
                        OnClick="(()=>{NotiVisible=!NotiVisible;})" />
         <MudIconButton Class="rounded-cycle"
                        Size="Size.Small"
-                       Icon="@Icons.Material.Filled.Search" />
+                       Icon="@Icons.Material.Filled.Search"
+                       OnClick="()=>{SearchVisible=!SearchVisible;}" />
     </MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
@@ -41,10 +49,17 @@
             OnClick="(()=>{NotiVisible=!NotiVisible;})">
     <Notification @onclick:stopPropagation />
 </MudOverlay>
+<MudOverlay Visible="@SearchVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{SearchVisible=!SearchVisible;})">
+    <SearchName @onclick:stopPropagation />
+</MudOverlay>
 
 @code
 {
-    private bool NotiVisible { get; set; } = false;
+    public bool NotiVisible { get; set; } = false;
+    public bool SearchVisible { get; set; } = false;
     [Parameter]
     public string? ActiveName { get; set; }
     [Parameter]

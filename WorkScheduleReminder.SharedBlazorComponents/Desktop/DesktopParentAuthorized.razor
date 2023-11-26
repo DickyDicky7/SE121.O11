@@ -3,26 +3,26 @@
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponent
 
 <MudLayout>
-	<MudPaper Class="d-flex flex-row mud-theme-info"
-			  Elevation="0"
-			  Height="100vh"
-			  Width="100vw">
-		@* Sidebar *@
-		<DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
-		@*Top bar & mainscreen*@
-		<MudPaper Class="d-flex flex-column"
-				  Style="background-color:transparent;overflow:hidden;"
-				  Elevation="0"
-				  Height="100%"
-				  Width="100%">
-			@* Topbar *@
-			<DesktopBarTop ActiveName="@ActiveName"
-						   ActiveIcon="@ActiveIcon"
-						   ActiveType="@ActiveType" />
-			@*MainScreen*@
-			@MainChildContent
-		</MudPaper>
-	</MudPaper>
+    <MudPaper Class="@($"d-flex flex-row {Theme}")"
+              Elevation="0"
+              Height="100vh"
+              Width="100vw">
+        @* Sidebar *@
+        <DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
+        @*Top bar & mainscreen*@
+        <MudPaper Class="d-flex flex-column"
+                  Style="background-color:transparent;overflow:hidden;"
+                  Elevation="0"
+                  Height="100%"
+                  Width="100%">
+            @* Topbar *@
+            <DesktopBarTop ActiveName="@ActiveName"
+                           ActiveIcon="@ActiveIcon"
+                           ActiveType="@ActiveType" />
+            @*MainScreen*@
+            @MainChildContent
+        </MudPaper>
+    </MudPaper>
 </MudLayout>
 
 @code
@@ -31,8 +31,21 @@
 	[Parameter]
 	public RenderFragment? MainChildContent { get; set; }
 
-	public string? ActiveName { get; set; }
-	public string? ActiveIcon { get; set; }
-	public Helper.ViewType ActiveType { get; set; }
+    public string? ActiveName { get; set; }
+    public string? ActiveIcon { get; set; }
+    public Helper.ViewType ActiveType { get; set; }
 
+    public string Theme { get; set; } = "mud-theme-info";
+    protected override Task OnParametersSetAsync()
+    {
+        if (ActiveType == Helper.ViewType.MyDay)
+        {
+            Theme = string.Empty;
+        }
+        else
+        {
+            Theme = "mud-theme-info";
+        }
+        return base.OnParametersSetAsync();
+    }
 }
