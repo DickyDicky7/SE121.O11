@@ -1,137 +1,145 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
+@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@using  Supabase.Realtime
+@using  Supabase.Realtime.PostgresChanges
+
 <MudPaper Class="d-flex flex-column gap-2 pa-2"
-          Style="overflow-y:scroll"
-          Elevation="0"
-          Height="100%"
-          Width="300px">
-    <MudButton Size="Size.Large"
-               FullWidth="true">
-        <MudPaper Class="d-flex flex-row gap-2 align-center"
-                  Elevation="0"
-                  Width="100%">
-            <MudAvatar>
-                <MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
-            </MudAvatar>
-            <MudText Style="font-family:inherit;font-size:large">
-                -Name-
-            </MudText>
-        </MudPaper>
-    </MudButton>
-    <MudPaper Class=""
-              Style=""
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        <MudList Class=""
-                 Dense="true"
-                 DisableGutters="true"
-                 DisablePadding="true">
-            @*default views*@
-            <MudButton Class="justify-start"
-                       StartIcon="@Icons.Material.Filled.Today"
-                       Size="Size.Medium"
-                       FullWidth="true"
-                       Href="myday"
-                       OnClick="@(()=>Update("My day", @Icons.Material.Filled.Today, Helper.ViewType.MyDay))">
-                <MudText Style="font-family:inherit">My day</MudText>
-            </MudButton>
-            <MudButton Class="justify-start"
-                       StartIcon="@Icons.Material.Filled.NextWeek"
-                       Size="Size.Medium"
-                       FullWidth="true"
-                       Href="kanban/next7days"
-                       OnClick="@(()=>Update("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
-                <MudText Style="font-family:inherit">Next 7 days</MudText>
-            </MudButton>
-            <MudButton Class="justify-start"
-                       StartIcon="@Icons.Material.Filled.Task"
-                       Size="Size.Medium"
-                       FullWidth="true"
-                       Href="kanban/alltasks"
-                       OnClick="@(()=>Update("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
-                <MudText Style="font-family:inherit">All my tasks</MudText>
-            </MudButton>
-            @*custom views*@
-            <MudListItem Class=""
-                         InitiallyExpanded="true"
-                         DisableGutters="true"
-                         Dense="true">
-                <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudPaper Class=" d-flex flex-row gap-2"
-                                  Elevation="0">
-                            <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
-                                     Size="Size.Medium" />
-                            <MudText Style="font-weight:bolder;">
-                                Custom views
-                            </MudText>
-                        </MudPaper>
-                        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="ToggleCreateCustomView" />
-                    </MudPaper>
-                </ChildContent>
-                <NestedList>
-                    @foreach (CustomView View in CustomViewList)
-                    {
-                        <MudButton Class="justify-start"
-                                   StartIcon="@Icons.Material.Filled.Today"
-                                   Size="Size.Medium"
-                                   FullWidth="true"
-                                   Href="test"
-                                   OnClick="@(()=>Update(View.Name, @Icons.Material.Filled.Today, Helper.ViewType.CustomView))">
-                            <MudText Style="overflow:hidden">
-                                @View.Name
-                            </MudText>
-                        </MudButton>
-                    }
-                </NestedList>
-            </MudListItem>
-            @*workspace*@
-            <MudListItem Class=""
-                         InitiallyExpanded="true"
-                         DisableGutters="true"
-                         Dense="true">
-                <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudPaper Class="d-flex flex-row gap-2"
-                                  Elevation="0">
-                            <MudIcon Icon="@Icons.Material.Filled.Workspaces"
-                                     Size="Size.Medium" />
-                            <MudText Style="font-weight:bolder;">
-                                Workspaces
-                            </MudText>
-                        </MudPaper>
-                        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="ToggleCreateBoard" />
-                        @* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                        Size="Size.Small"
-                        OnClick="ToggleInvite" /> *@
-                    </MudPaper>
-                </ChildContent>
-                <NestedList>
-                    @foreach (Board board in BoardList)
-                    {
-                        <MudButton Class="justify-start"
-                                   StartIcon="@board.Icon"
-                                   Size="Size.Medium"
-                                   FullWidth="true"
-                                   Href="table"
-                                   OnClick="@(()=>Update(board.Name, board.Icon,Helper.ViewType.WorkspaceView))">
-                            <MudText Style="overflow:hidden">
-                                @board.Name
-                            </MudText>
-                        </MudButton>
-                    }
-                </NestedList>
-            </MudListItem>
-        </MudList>
-    </MudPaper>
+		  Style="overflow-y:scroll"
+		  Elevation="0"
+		  Width="300px"
+		  Height="100%">
+	<MudButton Size="Size.Large"
+			   FullWidth="true">
+		<MudPaper Class="d-flex flex-row gap-2 align-center"
+				  Elevation="0"
+				  Width="100%">
+			<MudAvatar>
+				<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+			</MudAvatar>
+			<MudText Style="font-family:inherit;font-size:large">
+				-Name-
+			</MudText>
+		</MudPaper>
+	</MudButton>
+	<MudPaper Class=""
+			  Style=""
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		<MudList Class=""
+				 Dense="true"
+				 DisableGutters="true"
+				 DisablePadding="true">
+			@*default views*@
+			<MudButton Class="justify-start"
+					   StartIcon="@Icons.Material.Filled.Today"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Href="myday"
+					   OnClick="@(async () => await Update
+("My day", @Icons.Material.Filled.Today, Helper.ViewType.MyDayView))">
+				<MudText Style="font-family:inherit">My day</MudText>
+			</MudButton>
+			<MudButton Class="justify-start"
+					   StartIcon="@Icons.Material.Filled.NextWeek"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Href="kanban/next7days"
+					   OnClick="@(async () => await Update
+("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
+				<MudText Style="font-family:inherit">Next 7 days</MudText>
+			</MudButton>
+			<MudButton Class="justify-start"
+					   StartIcon="@Icons.Material.Filled.Task"
+					   Size="Size.Medium"
+					   FullWidth="true"
+					   Href="kanban/alltasks"
+					   OnClick="@(async () => await Update
+("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
+				<MudText Style="font-family:inherit">All my tasks</MudText>
+			</MudButton>
+			@*custom views*@
+			<MudListItem Class=""
+						 InitiallyExpanded="true"
+						 DisableGutters="true"
+						 Dense="true">
+				<ChildContent>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class=" d-flex flex-row gap-2"
+								  Elevation="0">
+							<MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
+									 Size="Size.Medium" />
+							<MudText Style="font-weight:bolder;">
+								Custom views
+							</MudText>
+						</MudPaper>
+						<MudIconButton Icon="@Icons.Material.Filled.Add"
+									   Size="Size.Small"
+									   OnClick="ToggleCreateCustomView" />
+					</MudPaper>
+				</ChildContent>
+				<NestedList>
+					@foreach (Models.CustomView customView in CustomViews)
+					{
+						<MudButton Class="justify-start"
+								   StartIcon="@Icons.Material.Filled.Today"
+								   Size="Size.Medium"
+								   FullWidth="true"
+								   Href="test"
+								   OnClick="@(CustomViewOnClick(customView))">
+							<MudText Style="overflow:hidden">
+								@customView.Name
+							</MudText>
+						</MudButton>
+					}
+				</NestedList>
+			</MudListItem>
+			@*workspace*@
+			<MudListItem Class=""
+						 Dense="true"
+						 DisableGutters="true"
+						 InitiallyExpanded="true">
+				<ChildContent>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class="d-flex flex-row gap-2"
+								  Elevation="0">
+							<MudIcon Icon="@Icons.Material.Filled.Workspaces"
+									 Size="Size.Medium" />
+							<MudText Style="font-weight:bolder;">
+								Workspaces
+							</MudText>
+						</MudPaper>
+						<MudIconButton Icon="@Icons.Material.Filled.Add"
+									   Size="Size.Small"
+									   OnClick="ToggleCreateBoard" />
+						@* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+						Size="Size.Small"
+						OnClick="ToggleInvite" /> *@
+					</MudPaper>
+				</ChildContent>
+				<NestedList>
+					@foreach (Models.Board board in Boards)
+					{
+						<MudButton Class="justify-start"
+								   Size="Size.Medium"
+								   FullWidth="true"
+								   Href="table"
+								   OnClick="@(BoardOnClick(board))">
+							<MudText Style="overflow:hidden">
+								@board.Name
+							</MudText>
+						</MudButton>
+					}
+				</NestedList>
+			</MudListItem>
+		</MudList>
+	</MudPaper>
 </MudPaper>
 @* <MudOverlay Class="border-2"
             Visible="InviteVisible"
@@ -141,91 +149,161 @@
     <Invite @onclick:stopPropagation />
 </MudOverlay> *@
 <MudOverlay Class="border-2"
-            Visible="CreateBoardVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateBoard">
-    <CreateBoard @onclick:stopPropagation />
+			Visible="CreateBoardVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateBoard">
+	<CreateBoard @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
-            Visible="CreateCustomViewVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateCustomView">
-    <CreateCustomView @onclick:stopPropagation />
+			Visible="CreateCustomViewVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateCustomView">
+	<CreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
-    public bool InviteVisible { get; set; } = false;
-    public bool CreateBoardVisible { get; set; } = false;
-    public bool CreateCustomViewVisible { get; set; } = false;
-    [Parameter]
-    public string? Name { get; set; }
-    [Parameter]
-    public string? Icon { get; set; }
-    [Parameter]
-    public Helper.ViewType Type { get; set; }
-    [Parameter]
-    public EventCallback<string> NameChanged { get; set; }
-    [Parameter]
-    public EventCallback<string> IconChanged { get; set; }
-    [Parameter]
-    public EventCallback<Helper.ViewType> TypeChanged { get; set; }
+	public bool           InviteVisible { get; set; } = false;
+	public bool      CreateBoardVisible { get; set; } = false;
+	public bool CreateCustomViewVisible { get; set; } = false;
+	[Parameter]
+	public string ActiveViewName { get; set; } = null!;
+	[Parameter]
+	public string ActiveViewIcon { get; set; } = null!;
+	[Parameter]
+	public Guid ActiveBoard_____Id { get; set; }
+	[Parameter]
+	public Guid ActiveCustomViewId { get; set; }
+	[Parameter]
+	public Helper.ViewType ActiveViewType { get; set; }
+	[Parameter]
+	public EventCallback<string> ActiveViewNameChanged { get; set; }
+	[Parameter]
+	public EventCallback<string> ActiveViewIconChanged { get; set; }
+	[Parameter]
+	public EventCallback<Guid> ActiveBoard_____IdChanged { get; set; }
+	[Parameter]
+	public EventCallback<Guid> ActiveCustomViewIdChanged { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewType> ActiveViewTypeChanged { get; set; }
 
-    public record CustomView
-    {
-        public string Name { get; set; } = string.Empty;
-    }
-    public record Board
-    {
-        public string Name { get; set; } = string.Empty;
-        public string Icon { get; set; } = string.Empty;
-    }
-    public List<CustomView> CustomViewList { get; set; } = new List<CustomView>();
-    public List<Board> BoardList { get; set; } = new List<Board>();
+	public RealtimeChannel RealtimeChannelBoards      { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelCustomViews { get; set; } = null!;
+	public List<Models.Board     > Boards      { get; set; } = new();
+	public List<Models.CustomView> CustomViews { get; set; } = new();
 
+	public async Task UpdateActiveViewName(string newActiveViewName)
+	{
+		ActiveViewName = newActiveViewName;
+		await ActiveViewNameChanged.InvokeAsync(ActiveViewName);
+	}
 
-    Task UpdateName(string newName)
-    {
-        Name = newName;
-        return NameChanged.InvokeAsync(Name);
-    }
-    Task UpdateIcon(string newIcon)
-    {
-        Icon = newIcon;
-        return IconChanged.InvokeAsync(Icon);
-    }
-    Task UpdateType(Helper.ViewType newType)
-    {
-        Type = newType;
-        return TypeChanged.InvokeAsync(Type);
-    }
-    void Update(string newName, string newIcon, Helper.ViewType newType)
-    {
-        UpdateName(newName);
-        UpdateIcon(newIcon);
-        UpdateType(newType);
-    }
-    public void ToggleInvite()
-    {
-        InviteVisible = !InviteVisible;
-    }
-    public void ToggleCreateBoard()
-    {
-        CreateBoardVisible = !CreateBoardVisible;
-    }
-    public void ToggleCreateCustomView()
-    {
-        CreateCustomViewVisible = !CreateCustomViewVisible;
-    }
+	public async Task UpdateActiveViewIcon(string newActiveViewIcon)
+	{
+		ActiveViewIcon = newActiveViewIcon;
+		await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
+	}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        CustomViewList.Add(new CustomView() { Name = "CustomView1" });
-        CustomViewList.Add(new CustomView() { Name = "CustomView2" });
-        BoardList.Add(new Board() { Name = "Board1", Icon = Icons.Material.Filled.Abc });
-        BoardList.Add(new Board() { Name = "Board2", Icon = Icons.Material.Filled.Abc });
-    }
+	public async Task UpdateActiveBoard_____Id(Guid newActiveBoard_____Id)
+	{
+		ActiveBoard_____Id = newActiveBoard_____Id;
+		await ActiveBoard_____IdChanged.InvokeAsync(ActiveBoard_____Id);
+	}
+
+	public async Task UpdateActiveCustomViewId(Guid newActiveCustomViewId)
+	{
+		ActiveCustomViewId = newActiveCustomViewId;
+		await ActiveCustomViewIdChanged.InvokeAsync(ActiveCustomViewId);
+	}
+
+	public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
+	{
+		ActiveViewType = newActiveViewType;
+		await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
+	}
+
+	public async Task Update(
+	string newActiveViewName,
+	string newActiveViewIcon, Helper.ViewType newActiveViewType)
+	{
+		await UpdateActiveViewName(newActiveViewName);
+		await UpdateActiveViewIcon(newActiveViewIcon);
+		await UpdateActiveViewType(newActiveViewType);
+	}
+
+	public Func<Task> BoardOnClick(Models.Board board)
+	{
+		return async () =>
+		{
+			await UpdateActiveBoard_____Id(board.Id);
+			await Update(board.Name, Icons.Material.Filled.Circle, Helper.ViewType.WorkspaceView);
+		};
+	}
+
+	public Func<Task> CustomViewOnClick(Models.CustomView customView)
+	{
+		return async () =>
+		{
+			await UpdateActiveCustomViewId(customView.Id);
+			await Update(customView.Name, Icons.Material.Filled.Today, Helper.ViewType.CustomView);
+		};
+	}
+
+	public void ToggleInvite()
+	{
+		InviteVisible = !
+		InviteVisible;
+	}
+
+	public void ToggleCreateBoard()
+	{
+		CreateBoardVisible = !
+		CreateBoardVisible;
+	}
+
+	public void ToggleCreateCustomView()
+	{
+		CreateCustomViewVisible = !
+		CreateCustomViewVisible;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await SupabaseClient.Realtime.  ConnectAsync();
+		await FetchBoards();
+		await FetchCustomViews();
+		RealtimeChannelBoards =
+		await SupabaseClient.From<Models.Member    >().On(PostgresChangesOptions.ListenType.All,
+		async (sender, changeEventArgs) =>
+		{
+			await FetchBoards();
+			await InvokeAsync(StateHasChanged);
+		});
+		RealtimeChannelCustomViews =
+		await SupabaseClient.From<Models.CustomView>().On(PostgresChangesOptions.ListenType.All,
+		async (sender, changeEventArgs) =>
+		{
+			await FetchCustomViews();
+			await InvokeAsync(StateHasChanged);
+		});
+	}
+
+	public async Task FetchBoards()
+	{
+		Boards      = (await SupabaseClient.From<Models.Board     >().Get()).Models;
+	}
+
+	public async Task FetchCustomViews()
+	{
+		CustomViews = (await SupabaseClient.From<Models.CustomView>().Get()).Models;
+	}
+
+	public void Dispose()
+	{
+		RealtimeChannelBoards     .Unsubscribe();
+		RealtimeChannelCustomViews.Unsubscribe();
+	}
 }

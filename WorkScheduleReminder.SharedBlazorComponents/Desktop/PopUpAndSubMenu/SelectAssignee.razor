@@ -1,74 +1,78 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column gap-2 pa-2"
-          Style="border-radius:20px;overflow:hidden"
-          Elevation="0"
-          Width="400px"
-          Height="400px">
-    <MudText Style="font-size:larger;font-weight:bold">
-        Select assignees
-    </MudText>
-    <MudPaper Class="d-flex flex-column"
-              Style="overflow-y:scroll"
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        @foreach (Assignee Assignee in AssigneeList)
-        {
-            <MudPaper Class="d-flex flex-row"
-                      Elevation="0"
-                      Width="100%">
-                <MudButton Class="rounded pill"
-                           FullWidth="true"
-                           OnClick="()=>{Assignee.Checked=!Assignee.Checked;}">
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Style="background-color:transparent"
-                              Elevation="0"
-                              Width="100%">
-                        <MudText>@Assignee.Name</MudText>
-                        <MudCheckBox @bind-Checked=Assignee.Checked
-                                     ReadOnly="true"
-                                     CheckedIcon="@Icons.Material.Filled.Check"
-                                     UncheckedIcon="null"
-                                     Size="Size.Small"
-                                     Color="Color.Info"
-                                     Dense="true"
-                                     DisableRipple="true" />
-                    </MudPaper>
-                </MudButton>
-            </MudPaper>
-        }
-    </MudPaper>
+		  Class="d-flex flex-column gap-2 pa-2"
+		  Style="border-radius:20px;overflow:hidden"
+		  Elevation="0"
+		  Width="400px"
+		  Height="400px">
+	<MudText Style="font-size:larger;font-weight:bold">
+		Select assignees
+	</MudText>
+	<MudPaper Class="d-flex flex-column"
+			  Style="overflow-y:scroll"
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		@foreach (Assignee Assignee in Assignees)
+		{
+			<MudPaper Class="d-flex flex-row"
+					  Elevation="0"
+					  Width="100%">
+				<MudButton Class="rounded pill"
+						   FullWidth="true"
+						   OnClick="Assignee.ToggleChecked">
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Style="background-color:transparent"
+							  Elevation="0"
+							  Width="100%">
+						<MudText>@Assignee.Name</MudText>
+						<MudCheckBox @bind-Checked=Assignee.Checked
+									 ReadOnly="true"
+									 CheckedIcon="@Icons.Material.Filled.Check"
+									 UncheckedIcon="null"
+									 Size="Size.Small"
+									 Color="Color.Info"
+									 Dense="true"
+									 DisableRipple="true" />
+					</MudPaper>
+				</MudButton>
+			</MudPaper>
+		}
+	</MudPaper>
 </MudPaper>
 
-@code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public record Assignee()
-    {
-        public string Name { get; set; } = string.Empty;
-        public bool Checked { get; set; } = false;
-    }
-    public List<Assignee> AssigneeList = new List<Assignee>();
+	public record Assignee()
+	{
+		public string  Name { get; set; } = string.Empty;
+		public bool Checked { get; set; } = false;
+		public void ToggleChecked() => 
+		Checked = ! Checked;
+	}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        AssigneeList.Add(new Assignee() { Name = "Member 1" });
-        AssigneeList.Add(new Assignee() { Name = "Member 2" });
-        AssigneeList.Add(new Assignee() { Name = "Member 3" });
-        AssigneeList.Add(new Assignee() { Name = "Member 4" });
-        AssigneeList.Add(new Assignee() { Name = "Member 5" });
-        AssigneeList.Add(new Assignee() { Name = "Member 6" });
-        AssigneeList.Add(new Assignee() { Name = "Member 7" });
-        AssigneeList.Add(new Assignee() { Name = "Member 8" });
-        AssigneeList.Add(new Assignee() { Name = "Member 9" });
-        AssigneeList.Add(new Assignee() { Name = "Member 10" });
-        AssigneeList.Add(new Assignee() { Name = "Member 11" });
-        AssigneeList.Add(new Assignee() { Name = "Member 12" });
-        AssigneeList.Add(new Assignee() { Name = "Member 13" });
-        AssigneeList.Add(new Assignee() { Name = "Member 14" });
-        AssigneeList.Add(new Assignee() { Name = "Member 15" });
-        AssigneeList.Add(new Assignee() { Name = "Member 16" });
-    }
+	public List<Assignee> Assignees = new List<Assignee>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Assignees.Add(new Assignee() { Name = "Member 1" });
+		Assignees.Add(new Assignee() { Name = "Member 2" });
+		Assignees.Add(new Assignee() { Name = "Member 3" });
+		Assignees.Add(new Assignee() { Name = "Member 4" });
+		Assignees.Add(new Assignee() { Name = "Member 5" });
+		Assignees.Add(new Assignee() { Name = "Member 6" });
+		Assignees.Add(new Assignee() { Name = "Member 7" });
+		Assignees.Add(new Assignee() { Name = "Member 8" });
+		Assignees.Add(new Assignee() { Name = "Member 9" });
+		Assignees.Add(new Assignee() { Name = "Member 10" });
+		Assignees.Add(new Assignee() { Name = "Member 11" });
+		Assignees.Add(new Assignee() { Name = "Member 12" });
+		Assignees.Add(new Assignee() { Name = "Member 13" });
+		Assignees.Add(new Assignee() { Name = "Member 14" });
+		Assignees.Add(new Assignee() { Name = "Member 15" });
+		Assignees.Add(new Assignee() { Name = "Member 16" });
+	}
 }

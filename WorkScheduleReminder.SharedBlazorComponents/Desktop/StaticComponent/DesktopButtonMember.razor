@@ -1,66 +1,67 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
 
 <MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
-          Elevation="0">
-    @if (Type == Helper.ViewType.DefaultView)
-    {
-        <MudSwitch Checked="SwitchChecked"
-                   Label="@Text"
-                   Color="Color.Tertiary"
-                   ThumbIcon="@Icons.Material.Filled.Workspaces"
-                   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
-    }
-    else if (Type == Helper.ViewType.CustomView)
-    {
-        <MudText Style="font-size:small;font-weight:100;">
-            Private view
-        </MudText>
-    }
-    else if (Type == Helper.ViewType.WorkspaceView)
-    {
-        <MudButton Class=""
-                   StartIcon="@Icons.Material.Filled.People"
-                   Size="Size.Small"
-                   OnClick="ToggleMemberVisible">
-            <MudText>
-                Member
-            </MudText>
-        </MudButton>
-    }
+		  Elevation="0">
+	@if (ViewType == Helper.ViewType.DefaultView)
+	{
+		<MudSwitch Checked="SwitchChecked"
+				   Label="@Text"
+				   Color="Color.Tertiary"
+				   ThumbIcon="@Icons.Material.Filled.Workspaces"
+				   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
+	}
+	else if (ViewType == Helper.ViewType.CustomView)
+	{
+		<MudText Style="font-size:small;font-weight:100;">
+			Private view
+		</MudText>
+	}
+	else if (ViewType == Helper.ViewType.WorkspaceView)
+	{
+		<MudButton Class=""
+				   StartIcon="@Icons.Material.Filled.People"
+				   Size="Size.Small"
+				   OnClick="ToggleMemberVisible">
+			<MudText>
+				Member
+			</MudText>
+		</MudButton>
+	}
 </MudPaper>
 <MudOverlay Visible="MemberVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleMemberVisible">
-    <Member @onclick:stopPropagation />
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleMemberVisible">
+	<Member @onclick:stopPropagation />
 </MudOverlay>
+
 @code
 {
-    [Parameter]
-    public Helper.ViewType Type { get; set; }
-    [Parameter]
-    public bool SwitchChecked { get; set; } = false;
+	[CascadingParameter(Name = "ViewType")]
+	public Helper.ViewType  ViewType { get; set; }
+	[Parameter]
+	public bool        SwitchChecked { get; set; } = false;
 
-    public string Text { get; set; } = "Individual";
-    public bool MemberVisible { get; set; } = false;
+	public string Text { get; set; } = "Individual";
+	public bool MemberVisible { get; set; } = false;
 
-    public void OnSwitchCheckedChanged(bool _)
-    {
-        SwitchChecked = !
-        SwitchChecked;
-        if (SwitchChecked)
-        {
-            Text = "Workspace";
-        }
-        else
-        {
-            Text = "Individual";
-        }
-    }
+	public void OnSwitchCheckedChanged(bool _)
+	{
+		SwitchChecked = !
+		SwitchChecked;
+		if (SwitchChecked)
+		{
+			Text =  "Workspace";
+		}
+		else
+		{
+			Text = "Individual";
+		}
+	}
 
-    public void ToggleMemberVisible()
-    {
-        MemberVisible = !
-        MemberVisible;
-    }
+	public void ToggleMemberVisible()
+	{
+		MemberVisible = !
+		MemberVisible;
+	}
 }

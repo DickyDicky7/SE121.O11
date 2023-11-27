@@ -1,98 +1,101 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column gap-2 pa-2"
-          Style="border-radius:20px;overflow:scroll"
-          Elevation="0"
-          Width="250px"
-          Height="300px">
-    <MudText Style="font-size:larger;font-weight:bold">
-        Filter by tags
-    </MudText>
-    <MudPaper Class="d-flex flex-column"
-              Style="overflow-y:scroll"
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        <MudPaper Class="d-flex flex-row"
-                  Elevation="0"
-                  Width="100%">
-            <MudButton Class="rounded pill"
-                       FullWidth="true"
-                       OnClick="()=>{UntaggedChecked=!UntaggedChecked;}">
-                <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                          Style="background-color:transparent"
-                          Elevation="0"
-                          Width="100%">
-                    <MudText>Untagged</MudText>
-                    <MudCheckBox @bind-Checked=UntaggedChecked
-                                 ReadOnly="true"
-                                 CheckedIcon="@Icons.Material.Filled.Check"
-                                 UncheckedIcon="null"
-                                 Size="Size.Small"
-                                 Color="Color.Info"
-                                 Dense="true"
-                                 DisableRipple="true" />
-                </MudPaper>
-            </MudButton>
-        </MudPaper>
-        @foreach (TagChecked tagChecked in TagFilterList)
-        {
-            <MudPaper Class="d-flex flex-row"
-                      Elevation="0"
-                      Width="100%">
-                <MudButton Class="rounded pill"
-                           FullWidth="true"
-                           OnClick="()=>{tagChecked.Checked=!tagChecked.Checked;}">
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Style="background-color:transparent"
-                              Elevation="0"
-                              Width="100%">
-                        <MudText>@tagChecked.Name</MudText>
-                        <MudCheckBox @bind-Checked=tagChecked.Checked
-                                     ReadOnly="true"
-                                     CheckedIcon="@Icons.Material.Filled.Check"
-                                     UncheckedIcon="null"
-                                     Size="Size.Small"
-                                     Color="Color.Info"
-                                     Dense="true"
-                                     DisableRipple="true" />
-                    </MudPaper>
-                </MudButton>
-            </MudPaper>
-        }
-    </MudPaper>
+		  Class="d-flex flex-column gap-2 pa-2"
+		  Style="border-radius:20px;overflow:scroll"
+		  Elevation="0"
+		  Width="250px"
+		  Height="300px">
+	<MudText Style="font-size:larger;font-weight:bold">
+		Filter by tags
+	</MudText>
+	<MudPaper Class="d-flex flex-column"
+			  Style="overflow-y:scroll"
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		<MudPaper Class="d-flex flex-row"
+				  Elevation="0"
+				  Width="100%">
+			<MudButton Class="rounded pill"
+					   FullWidth="true"
+					   OnClick="()=>{UntaggedChecked=!UntaggedChecked;}">
+				<MudPaper Class="d-flex flex-row align-center justify-space-between"
+						  Style="background-color:transparent"
+						  Elevation="0"
+						  Width="100%">
+					<MudText>Untagged</MudText>
+					<MudCheckBox @bind-Checked=UntaggedChecked
+								 ReadOnly="true"
+								 CheckedIcon="@Icons.Material.Filled.Check"
+								 UncheckedIcon="null"
+								 Size="Size.Small"
+								 Color="Color.Info"
+								 Dense="true"
+								 DisableRipple="true" />
+				</MudPaper>
+			</MudButton>
+		</MudPaper>
+		@foreach (TagChecked tagChecked in TagFilterList)
+		{
+			<MudPaper Class="d-flex flex-row"
+					  Elevation="0"
+					  Width="100%">
+				<MudButton Class="rounded pill"
+						   FullWidth="true"
+						   OnClick="()=>{tagChecked.Checked=!tagChecked.Checked;}">
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Style="background-color:transparent"
+							  Elevation="0"
+							  Width="100%">
+						<MudText>@tagChecked.Name</MudText>
+						<MudCheckBox @bind-Checked=tagChecked.Checked
+									 ReadOnly="true"
+									 CheckedIcon="@Icons.Material.Filled.Check"
+									 UncheckedIcon="null"
+									 Size="Size.Small"
+									 Color="Color.Info"
+									 Dense="true"
+									 DisableRipple="true" />
+					</MudPaper>
+				</MudButton>
+			</MudPaper>
+		}
+	</MudPaper>
 </MudPaper>
 
-@code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+@code 
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public bool UntaggedChecked { get; set; } = false;
-    public record TagChecked()
-    {
-        public string Name { get; set; } = string.Empty;
-        public Color Color { get; set; } = Color.Tertiary;
-        public bool Checked { get; set; } = false;
-    }
-    public List<TagChecked> TagFilterList = new List<TagChecked>();
+	public bool UntaggedChecked { get; set; } = false;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        TagFilterList.Add(new TagChecked() { Name = "Tag 1", Color = Color.Error });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 2", Color = Color.Warning });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 3", Color = Color.Tertiary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 4", Color = Color.Secondary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 5", Color = Color.Error });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 6", Color = Color.Warning });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 7", Color = Color.Tertiary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 8", Color = Color.Secondary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 9", Color = Color.Error });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 10", Color = Color.Warning });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 11", Color = Color.Tertiary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 12", Color = Color.Secondary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 13", Color = Color.Error });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 14", Color = Color.Warning });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 15", Color = Color.Tertiary });
-        TagFilterList.Add(new TagChecked() { Name = "Tag 16", Color = Color.Secondary });
-    }
+	public record TagChecked()
+	{
+		public string Name { get; set; } = string.Empty;
+		public Color Color { get; set; } = Color.Tertiary;
+		public bool Checked { get; set; } = false;
+	}
+
+	public List<TagChecked> TagFilterList = new List<TagChecked>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		TagFilterList.Add(new TagChecked() { Name = "Tag 01", Color = Color.Error });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 02", Color = Color.Warning });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 03", Color = Color.Tertiary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 04", Color = Color.Secondary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 05", Color = Color.Error });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 06", Color = Color.Warning });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 07", Color = Color.Tertiary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 08", Color = Color.Secondary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 09", Color = Color.Error });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 10", Color = Color.Warning });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 11", Color = Color.Tertiary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 12", Color = Color.Secondary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 13", Color = Color.Error });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 14", Color = Color.Warning });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 15", Color = Color.Tertiary });
+		TagFilterList.Add(new TagChecked() { Name = "Tag 16", Color = Color.Secondary });
+	}
 }

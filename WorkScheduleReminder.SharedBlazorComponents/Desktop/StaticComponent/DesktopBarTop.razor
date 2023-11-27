@@ -1,69 +1,93 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
+<CascadingValue Name="ViewName" Value="ActiveViewName">
+<CascadingValue Name="ViewIcon" Value="ActiveViewIcon">
+<CascadingValue Name="ViewType" Value="ActiveViewType">
+<CascadingValue Name="Board_____Id" Value="ActiveBoard_____Id">
+<CascadingValue Name="CustomViewId" Value="ActiveCustomViewId">
 <MudPaper Class="d-flex flex-row align-center pa-2 justify-space-between"
-          Style="background-color:transparent;"
-          Elevation="0"
-          Width="100%">
-    @* Toolbar1 *@
-    <MudPaper Class="d-flex flex-row flex-wrap gap-2"
-              Elevation="0">
-        @if (ActiveType != Helper.ViewType.MyDay)
-        {
-            <DesktopViewTitle Name="@ActiveName"
-                              Icon="@ActiveIcon" />
-            <DesktopButtonMember Type="@ActiveType" />
-            @if (ActiveType == Helper.ViewType.WorkspaceView)
-            {
-                <DesktopButtonView />
-            }
-            @if (ActiveType == Helper.ViewType.CustomView || ActiveType == Helper.ViewType.WorkspaceView)
-            {
-                <DesktopButtonFilter />
-            }
-            <DesktopButtonMore Type="@ActiveType" />
-        }
-        else
-        {
-            <DesktopMyDayTitle />
-        }
-    </MudPaper>
-    @* Toolbar2 *@
-    <MudPaper Class="d-flex flex-row flex-wrap gap-2 py-2"
-              Elevation="0">
-        <MudIconButton Class="rounded-cycle"
-                       Size="Size.Small"
-                       Icon="@Icons.Material.Filled.Sync" />
-        <MudIconButton Class="rounded-cycle"
-                       Size="Size.Small"
-                       Icon="@Icons.Material.Filled.Notifications"
-                       OnClick="(()=>{NotiVisible=!NotiVisible;})" />
-        <MudIconButton Class="rounded-cycle"
-                       Size="Size.Small"
-                       Icon="@Icons.Material.Filled.Search"
-                       OnClick="()=>{SearchVisible=!SearchVisible;}" />
-    </MudPaper>
+		  Style="background-color:transparent;"
+		  Elevation="0"
+		  Width="100%">
+	@* Toolbar1 *@
+	<MudPaper Class="d-flex flex-row flex-wrap gap-2"
+			  Elevation="0">
+		@if (ActiveViewType != Helper.ViewType.MyDayView)
+		{
+			<DesktopOtherViewTitle />
+			<DesktopButtonMember   />
+			@if (ActiveViewType == Helper.ViewType.WorkspaceView)
+			{
+				<DesktopButtonView   />
+			}
+			@if (ActiveViewType == Helper.ViewType.WorkspaceView || ActiveViewType == Helper.ViewType.CustomView)
+			{
+				<DesktopButtonFilter />
+			}
+			<DesktopButtonMore />
+		}
+		else
+		{
+			<DesktopMyDayViewTitle />
+		}
+	</MudPaper>
+	@* Toolbar2 *@
+	<MudPaper Class="d-flex flex-row flex-wrap gap-2 py-2"
+			  Elevation="0">
+		<MudIconButton Class="rounded-cycle"
+					   Size="Size.Small"
+					   Icon="@Icons.Material.Filled.Sync" />
+		<MudIconButton Class="rounded-cycle"
+					   Size="Size.Small"
+					   Icon="@Icons.Material.Filled.Notifications"
+					   OnClick="ToggleNotifiVisible" />
+		<MudIconButton Class="rounded-cycle"
+					   Size="Size.Small"
+					   Icon="@Icons.Material.Filled.Search"
+					   OnClick="ToggleSearchVisible" />
+	</MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
-            Visible="NotiVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{NotiVisible=!NotiVisible;})">
-    <Notification @onclick:stopPropagation />
+			Visible="@NotifiVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleNotifiVisible">
+	<Notification @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Visible="@SearchVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{SearchVisible=!SearchVisible;})">
-    <SearchName @onclick:stopPropagation />
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleSearchVisible">
+	<SearchName   @onclick:stopPropagation />
 </MudOverlay>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
 
 @code
 {
-    public bool NotiVisible { get; set; } = false;
-    public bool SearchVisible { get; set; } = false;
-    [Parameter]
-    public string? ActiveName { get; set; }
-    [Parameter]
-    public string? ActiveIcon { get; set; }
-    [Parameter]
-    public Helper.ViewType ActiveType { get; set; }
+	public bool NotifiVisible { get; set; } = false;
+	public bool SearchVisible { get; set; } = false;
+	[Parameter]
+	public string ActiveViewName { get; set; } = string.Empty;
+	[Parameter]
+	public string ActiveViewIcon { get; set; } = string.Empty;
+	[Parameter]
+	public Guid ActiveBoard_____Id { get; set; }
+	[Parameter]
+	public Guid ActiveCustomViewId { get; set; }
+	[Parameter]
+	public Helper.ViewType ActiveViewType { get; set; }
+
+	public void ToggleNotifiVisible()
+	{
+		NotifiVisible = !NotifiVisible;
+	}
+
+	public void ToggleSearchVisible()
+	{
+		SearchVisible = !SearchVisible;
+	}
 }

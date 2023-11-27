@@ -23,7 +23,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 
 		public enum ViewType
 		{
-			MyDay, DefaultView, CustomView, WorkspaceView
+			  MyDayView,
+			DefaultView, CustomView, WorkspaceView
 		}
 
 		public enum DeviceType
@@ -42,7 +43,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 					{
 						 Default = new()
 						 {
-							 FontFamily = new string[1] { "Mooli-Regular" },
+							 FontFamily = new string[1] { "Montserrat-Regular" },
 						 },
 					},
 					ZIndex = new()

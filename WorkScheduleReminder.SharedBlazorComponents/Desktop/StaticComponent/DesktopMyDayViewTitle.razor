@@ -1,0 +1,29 @@
+﻿<MudPaper Class="flex-wrap pa-2 align-center"
+		  Style="background-color:transparent;"
+		  Elevation="0">
+	<MudText Style="font-weight:bold;font-size:xx-large"
+			 Color="Color.Info">
+		@Greeting, @UserName
+	</MudText>
+</MudPaper>
+
+@code
+{
+
+	[Parameter]
+	public string UserName { get; set; } = "Master";
+	public string Greeting { get; set; } = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Greeting = DateTime.Now.Hour switch
+		{
+			            (< 12) => "Good morning",
+			(>= 12) and (< 18) => "Good afternoon",
+			(>= 18) and (< 22) => "Good evening",
+			_ => "Good night",
+		};
+	}
+
+}

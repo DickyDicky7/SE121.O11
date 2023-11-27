@@ -1,66 +1,71 @@
 ﻿<MudPaper @attributes="AdditionalAttributes"
-          Class="d-flex flex-column gap-2 pa-2 justify-center"
-          Style="border-radius:20px;overflow:hidden;"
-          Elevation="0"
-          Width="400px"
-          Height="400px"
-          MaxHeight="80vh">
-    <MudText Style="font-size:larger; font-weight:bold">
-        Board section
-    </MudText>
-    <MudPaper Class="d-flex flex-column"
-              Style="overflow-y:scroll"
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        @foreach (Section Section in SectionList)
-        {
-            <MudPaper Class="d-flex flex-row gap-2"
-                      Elevation="0"
-                      Width="100%">
-                <MudTextField @bind-Value=Section.Name
-                              Variant="Variant.Text"
-                              DisableUnderLine="true"
-                              TextUpdateSuppression="false"
-                              Immediate="true"
-                              FullWidth="true" />
-                <MudIconButton Size="Size.Small"
-                               Icon="@Icons.Material.Filled.Delete"
-                               OnClick="()=>RemoveSection(Section)" />
-            </MudPaper>
-        }
-    </MudPaper>
-    <MudTextField @bind-Value="NewSectionName"
-                  Variant="Variant.Outlined"
-                  Margin="Margin.Dense"
-                  DisableUnderLine="true"
-                  Immediate="true"
-                  Clearable="true"
-                  TextUpdateSuppression="false"
-                  FullWidth="true"
-                  Placeholder="Add section"
-                  OnKeyDown="(KeyboardEventArgs e)=>AddSection(e)" />
+		  Class="d-flex flex-column gap-2 pa-2 justify-center"
+		  Style="border-radius:20px;overflow:hidden;"
+		  Elevation="0"
+		  Width="400px"
+		  Height="400px"
+		  MaxHeight="80vh">
+	<MudText Style="font-size:larger; font-weight:bold">
+		Board section
+	</MudText>
+	<MudPaper Class="d-flex flex-column"
+			  Style="overflow-y:scroll"
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		@foreach (Section Section in Sections)
+		{
+			<MudPaper Class="d-flex flex-row gap-2"
+					  Elevation="0"
+					  Width="100%">
+				<MudTextField @bind-Value=Section.Name
+							  Variant="Variant.Text"
+							  DisableUnderLine="true"
+							  TextUpdateSuppression="false"
+							  Immediate="true"
+							  FullWidth="true" />
+				<MudIconButton Size="Size.Small"
+							   Icon="@Icons.Material.Filled.Delete"
+							   OnClick="() => RemoveSection(Section)" />
+			</MudPaper>
+		}
+	</MudPaper>
+	<MudTextField @bind-Value="NewSectionName"
+				  Variant="Variant.Outlined"
+				  Margin="Margin.Dense"
+				  DisableUnderLine="true"
+				  Immediate="true"
+				  Clearable="true"
+				  TextUpdateSuppression="false"
+				  FullWidth="true"
+				  Placeholder="Add section"
+				  OnKeyDown="AddSection" />
 </MudPaper>
-@code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
-    public string NewSectionName { get; set; } = string.Empty;
-    public record Section
-    {
-        public string Name { get; set; } = string.Empty;
-    }
-    public List<Section> SectionList = new List<Section>();
 
-    public void AddSection(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" && NewSectionName != string.Empty)
-        {
-            SectionList.Add(new Section() { Name = NewSectionName });
-            NewSectionName = string.Empty;
-        }
-    }
-    public void RemoveSection(Section _Section)
-    {
-        SectionList.Remove(_Section);
-    }
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	public string NewSectionName { get; set; } = string.Empty;
+	
+	public record Section
+	{
+		public string Name { get; set; } = string.Empty;
+	}
+
+	public List<Section> Sections = new List<Section>();
+
+	public void AddSection(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter" && NewSectionName != string.Empty)
+		{
+			Sections.Add(new Section() { Name =  NewSectionName });
+			NewSectionName = string.Empty;
+		}
+	}
+
+	public void RemoveSection(Section section)
+	{
+		Sections.Remove(section);
+	}
 }

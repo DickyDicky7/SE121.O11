@@ -1,84 +1,86 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column gap-2 pa-2"
-          Style="border-radius:20px;overflow:hidden"
-          Elevation="0"
-          Width="400px"
-          Height="400px">
-    <MudText Style="font-size:larger;font-weight:bold">
-        Select section
-    </MudText>
-    <MudPaper Class="d-flex flex-column"
-              Style="overflow-y:scroll"
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        @foreach (Section Section in SectionList)
-        {
-            <MudPaper Class="d-flex flex-row"
-                      Elevation="0"
-                      Width="100%">
-                <MudButton Class="rounded pill"
-                           FullWidth="true"
-                           OnClick="()=>OnSectionSelected(Section)">
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Style="background-color:transparent"
-                              Elevation="0"
-                              Width="100%">
-                        <MudText>@Section.Name</MudText>
-                        <MudCheckBox @bind-Checked=Section.Selected
-                                     ReadOnly="true"
-                                     CheckedIcon="@Icons.Material.Filled.Check"
-                                     UncheckedIcon="null"
-                                     Size="Size.Small"
-                                     Color="Color.Info"
-                                     Dense="true"
-                                     DisableRipple="true" />
-                    </MudPaper>
-                </MudButton>
-            </MudPaper>
-        }
-    </MudPaper>
+		  Class="d-flex flex-column gap-2 pa-2"
+		  Style="border-radius:20px;overflow:hidden"
+		  Elevation="0"
+		  Width="400px"
+		  Height="400px">
+	<MudText Style="font-size:larger;font-weight:bold">
+		Select section
+	</MudText>
+	<MudPaper Class="d-flex flex-column"
+			  Style="overflow-y:scroll"
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		@foreach (Section Section in Sections)
+		{
+			<MudPaper Class="d-flex flex-row"
+					  Elevation="0"
+					  Width="100%">
+				<MudButton Class="rounded pill"
+						   FullWidth="true"
+						   OnClick="() => OnSectionSelected(Section)">
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Style="background-color:transparent"
+							  Elevation="0"
+							  Width="100%">
+						<MudText>@Section.Name</MudText>
+						<MudCheckBox @bind-Checked=Section.Selected
+									 ReadOnly="true"
+									 CheckedIcon="@Icons.Material.Filled.Check"
+									 UncheckedIcon="null"
+									 Size="Size.Small"
+									 Color="Color.Info"
+									 Dense="true"
+									 DisableRipple="true" />
+					</MudPaper>
+				</MudButton>
+			</MudPaper>
+		}
+	</MudPaper>
 </MudPaper>
 
-@code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public record Section
-    {
-        public string Name { get; set; } = string.Empty;
-        public bool Selected { get; set; } = false;
-    }
-    //input has only 1 Section with selected = true
-    public List<Section> SectionList = new List<Section>();
+	public record Section
+	{
+		public string   Name { get; set; } = string.Empty;
+		public bool Selected { get; set; } = false;
+	}
 
-    public void OnSectionSelected(Section _Section)
-    {
-        foreach (Section Section in SectionList)
-        {
-            Section.Selected = false;
-        }
-        _Section.Selected = true;
-    }
+	//input has only 1 Section with selected = true
+	public List<Section> Sections = new List<Section>();
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        SectionList.Add(new Section() { Name = "Section 1", Selected = true });
-        SectionList.Add(new Section() { Name = "Section 2", });
-        SectionList.Add(new Section() { Name = "Section 3", });
-        SectionList.Add(new Section() { Name = "Section 4", });
-        SectionList.Add(new Section() { Name = "Section 5", });
-        SectionList.Add(new Section() { Name = "Section 6", });
-        SectionList.Add(new Section() { Name = "Section 7", });
-        SectionList.Add(new Section() { Name = "Section 8", });
-        SectionList.Add(new Section() { Name = "Section 9", });
-        SectionList.Add(new Section() { Name = "Section 10", });
-        SectionList.Add(new Section() { Name = "Section 11", });
-        SectionList.Add(new Section() { Name = "Section 12", });
-        SectionList.Add(new Section() { Name = "Section 13", });
-        SectionList.Add(new Section() { Name = "Section 14", });
-        SectionList.Add(new Section() { Name = "Section 15", });
-        SectionList.Add(new Section() { Name = "Section 16", });
-    }
+	public void OnSectionSelected(Section selectedSection)
+	{
+		foreach (Section section in Sections)
+		{
+			    section.Selected =  false;
+		}
+		selectedSection.Selected = !false;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Sections.Add(new Section() { Name = "Section 1", Selected = true });
+		Sections.Add(new Section() { Name = "Section 2", });
+		Sections.Add(new Section() { Name = "Section 3", });
+		Sections.Add(new Section() { Name = "Section 4", });
+		Sections.Add(new Section() { Name = "Section 5", });
+		Sections.Add(new Section() { Name = "Section 6", });
+		Sections.Add(new Section() { Name = "Section 7", });
+		Sections.Add(new Section() { Name = "Section 8", });
+		Sections.Add(new Section() { Name = "Section 9", });
+		Sections.Add(new Section() { Name = "Section 10", });
+		Sections.Add(new Section() { Name = "Section 11", });
+		Sections.Add(new Section() { Name = "Section 12", });
+		Sections.Add(new Section() { Name = "Section 13", });
+		Sections.Add(new Section() { Name = "Section 14", });
+		Sections.Add(new Section() { Name = "Section 15", });
+		Sections.Add(new Section() { Name = "Section 16", });
+	}
 }

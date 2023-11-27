@@ -3,49 +3,56 @@
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponent
 
 <MudLayout>
-    <MudPaper Class="@($"d-flex flex-row {Theme}")"
-              Elevation="0"
-              Height="100vh"
-              Width="100vw">
-        @* Sidebar *@
-        <DesktopBarSide @bind-Name="ActiveName" @bind-Icon="ActiveIcon" @bind-Type="ActiveType" />
-        @*Top bar & mainscreen*@
-        <MudPaper Class="d-flex flex-column"
-                  Style="background-color:transparent;overflow:hidden;"
-                  Elevation="0"
-                  Height="100%"
-                  Width="100%">
-            @* Topbar *@
-            <DesktopBarTop ActiveName="@ActiveName"
-                           ActiveIcon="@ActiveIcon"
-                           ActiveType="@ActiveType" />
-            @*MainScreen*@
-            @MainChildContent
-        </MudPaper>
-    </MudPaper>
+	<MudPaper Class="@($"d-flex flex-row {Theme}")"
+			  Elevation="0"
+			  Width="100vw" Height="100vh">
+		@* Sidebar *@
+		<DesktopBarSide @bind-ActiveViewName="ActiveViewName"
+		                @bind-ActiveViewIcon="ActiveViewIcon"
+		                @bind-ActiveViewType="ActiveViewType"
+		                @bind-ActiveBoard_____Id="ActiveBoard_____Id"
+		                @bind-ActiveCustomViewId="ActiveCustomViewId" />
+		@*Top bar & mainscreen*@
+		<MudPaper Class="d-flex flex-column"
+				  Style="background-color:transparent;overflow:hidden;"
+				  Elevation="0"
+				  Width="100%" Height="100%">
+			@* Topbar *@
+			<DesktopBarTop ActiveViewName="@ActiveViewName"
+						   ActiveViewIcon="@ActiveViewIcon"
+						   ActiveViewType="@ActiveViewType"
+						   ActiveBoard_____Id="@ActiveBoard_____Id"
+						   ActiveCustomViewId="@ActiveCustomViewId" />
+			@*MainScreen*@
+			@MainChildContent
+		</MudPaper>
+	</MudPaper>
 </MudLayout>
 
 @code
 {
 
 	[Parameter]
-	public RenderFragment? MainChildContent { get; set; }
+	public RenderFragment MainChildContent { get; set; } = null!;
 
-    public string? ActiveName { get; set; }
-    public string? ActiveIcon { get; set; }
-    public Helper.ViewType ActiveType { get; set; }
+	public string ActiveViewName { get; set; } = string.Empty;
+	public string ActiveViewIcon { get; set; } = string.Empty;
+	public Guid ActiveBoard_____Id { get; set; }
+	public Guid ActiveCustomViewId { get; set; }
+	public Helper.ViewType ActiveViewType { get; set; }
+	public string Theme { get; set; } = "mud-theme-info";
 
-    public string Theme { get; set; } = "mud-theme-info";
-    protected override Task OnParametersSetAsync()
-    {
-        if (ActiveType == Helper.ViewType.MyDay)
-        {
-            Theme = string.Empty;
-        }
-        else
-        {
-            Theme = "mud-theme-info";
-        }
-        return base.OnParametersSetAsync();
-    }
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+		if (ActiveViewType == Helper.ViewType.MyDayView)
+		{
+			Theme = string.Empty;
+		}
+		else
+		{
+			Theme = "mud-theme-info";
+		}
+	}
+
 }

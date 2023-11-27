@@ -52,7 +52,7 @@
 {
 
 	[Parameter]
-	public RenderFragment? ChildContent { get; set; }
+	public RenderFragment  ChildContent { get; set; } = null!;
 	[Parameter]
 	public Helper.DeviceType DeviceType { get; set; }
 
@@ -95,6 +95,7 @@
 	public void Dispose()
 	{
 		SupabaseClient.Auth.RemoveStateChangedListener(AuthEventHandler);
+		SupabaseClient.Realtime.Disconnect();
 	}
 
 }

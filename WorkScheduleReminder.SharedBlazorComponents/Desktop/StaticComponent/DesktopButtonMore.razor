@@ -1,143 +1,115 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
-          Elevation="0">
-    <MudMenu Class=""
-             Size="Size.Small"
-             FullWidth="false"
-             DisableElevation="true"
-             Dense="true"
-             AnchorOrigin="Origin.BottomCenter"
-             TransformOrigin="Origin.TopCenter"
-             MaxHeight="250">
-        <ActivatorContent>
-            <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                           Size="Size.Small" />
-        </ActivatorContent>
-        <ChildContent>
-            @if (Type == Helper.ViewType.DefaultView)
-            {
-                @foreach (MenuItem Item in DefaultViewItem)
-                {
-                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
-                                 AutoClose=true>
-                        <MudText Style="background-color:transparent">
-                            @Item.Name
-                        </MudText>
-                    </MudMenuItem>
-                }
-            }
-            else if (Type == Helper.ViewType.CustomView)
-            {
-                @foreach (MenuItem Item in CustomViewItem)
-                {
-                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
-                                 AutoClose=true>
-                        <MudText Style="background-color:transparent">
-                            @Item.Name
-                        </MudText>
-                    </MudMenuItem>
-                }
-            }
-            else if (Type == Helper.ViewType.WorkspaceView)
-            {
-                @foreach (MenuItem Item in WorkspaceItem)
-                {
-                    <MudMenuItem OnClick="()=>{Item.Visible=!Item.Visible;}"
-                                 AutoClose=true>
-                        <MudText Style="background-color:transparent">
-                            @Item.Name
-                        </MudText>
-                    </MudMenuItem>
-                }
-            }
-        </ChildContent>
-    </MudMenu>
+		  Elevation="0">
+	<MudMenu Class=""
+			 Size="Size.Small"
+			 FullWidth="false"
+			 DisableElevation="true"
+			 Dense="true"
+			 AnchorOrigin="Origin.BottomCenter"
+			 TransformOrigin="Origin.TopCenter"
+			 MaxHeight="250">
+		<ActivatorContent>
+			<MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+						   Size="Size.Small" />
+		</ActivatorContent>
+		<ChildContent>
+			@foreach (MenuItem menuItem in ViewTypeMenuItems[ViewType])
+			{
+				<MudMenuItem OnClick="menuItem.ToggleVisible"
+							 AutoClose=true>
+					<MudText Style="background-color:transparent">
+						@menuItem.Name
+					</MudText>
+				</MudMenuItem>
+			}
+		</ChildContent>
+	</MudMenu>
 </MudPaper>
-@foreach (MenuItem Item in DefaultViewItem)
+@foreach (MenuItem menuItem in ViewTypeMenuItems[ViewType])
 {
-    if (Item.Child != null)
-    {
-        <MudOverlay Visible=Item.Visible
-                    DarkBackground="true"
-                    AutoClose="true"
-                    OnClick="()=>{Item.Visible=!Item.Visible;}">
-            @Item.Child
-        </MudOverlay>
-    }
-}
-@foreach (MenuItem Item in CustomViewItem)
-{
-    if (Item.Child != null)
-    {
-        <MudOverlay Visible=Item.Visible
-                    DarkBackground="true"
-                    AutoClose="true"
-                    OnClick="()=>{Item.Visible=!Item.Visible;}">
-            @Item.Child
-        </MudOverlay>
-    }
-}
-@foreach (MenuItem Item in WorkspaceItem)
-{
-    if (Item.Child != null)
-    {
-        <MudOverlay Visible=Item.Visible
-                    DarkBackground="true"
-                    AutoClose="true"
-                    OnClick="()=>{Item.Visible=!Item.Visible;}">
-            @Item.Child
-        </MudOverlay>
-    }
+	if (menuItem.Child != null)
+	{
+		<MudOverlay Visible="menuItem.Visible"
+					DarkBackground="true"
+					AutoClose="true"
+					OnClick="menuItem.ToggleVisible">
+			@menuItem.Child
+		</MudOverlay>
+	}
 }
 
 @code
 {
-    [Parameter]
-    public Helper.ViewType Type { get; set; }
+	[CascadingParameter(Name = "ViewType")]
+	public Helper.ViewType  ViewType{ get; set; }
 
-    public record MenuItem
-    {
-        public string Name { get; set; } = null!;
-        public bool Visible { get; set; } = false;
-        public RenderFragment Child { get; set; } = null!;
-    }
-    public List<MenuItem> DefaultViewItem { get; set; } = new List<MenuItem>();
-    public List<MenuItem> CustomViewItem { get; set; } = new List<MenuItem>();
-    public List<MenuItem> WorkspaceItem { get; set; } = new List<MenuItem>();
+	public record MenuItem
+	{
+		public string  Name { get; set; } = null!;
+		public bool Visible { get; set; } = false;
+		public RenderFragment Child { get; set; } = null!;
+		public void ToggleVisible() => Visible = !Visible;
+	}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        DefaultViewItem.Add(new MenuItem() { Name = "Clear completed" });
-        DefaultViewItem.Add(new MenuItem() { Name = "Multi-select" });
-        DefaultViewItem.Add(new MenuItem() { Name = "Print" });
+	public Dictionary<Helper.ViewType, List<MenuItem>> ViewTypeMenuItems = Enum.GetValues<Helper.ViewType>()
+		.ToDictionary<Helper.ViewType,
+						Helper.ViewType, List<MenuItem>>(
+		viewType => viewType,
+		viewType => new());
 
-        CustomViewItem.Add(new MenuItem()
-            {
-                Name = "Edit",
-                Child =@<CreateCustomView @onclick:stopPropagation /> });
-        CustomViewItem.Add(new MenuItem()
-            {
-                Name = "Delete",
-                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this view" Action="Delete" /> });
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
 
-        WorkspaceItem.Add(new MenuItem() { Name = "Board activity" });
-        WorkspaceItem.Add(new MenuItem()
-            {
-                Name = "Board tags",
-                Child =@<TagAndTagging @onclick:stopPropagation EnableTagging=false />});
-        WorkspaceItem.Add(new MenuItem()
-            {
-                Name = "Board Section",
-                Child =@<BoardSection @onclick:stopPropagation /> });
-        WorkspaceItem.Add(new MenuItem() { Name = "Multi-select" });
-        WorkspaceItem.Add(new MenuItem()
-            {
-                Name = "Leave board",
-                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to leave this board" Action="Leave" />});
-        WorkspaceItem.Add(new MenuItem()
-            {
-                Name = "Delete board",
-                Child =@<Confirm @onclick:stopPropagation Title="Are you sure to delete this board" Action="Delete" /> });
-    }
+		List<MenuItem> DefaultViewItems = ViewTypeMenuItems[Helper.ViewType.DefaultView];
+		List<MenuItem> CustomViewItems = ViewTypeMenuItems[Helper.ViewType.CustomView];
+		List<MenuItem> WorkspaceViewItems = ViewTypeMenuItems[Helper.ViewType.WorkspaceView];
+
+		DefaultViewItems.Add(new MenuItem() { Name = "Clear completed" });
+		DefaultViewItems.Add(new MenuItem() { Name = "Multi-select" });
+		DefaultViewItems.Add(new MenuItem() { Name = "Print" });
+
+		CustomViewItems.Add(new MenuItem()
+				{
+					Name = "Edit",
+					Child = @<CreateCustomView @onclick:stopPropagation />
+			});
+		CustomViewItems.Add(new MenuItem()
+				{
+					Name = "Delete",
+					Child = @<Confirm @onclick:stopPropagation
+		 Title="Are you sure to delete this view"
+		 Action="Delete" />
+			});
+
+		WorkspaceViewItems.Add(new MenuItem() { Name = "Board activity" });
+		WorkspaceViewItems.Add(new MenuItem()
+				{
+					Name = "Board tags",
+					Child = @<TagAndTagging @onclick:stopPropagation
+			   EnableTagging=false />
+			});
+		WorkspaceViewItems.Add(new MenuItem()
+				{
+					Name = "Board Section",
+					Child = @<BoardSection @onclick:stopPropagation />
+			});
+		WorkspaceViewItems.Add(new MenuItem() { Name = "Multi-select" });
+		WorkspaceViewItems.Add(new MenuItem()
+				{
+					Name = "Leave board",
+					Child = @<Confirm @onclick:stopPropagation
+		 Title="Are you sure to leave this board"
+		 Action="Leave" />
+			});
+		WorkspaceViewItems.Add(new MenuItem()
+				{
+					Name = "Delete board",
+					Child = @<Confirm @onclick:stopPropagation
+		 Title="Are you sure to delete this board"
+		 Action="Delete" />
+		});
+	}
 }

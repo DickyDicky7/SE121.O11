@@ -1,55 +1,47 @@
 ﻿@*Appear in workspace*@
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
-          Elevation="0">
-    <MudMenu Class=""
-             Size="Size.Small"
-             FullWidth="false"
-             DisableElevation="true"
-             Dense="true"
-             AnchorOrigin="Origin.BottomCenter"
-             TransformOrigin="Origin.TopCenter"
-             MaxHeight="250">
-        <ActivatorContent>
-            <MudButton StartIcon="@ActiveIcon"
-                       Size="Size.Small">
-                <MudText>View</MudText>
-            </MudButton>
-        </ActivatorContent>
-        <ChildContent>
-            <MudMenuItem AutoClose="false"
-                         OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.ViewKanban;})">
-                <MudPaper Class="d-flex flex-row gap-2 align-center"
-                          Style="background-color:transparent"
-                          Elevation="0">
-                    <MudIcon Size="Size.Small"
-                             Icon="@Icons.Material.Filled.ViewKanban" />
-                    <MudText>Kanban</MudText>
-                </MudPaper>
-            </MudMenuItem>
-            <MudMenuItem AutoClose="false"
-                         OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.GridView;})">
-                <MudPaper Class="d-flex flex-row gap-2 align-center"
-                          Style="background-color:transparent"
-                          Elevation="0">
-                    <MudIcon Size="Size.Small"
-                             Icon="@Icons.Material.Filled.GridView" />
-                    <MudText>Table</MudText>
-                </MudPaper>
-            </MudMenuItem>
-            <MudMenuItem AutoClose="false"
-                         OnClick="@(()=>{ActiveIcon=Icons.Material.Filled.CalendarToday;})">
-                <MudPaper Class="d-flex flex-row gap-2 align-center"
-                          Style="background-color:transparent"
-                          Elevation="0">
-                    <MudIcon Size="Size.Small"
-                             Icon="@Icons.Material.Filled.CalendarToday" />
-                    <MudText>Calendar</MudText>
-                </MudPaper>
-            </MudMenuItem>
-        </ChildContent>
-    </MudMenu>
+		  Elevation="0">
+	<MudMenu Class=""
+			 Size="Size.Small"
+			 FullWidth="false"
+			 DisableElevation="true"
+			 Dense="true"
+			 AnchorOrigin="Origin.BottomCenter"
+			 TransformOrigin="Origin.TopCenter"
+			 MaxHeight="250">
+		<ActivatorContent>
+			<MudButton StartIcon="@ActiveIcon"
+					   Size="Size.Small">
+				<MudText>View</MudText>
+			</MudButton>
+		</ActivatorContent>
+		<ChildContent>
+			@foreach ((string Icon, string Text) in Set)
+			{
+				<MudMenuItem AutoClose="false"
+							 OnClick="@(() => { ActiveIcon = Icon; })">
+					<MudPaper Class="d-flex flex-row gap-2 align-center"
+							  Style="background-color:transparent"
+							  Elevation="0">
+						<MudIcon Size="Size.Small"
+								 Icon="@Icon" />
+						<MudText>@Text</MudText>
+					</MudPaper>
+				</MudMenuItem>
+			}
+		</ChildContent>
+	</MudMenu>
 </MudPaper>
+
 @code
 {
-    public string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
+
+	public string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
+	public List<(string Icon, string Text)> Set { get; set; } = new()
+	{
+		(Icons.Material.Filled.ViewKanban   , "Kanban"  ),
+		(Icons.Material.Filled.GridView     , "Table"   ),
+		(Icons.Material.Filled.CalendarToday, "Calendar"),
+	};
+
 }
