@@ -1,4 +1,4 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
 <MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
 		  Elevation="0">
@@ -32,7 +32,7 @@
 			DarkBackground="true"
 			AutoClose="true"
 			OnClick="ToggleMemberVisible">
-	<Member @onclick:stopPropagation />
+	<PopupMenuMember @onclick:stopPropagation />
 </MudOverlay>
 
 @code

@@ -1,4 +1,4 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenu
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
 @implements IDisposable
 @inject Supabase.Client SupabaseClient
@@ -117,7 +117,7 @@
 						</MudPaper>
 						<MudIconButton Icon="@Icons.Material.Filled.Add"
 									   Size="Size.Small"
-									   OnClick="ToggleCreateBoard" />
+									   OnClick="ToggleCreateBoard_____" />
 						@* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
 						Size="Size.Small"
 						OnClick="ToggleInvite" /> *@
@@ -149,11 +149,11 @@
     <Invite @onclick:stopPropagation />
 </MudOverlay> *@
 <MudOverlay Class="border-2"
-			Visible="CreateBoardVisible"
+			Visible="CreateBoard_____Visible"
 			DarkBackground="true"
 			AutoClose="true"
-			OnClick="ToggleCreateBoard">
-	<CreateBoard @onclick:stopPropagation />
+			OnClick="ToggleCreateBoard_____">
+	<CreateBoard      @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
 			Visible="CreateCustomViewVisible"
@@ -166,7 +166,7 @@
 @code
 {
 	public bool           InviteVisible { get; set; } = false;
-	public bool      CreateBoardVisible { get; set; } = false;
+	public bool CreateBoard_____Visible { get; set; } = false;
 	public bool CreateCustomViewVisible { get; set; } = false;
 	[Parameter]
 	public string ActiveViewName { get; set; } = null!;
@@ -257,10 +257,10 @@
 		InviteVisible;
 	}
 
-	public void ToggleCreateBoard()
+	public void ToggleCreateBoard_____()
 	{
-		CreateBoardVisible = !
-		CreateBoardVisible;
+		CreateBoard_____Visible = !
+		CreateBoard_____Visible;
 	}
 
 	public void ToggleCreateCustomView()
