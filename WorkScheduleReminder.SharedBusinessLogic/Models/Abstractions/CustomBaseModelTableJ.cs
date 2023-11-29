@@ -1,4 +1,4 @@
-﻿
+﻿using     Postgrest.Attributes;
 
 namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 {
@@ -16,22 +16,38 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 			PrimaryKeyPropertyName8 = string.Empty;
 		}
 
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName1 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName2 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName3 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName4 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName5 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName6 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName7 { get; protected set; }
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public string PrimaryKeyPropertyName8 { get; protected set; }
 
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty1 => this.GetType().GetProperty(PrimaryKeyPropertyName1)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty2 => this.GetType().GetProperty(PrimaryKeyPropertyName2)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty3 => this.GetType().GetProperty(PrimaryKeyPropertyName3)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty4 => this.GetType().GetProperty(PrimaryKeyPropertyName4)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty5 => this.GetType().GetProperty(PrimaryKeyPropertyName5)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty6 => this.GetType().GetProperty(PrimaryKeyPropertyName6)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty7 => this.GetType().GetProperty(PrimaryKeyPropertyName7)?.GetValue(this);
+		[Column(ignoreOnInsert: true, ignoreOnUpdate: true)]
 		public object? PrimaryKeyProperty8 => this.GetType().GetProperty(PrimaryKeyPropertyName8)?.GetValue(this);
 
 		public override int GetHashCode()

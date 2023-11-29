@@ -13,14 +13,14 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Column(columnName: "name")]
 		public string Name { get; set; } = default!;
 
-		[Column(columnName: "type")]
-		public string Type { get; set; } = default!;
-
 		[Column(columnName: "profile_id")]
 		public Guid ProfileId { get; set; }
 
 		[Column(columnName: "board___id")]
 		public Guid   BoardId { get; set; }
+
+		[Column(columnName: "type")]
+		public string RealType { get; set; } = default!;
 
 		[Column(columnName: "settings")]
 		public string Settings { get; set; } = default!;
@@ -36,5 +36,16 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
                    columnName: nameof(BoardId),
                    foreignKey: "custom_views_board___id_fkey")]
 		public   Board   Board { get; set; } = default!;
+
+		[Column(ignoreOnInsert: true,
+		        ignoreOnUpdate: true)]
+		public      PossibleType Type { get => Enum.Parse<PossibleType>(RealType); set => RealType = value.ToString(); }
+
+		public enum PossibleType
+		{
+			People,
+			DueDay,
+			BoardsAndSections,
+		}
 	}
 }

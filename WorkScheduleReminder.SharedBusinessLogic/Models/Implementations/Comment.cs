@@ -19,7 +19,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
                    model:         typeof(Task  ),
                    columnName:    nameof(TaskId),
-                   foreignKey: "comments_task____id_fkey")]
+                   foreignKey: "comments_task_id_fkey")]
 		public    Task    Task { get; set; } = default!;
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,

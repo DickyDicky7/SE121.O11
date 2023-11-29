@@ -31,12 +31,22 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Profile Profile { get; set; } = default!;
 
 		[Column(columnName: "role")]
-		public string     Role { get; set; } = default!;
+		public string RealRole { get; set; } = default!;
 
 		[Column(columnName: "settings")]
 		public string Settings { get; set; } = default!;
 
 		[Column(columnName: "invitation_accepted")]
-		public  bool? InvitationAccepted { get; set; }
+		public bool InvitationAccepted { get; set; }
+
+		[Column(ignoreOnInsert: true, 
+		        ignoreOnUpdate: true)]
+		public      PossibleRole  Role { get => Enum.Parse<PossibleRole>(RealRole); set => RealRole = value.ToString(); }
+
+		public enum PossibleRole
+		{
+			Editor,
+			Viewer,
+		}
 	}
 }
