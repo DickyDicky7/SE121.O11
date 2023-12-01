@@ -58,44 +58,68 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await base.OnInitializedAsync  ();
-		SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
-		SupabaseClient.Auth.LoadSession();
-		await SupabaseClient.Auth.RetrieveSessionAsync();
+		try
+		{
+			await base.OnInitializedAsync  ();
+			SupabaseClient.Auth.   AddStateChangedListener(AuthEventHandler);
+			SupabaseClient.Auth.LoadSession();
+			await SupabaseClient.Auth.RetrieveSessionAsync();
+		}
+		catch (Exception exception)
+		{
+			System.Diagnostics.Debug.WriteLine(exception.Message);
+		}
 	}
 
 	protected void AuthEventHandler(IGotrueClient<User, Session> gotrueClient, Constants.AuthState authState)
 	{
-		System.Diagnostics.Debug.WriteLine(authState);
-		switch (authState)
+		try
 		{
-			case Constants.AuthState.Shutdown:
-				break;
+			System.Diagnostics.Debug.WriteLine(authState);
+			switch (authState)
+			{
+				case Constants.AuthState.Shutdown:
+				     break;
 
-			case Constants.AuthState.SignedIn:
-				Snackbar_.Add
-				(Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
-						.Success);
-				break;
+				case Constants.AuthState.SignedIn:
+				     Snackbar_.Add
+				    (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
+					        .Success);
+				     break;
 
-			case Constants.AuthState.SignedOut:
-				break;
+				case Constants.AuthState.SignedOut:
+				     Snackbar_.Add
+				    (Message.Success.SUCCESSFULLY_LOGGING_OUT, Severity
+			            .Success);
+				     break;
 
-			case Constants.AuthState.UserUpdated:
-				break;
+				case Constants.AuthState.UserUpdated:
+				     break;
 
-			case Constants.AuthState.TokenRefreshed:
-				break;
+				case Constants.AuthState.  TokenRefreshed:
+				     break;
 
-			case Constants.AuthState.PasswordRecovery:
-				break;
+				case Constants.AuthState.PasswordRecovery:
+				     break;
+			}
+		}
+		catch (Exception exception)
+		{
+			System.Diagnostics.Debug.WriteLine(exception.Message);
 		}
 	}
 
 	public void Dispose()
 	{
-		SupabaseClient.Auth.RemoveStateChangedListener(AuthEventHandler);
-		SupabaseClient.Realtime.Disconnect();
+		try
+		{
+			SupabaseClient.Auth.RemoveStateChangedListener(AuthEventHandler);
+			SupabaseClient.Realtime.Disconnect();
+		}
+		catch (Exception exception)
+		{
+			System.Diagnostics.Debug.WriteLine(exception.Message);
+		}
 	}
 
 }

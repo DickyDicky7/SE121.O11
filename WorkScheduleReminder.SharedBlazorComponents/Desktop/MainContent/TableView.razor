@@ -101,8 +101,9 @@
     public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
     public IEnumerable<Task> Tasks = null!;
     public List<Task> Temp = new List<Task>();
-    protected override void OnInitialized()
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         foreach (int i in Enumerable.Range(0, 30))
         {
             //Temp.Add(new Task(i.ToString(), (30 - i).ToString(), 45 - i, DateTime.Now.AddDays(i)));

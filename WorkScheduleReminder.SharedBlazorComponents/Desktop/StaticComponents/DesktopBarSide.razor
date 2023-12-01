@@ -1,9 +1,13 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
 @implements IDisposable
+@inject       ISnackbar Snackbar
 @inject Supabase.Client SupabaseClient
 @using  Supabase.Realtime
+@using  Supabase.Realtime.Interfaces
 @using  Supabase.Realtime.PostgresChanges
+@inject NavigationManager NavigationManager
+@inject Services.Implementations.SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 
 <MudPaper Class="d-flex flex-column gap-2 pa-2"
 		  Style="overflow-y:scroll"
@@ -11,7 +15,7 @@
 		  Width="300px"
 		  Height="100%">
 	<MudButton Size="Size.Large"
-			   FullWidth="true">
+			   FullWidth="true" ClickPropagation="false" OnClick=@(async () => await SupabaseAuthenticationStateProviderService.LogOut(Snackbar))>
 		<MudPaper Class="d-flex flex-row gap-2 align-center"
 				  Elevation="0"
 				  Width="100%">
@@ -38,8 +42,7 @@
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Href="myday"
-					   OnClick="@(async () => await Update
-("My day", @Icons.Material.Filled.Today, Helper.ViewType.MyDayView))">
+					   OnClick="MyDayOnClick">
 				<MudText Style="font-family:inherit">My day</MudText>
 			</MudButton>
 			<MudButton Class="justify-start"
@@ -47,8 +50,7 @@
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Href="kanban/next7days"
-					   OnClick="@(async () => await Update
-("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
+					   OnClick="Next7DaysOnClick">
 				<MudText Style="font-family:inherit">Next 7 days</MudText>
 			</MudButton>
 			<MudButton Class="justify-start"
@@ -56,8 +58,7 @@
 					   Size="Size.Medium"
 					   FullWidth="true"
 					   Href="kanban/alltasks"
-					   OnClick="@(async () => await Update
-("All my task", @Icons.Material.Filled.Task, Helper.ViewType.DefaultView))">
+					   OnClick="AllMyTasksOnClick">
 				<MudText Style="font-family:inherit">All my tasks</MudText>
 			</MudButton>
 			@*custom views*@
@@ -83,6 +84,10 @@
 					</MudPaper>
 				</ChildContent>
 				<NestedList>
+					@if (FetchingCustomViews)
+					{
+						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
+					}
 					@foreach (Models.CustomView customView in CustomViews)
 					{
 						<MudButton Class="justify-start"
@@ -124,6 +129,10 @@
 					</MudPaper>
 				</ChildContent>
 				<NestedList>
+					@if (FetchingBoards)
+					{
+						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
+					}
 					@foreach (Models.Board board in Boards)
 					{
 						<MudButton Class="justify-start"
@@ -165,6 +174,8 @@
 
 @code
 {
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
 	public bool           InviteVisible { get; set; } = false;
 	public bool CreateBoard_____Visible { get; set; } = false;
 	public bool CreateCustomViewVisible { get; set; } = false;
@@ -173,26 +184,32 @@
 	[Parameter]
 	public string ActiveViewIcon { get; set; } = null!;
 	[Parameter]
-	public Guid ActiveBoard_____Id { get; set; }
-	[Parameter]
-	public Guid ActiveCustomViewId { get; set; }
-	[Parameter]
 	public Helper.ViewType ActiveViewType { get; set; }
+	[Parameter]
+	public Models.Board      ActiveBoard_____ { get; set; } = null!;
+	[Parameter]
+	public Models.CustomView ActiveCustomView { get; set; } = null!;
 	[Parameter]
 	public EventCallback<string> ActiveViewNameChanged { get; set; }
 	[Parameter]
 	public EventCallback<string> ActiveViewIconChanged { get; set; }
 	[Parameter]
-	public EventCallback<Guid> ActiveBoard_____IdChanged { get; set; }
-	[Parameter]
-	public EventCallback<Guid> ActiveCustomViewIdChanged { get; set; }
-	[Parameter]
 	public EventCallback<Helper.ViewType> ActiveViewTypeChanged { get; set; }
+	[Parameter]
+	public EventCallback<Models.Board     > ActiveBoard_____Changed { get; set; }
+	[Parameter]
+	public EventCallback<Models.CustomView> ActiveCustomViewChanged { get; set; }
 
-	public RealtimeChannel RealtimeChannelBoards      { get; set; } = null!;
-	public RealtimeChannel RealtimeChannelCustomViews { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelAllMembers     { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelAllBoards      { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelAllCustomViews { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelDeletesMembers     { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelDeletesBoards      { get; set; } = null!;
+	public RealtimeChannel RealtimeChannelDeletesCustomViews { get; set; } = null!;
 	public List<Models.Board     > Boards      { get; set; } = new();
 	public List<Models.CustomView> CustomViews { get; set; } = new();
+	public bool FetchingBoards      { get; set; } = true;
+	public bool FetchingCustomViews { get; set; } = true;
 
 	public async Task UpdateActiveViewName(string newActiveViewName)
 	{
@@ -206,16 +223,16 @@
 		await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
 	}
 
-	public async Task UpdateActiveBoard_____Id(Guid newActiveBoard_____Id)
+	public async Task UpdateActiveBoard_____(Models.Board      newActiveBoard_____)
 	{
-		ActiveBoard_____Id = newActiveBoard_____Id;
-		await ActiveBoard_____IdChanged.InvokeAsync(ActiveBoard_____Id);
+		ActiveBoard_____ = newActiveBoard_____;
+		await ActiveBoard_____Changed.InvokeAsync(ActiveBoard_____);
 	}
 
-	public async Task UpdateActiveCustomViewId(Guid newActiveCustomViewId)
+	public async Task UpdateActiveCustomView(Models.CustomView newActiveCustomView)
 	{
-		ActiveCustomViewId = newActiveCustomViewId;
-		await ActiveCustomViewIdChanged.InvokeAsync(ActiveCustomViewId);
+		ActiveCustomView = newActiveCustomView;
+		await ActiveCustomViewChanged.InvokeAsync(ActiveCustomView);
 	}
 
 	public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
@@ -224,21 +241,46 @@
 		await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
 	}
 
-	public async Task Update(
-	string newActiveViewName,
-	string newActiveViewIcon, Helper.ViewType newActiveViewType)
+	// public async Task Update(
+	// string newActiveViewName,
+	// string newActiveViewIcon, Helper.ViewType newActiveViewType)
+	// {
+	// 	await UpdateActiveViewName(newActiveViewName);
+	// 	await UpdateActiveViewIcon(newActiveViewIcon);
+	// 	await UpdateActiveViewType(newActiveViewType);
+	// }
+
+	public async Task      MyDayOnClick()
 	{
-		await UpdateActiveViewName(newActiveViewName);
-		await UpdateActiveViewIcon(newActiveViewIcon);
-		await UpdateActiveViewType(newActiveViewType);
+		await UpdateActiveViewName("My day");
+		await UpdateActiveViewIcon( Icons.Material.Filled.Today);
+		await UpdateActiveViewType(Helper.ViewType.   MyDayView);
+	}
+
+	public async Task  Next7DaysOnClick()
+	{
+		await UpdateActiveViewName("Next 7 days");
+		await UpdateActiveViewIcon( Icons.Material.Filled.NextWeek);
+		await UpdateActiveViewType(Helper.ViewType.    DefaultView);
+	}
+
+	public async Task AllMyTasksOnClick()
+	{
+		await UpdateActiveViewName("All my tasks");
+		await UpdateActiveViewIcon( Icons.Material.Filled.Task);
+		await UpdateActiveViewType(Helper.ViewType.DefaultView);
 	}
 
 	public Func<Task> BoardOnClick(Models.Board board)
 	{
 		return async () =>
 		{
-			await UpdateActiveBoard_____Id(board.Id);
-			await Update(board.Name, Icons.Material.Filled.Circle, Helper.ViewType.WorkspaceView);
+			await UpdateActiveBoard_____(board);
+			await UpdateActiveCustomView(null!);
+			await UpdateActiveViewName(board.Name);
+			await UpdateActiveViewIcon(Icons.Material.Filled.Circle);
+			await UpdateActiveViewType
+			(Helper.ViewType.WorkspaceView);
 		};
 	}
 
@@ -246,8 +288,11 @@
 	{
 		return async () =>
 		{
-			await UpdateActiveCustomViewId(customView.Id);
-			await Update(customView.Name, Icons.Material.Filled.Today, Helper.ViewType.CustomView);
+			await UpdateActiveCustomView(customView);
+			await UpdateActiveBoard_____(null!);
+			await UpdateActiveViewName(customView.Name);
+			await UpdateActiveViewIcon( Icons.Material.Filled.Today);
+			await UpdateActiveViewType(Helper.ViewType.  CustomView);
 		};
 	}
 
@@ -271,39 +316,127 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		try
+		{
 		await base.OnInitializedAsync();
 		await SupabaseClient.Realtime.  ConnectAsync();
 		await FetchBoards();
 		await FetchCustomViews();
-		RealtimeChannelBoards =
+		RealtimeChannelAllMembers =
 		await SupabaseClient.From<Models.Member    >().On(PostgresChangesOptions.ListenType.All,
-		async (sender, changeEventArgs) =>
+		async (sender, postgresChangesResponse) =>
 		{
-			await FetchBoards();
-			await InvokeAsync(StateHasChanged);
+			await InvokeAsync(async () =>
+			{
+				await FetchBoards();
+				  StateHasChanged();
+			});
 		});
-		RealtimeChannelCustomViews =
+		RealtimeChannelAllBoards  =
+		await SupabaseClient.From<Models.Board     >().On(PostgresChangesOptions.ListenType.All,
+		async (sender, postgresChangesResponse) =>
+		{
+			await InvokeAsync(async () =>
+			{
+				await FetchBoards();
+				  StateHasChanged();
+			});
+		});
+		RealtimeChannelAllCustomViews =
 		await SupabaseClient.From<Models.CustomView>().On(PostgresChangesOptions.ListenType.All,
-		async (sender, changeEventArgs) =>
+		async (sender, postgresChangesResponse) =>
 		{
-			await FetchCustomViews();
-			await InvokeAsync(StateHasChanged);
+			await InvokeAsync(async () =>
+			{
+				await FetchCustomViews();
+				       StateHasChanged();
+			});
 		});
+		RealtimeChannelDeletesMembers =
+		await SupabaseClient.From<Models.Member    >().On(PostgresChangesOptions.ListenType.Deletes, OnRealtimeDeletesMember____);
+		RealtimeChannelDeletesBoards  =
+		await SupabaseClient.From<Models.Board     >().On(PostgresChangesOptions.ListenType.Deletes, OnRealtimeDeletesBoard_____);
+		RealtimeChannelDeletesCustomViews =
+		await SupabaseClient.From<Models.CustomView>().On(PostgresChangesOptions.ListenType.Deletes, OnRealtimeDeletesCustomView);
+		}
+		catch (Exception exception)
+		{
+			System.Diagnostics.Debug.WriteLine(exception.Message);
+		}
+	}
+
+	public async void OnRealtimeDeletesMember____(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
+	{
+		await InvokeAsync(async () =>
+		{
+			int currentUserInActiveBoard_____Count = await SupabaseClient.From<Models.Member>().Where
+(member => member.BoardId == ActiveBoard_____.Id && member.ProfileId == CurrentUserId
+).Count(Postgrest.Constants.CountType.Exact);
+			if (currentUserInActiveBoard_____Count == 1)
+			{
+				return;
+			}
+		await ReturnToMyDayView_();
+		});
+	}
+
+	public async void OnRealtimeDeletesBoard_____(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
+	{
+		await InvokeAsync(async () =>
+		{
+			int activeBoardCount = await SupabaseClient.From<Models.Board>().Where(board => board.Id == ActiveBoard_____.Id)
+.Count(Postgrest.Constants.CountType.Exact);
+			if (activeBoardCount == 1)
+			{
+				return;
+			}
+		await ReturnToMyDayView_();
+		});
+	}
+
+	public async void OnRealtimeDeletesCustomView(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
+	{
+		await InvokeAsync(async () =>
+		{
+		await ReturnToMyDayView_();
+		});
+	}
+
+	public async Task ReturnToMyDayView_()
+	{
+		await MyDayOnClick();
+		NavigationManager.NavigateTo("/myday", forceLoad: false);
+		   StateHasChanged();
 	}
 
 	public async Task FetchBoards()
 	{
+		FetchingBoards      = !false;
 		Boards      = (await SupabaseClient.From<Models.Board     >().Get()).Models;
+		FetchingBoards      =  false;
 	}
 
 	public async Task FetchCustomViews()
 	{
+		FetchingCustomViews = !false;
 		CustomViews = (await SupabaseClient.From<Models.CustomView>().Get()).Models;
+		FetchingCustomViews =  false;
 	}
 
 	public void Dispose()
 	{
-		RealtimeChannelBoards     .Unsubscribe();
-		RealtimeChannelCustomViews.Unsubscribe();
+		if (RealtimeChannelAllMembers     != null)
+		    RealtimeChannelAllMembers    .Unsubscribe();
+		if (RealtimeChannelAllBoards      != null)
+		    RealtimeChannelAllBoards     .Unsubscribe();
+		if (RealtimeChannelAllCustomViews != null)
+		    RealtimeChannelAllCustomViews.Unsubscribe();
+
+		if (RealtimeChannelDeletesMembers     != null)
+		    RealtimeChannelDeletesMembers    .Unsubscribe();
+		if (RealtimeChannelDeletesBoards      != null)
+		    RealtimeChannelDeletesBoards     .Unsubscribe();
+		if (RealtimeChannelDeletesCustomViews != null)
+		    RealtimeChannelDeletesCustomViews.Unsubscribe();
 	}
 }

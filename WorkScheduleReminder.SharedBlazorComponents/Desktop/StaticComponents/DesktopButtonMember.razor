@@ -2,7 +2,7 @@
 
 <MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
 		  Elevation="0">
-	@if (ViewType == Helper.ViewType.DefaultView)
+	@if (ActiveViewType == Helper.ViewType.DefaultView)
 	{
 		<MudSwitch Checked="SwitchChecked"
 				   Label="@Text"
@@ -10,13 +10,13 @@
 				   ThumbIcon="@Icons.Material.Filled.Workspaces"
 				   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
 	}
-	else if (ViewType == Helper.ViewType.CustomView)
+	else if (ActiveViewType == Helper.ViewType.CustomView)
 	{
 		<MudText Style="font-size:small;font-weight:100;">
 			Private view
 		</MudText>
 	}
-	else if (ViewType == Helper.ViewType.WorkspaceView)
+	else if (ActiveViewType == Helper.ViewType.WorkspaceView)
 	{
 		<MudButton Class=""
 				   StartIcon="@Icons.Material.Filled.People"
@@ -37,10 +37,10 @@
 
 @code
 {
-	[CascadingParameter(Name = "ViewType")]
-	public Helper.ViewType  ViewType { get; set; }
+	[CascadingParameter(Name = nameof(ActiveViewType))]
+	public Helper.ViewType ActiveViewType { get; set; }
 	[Parameter]
-	public bool        SwitchChecked { get; set; } = false;
+	public bool             SwitchChecked { get; set; } = false;
 
 	public string Text { get; set; } = "Individual";
 	public bool MemberVisible { get; set; } = false;

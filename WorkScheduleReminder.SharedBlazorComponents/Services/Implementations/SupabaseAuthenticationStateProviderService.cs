@@ -66,8 +66,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
 			}
 		}
 
@@ -82,8 +81,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
 			}
 		}
 
@@ -98,8 +96,26 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
+			}
+		}
+
+		public async Task<bool> LogOut(ISnackbar snackbar)
+		{
+			(bool ok, string reason) = await SignOut();
+			if  (!ok)
+			{
+				snackbar.Add(Message.Error.CANNOT_LOG_OUT(reason),
+				Severity.Error);
+				return
+				  ok;
+			}
+			else
+			{
+				snackbar.Add(reason,
+				Severity.Success);
+				return
+				  ok;
 			}
 		}
 
@@ -188,6 +204,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 
 		public async Task LogInWithGoogle__(NavigationManager navigationManager)
 		{
+			try
+			{
 			Supabase.Gotrue.
 			ProviderAuthState
 			providerAuthState = await  supabaseClient.Auth.SignIn(
@@ -204,10 +222,17 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			providerAuthState.PKCEVerifier));
 			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				System.Diagnostics.Debug.WriteLine(gotrueException.Message);
+			}
 		}
 
 		public async Task LogInWithFacebook(NavigationManager navigationManager)
 		{
+			try
+			{
 			Supabase.Gotrue.
 			ProviderAuthState
 			providerAuthState = await    supabaseClient.Auth.SignIn(
@@ -224,16 +249,28 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			providerAuthState.PKCEVerifier));
 			observableDictionaryTransferService.Insert("authenticationCode", SuccessfullyLogInWithOAuthVer2(
 			providerAuthState.PKCEVerifier));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				System.Diagnostics.Debug.WriteLine(gotrueException.Message);
+			}
 		}
 
 		public Action<object?> SuccessfullyLogInWithOAuthVer2(string? maybeNullPKCEVerifier)
 		=>  async (maybeNullAuthenticationCode) =>
 		{
+			try
+			{
 			string pkceVerifier       = maybeNullPKCEVerifier                 ?? string.Empty;
 			string authenticationCode = maybeNullAuthenticationCode as string ?? string.Empty;
 			await  supabaseClient.Auth.ExchangeCodeForSession(pkceVerifier, authenticationCode);
 			NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
 			observableDictionaryTransferService.Remove(nameof(authenticationCode));
+			}
+			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
+			{
+				System.Diagnostics.Debug.WriteLine(gotrueException.Message);
+			}
 		};
 
 		private async Task<(bool ok, string reason)> SendPasswordRecoveryCodeToEmail(string email)
@@ -252,8 +289,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
 			}
 		}
 
@@ -270,8 +306,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
 			}
 			catch (Exception exception)
 			{
@@ -290,8 +325,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			}
 			catch (Supabase.Gotrue.Exceptions.GotrueException gotrueException)
 			{
-				JObject message = JObject.Parse(gotrueException.Message);
-				return (ok: false, reason: message.ExtractSupabaseGotrueException());
+				return (ok: false, reason:    gotrueException.ExtractMessage());
 			}
 		}
 
