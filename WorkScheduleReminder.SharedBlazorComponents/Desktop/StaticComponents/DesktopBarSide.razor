@@ -1,4 +1,4 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
 
 @implements IDisposable
 @inject Supabase.Client SupabaseClient
@@ -46,7 +46,7 @@
 					   StartIcon="@Icons.Material.Filled.NextWeek"
 					   Size="Size.Medium"
 					   FullWidth="true"
-					   Href="kanban/next7days"
+					   Href="table"
 					   OnClick="@(async () => await Update
 ("Next 7 days", @Icons.Material.Filled.NextWeek, Helper.ViewType.DefaultView))">
 				<MudText Style="font-family:inherit">Next 7 days</MudText>
