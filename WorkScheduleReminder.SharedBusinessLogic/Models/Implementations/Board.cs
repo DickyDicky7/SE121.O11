@@ -21,9 +21,9 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		public Guid    OwnerId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
-                   model:      typeof(Profile), 
-                   columnName: nameof(OwnerId),
-                   foreignKey: "boards___owner_id_fkey",
+		           model:      typeof(Profile), 
+		           columnName: nameof(OwnerId),
+		           foreignKey: "boards___owner_id_fkey",
 		           includeInQuery: true,
 		           ignoreOnInsert: true,
 		           ignoreOnUpdate: true)]
