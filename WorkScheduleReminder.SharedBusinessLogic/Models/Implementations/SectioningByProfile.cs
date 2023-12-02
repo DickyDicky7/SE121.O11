@@ -12,22 +12,30 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 			PrimaryKeyPropertyName2 = nameof(            TaskId);
 		}
 
-		[PrimaryKey(columnName: "task_id")]
+		[PrimaryKey(columnName: "task_id",
+		            shouldInsert: true)]
 		public Guid TaskId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
                    model:      typeof(Task  ),
                    columnName: nameof(TaskId),
-                   foreignKey: "sectionings_by_profiles_task_id_fkey")]
+                   foreignKey: "sectionings_by_profiles_task_id_fkey",
+		           includeInQuery: true,
+		           ignoreOnInsert: true,
+		           ignoreOnUpdate: true)]
 		public Task Task   { get; set; } = default!;
 
-		[PrimaryKey(columnName: "section_by_profile_id")]
+		[PrimaryKey(columnName: "section_by_profile_id",
+		            shouldInsert: true)]
 		public Guid             SectionByProfileId { get; set; }
 
 		[Reference(joinType: ReferenceAttribute.JoinType.Left,
                    model:      typeof(SectionByProfile  ),
                    columnName: nameof(SectionByProfileId),
-                   foreignKey: "sectionings_by_profiles_section_by_profile_id_fkey")]
+                   foreignKey: "sectionings_by_profiles_section_by_profile_id_fkey",
+		           includeInQuery: true,
+		           ignoreOnInsert: true,
+		           ignoreOnUpdate: true)]
 		public SectionByProfile SectionByProfile   { get; set; } = default!;
 	}
 }

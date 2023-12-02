@@ -1,19 +1,19 @@
 ﻿<MudPaper Class="d-flex flex-row flex-wrap gap-2 pa-2 align-center"
 		  Elevation="0">
 	<MudIcon Class="rounded-cycle"
-			 Icon="@ViewIcon"
+			 Icon="@ActiveViewIcon"
 			 Size="Size.Large"
 			 Color="Color.Info" />
 	<MudText Style="font-weight:bold;font-size:x-large"
 			 Color="Color.Info">
-		@ViewName
+		@ActiveViewName
 	</MudText>
 </MudPaper>
 
 @code
 {
-	[CascadingParameter(Name = "ViewName")]
-	public string ViewName { get; set; } = string.Empty;
-	[CascadingParameter(Name = "ViewIcon")]
-	public string ViewIcon { get; set; } = string.Empty;
+	[CascadingParameter(Name = nameof(ActiveViewName))]
+	public string ActiveViewName { get; set; } = string.Empty;
+	[CascadingParameter(Name = nameof(ActiveViewIcon))]
+	public string ActiveViewIcon { get; set; } = string.Empty;
 }

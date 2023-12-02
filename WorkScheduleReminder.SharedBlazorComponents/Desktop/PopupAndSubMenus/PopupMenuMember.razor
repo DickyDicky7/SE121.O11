@@ -1,149 +1,281 @@
-﻿<MudPaper @attributes=AdditionalAttributes
-          Class="d-flex flex-column flex-wrap gap-2 pa-2 align-content-start"
-          Style="border-radius:20px; overflow:hidden;"
-          Elevation="0"
-          Width="500px">
-    <MudText Style="font-size:larger;font-weight:bold">
-        Invite
-    </MudText>
-    <MudPaper Class="d-flex flex-row gap-1 px-2"
-              Elevation="0"
-              Width="100%">
-        <MudTextField @bind-Value="Email"
-                      Class="d-flex flex-grow-1"
-                      Immediate="true"
-                      Placeholder="Enter email"
-                      DisableUnderLine="true"
-                      Variant="Variant.Outlined"
-                      Margin="Margin.Dense" />
-        <MudButton Class="d-flex flex-wrap"
-                   Size="Size.Small"
-                   Color="Color.Info"
-                   OnClick="InviteByEmail">
-            Invite
-        </MudButton>
-    </MudPaper>
-    <MudText Style="font-size:larger;font-weight:bold">
-        Permission
-    </MudText>
-    <MudPaper Class="d-flex flex-column gap-1"
-              Style="overflow-y:scroll"
-              Elevation="0"
-              Width="100%"
-              Height="150px">
-        @*for go here*@
-        @foreach (Teammate Mate in Teammates)
-        {
-            <MudPaper Class="d-flex flex-row gap-1 px-2"
-                      Elevation="0"
-                      Width="100%">
-                <MudAvatar>
-                    <MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
-                </MudAvatar>
-                <MudText Class="d-flex flex-grow-1 align-center">
-                    @Mate.Name
-                </MudText>
-                <MudMenu Class=""
-                         Size="Size.Small"
-                         FullWidth="false"
-                         DisableElevation="true"
-                         Dense="true"
-                         AnchorOrigin="Origin.BottomCenter"
-                         TransformOrigin="Origin.TopCenter"
-                         MaxHeight="250">
-                    <ActivatorContent>
-                        <MudText>
-                            @Mate.CurrentRole
-                        </MudText>
-                    </ActivatorContent>
-                    <ChildContent>
-                        <MudMenuItem AutoClose="true"
-                                     OnClick="@(()=>SetAdmin(@Mate))">
-                            <MudText>
-                                Admin
-                            </MudText>
-                        </MudMenuItem>
-                        <MudMenuItem AutoClose="false"
-                                     OnClick="@(()=>SetMember(@Mate))">
-                            <MudText>
-                                Member
-                            </MudText>
-                        </MudMenuItem>
-                        <MudMenuItem AutoClose="false"
-                                     OnClick="@(()=>SetGuest(@Mate))">
-                            <MudText>
-                                Guest
-                            </MudText>
-                        </MudMenuItem>
-                        <MudMenuItem AutoClose="false"
-                                     OnClick="@(()=>RemoveTeammate(@Mate))">
-                            <MudText>
-                                Remove
-                            </MudText>
-                        </MudMenuItem>
-                    </ChildContent>
-                </MudMenu>
-            </MudPaper>
-        }
-    </MudPaper>
+﻿@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@using  Supabase.Realtime
+@using  Supabase.Realtime.PostgresChanges
+@inject ISnackbar Snackbar
+
+<MudPaper @attributes=AdditionalAttributes
+		  Class="d-flex flex-column flex-wrap gap-2 pa-2 align-content-start"
+		  Style="border-radius:20px; overflow:hidden;"
+		  Elevation="0"
+		  Width="500px">
+	@if (FetchingMembers)
+	{
+		<MudSkeleton Width="100%" Height="030px" />
+		<MudSkeleton SkeletonType="SkeletonType.Circle"
+					 Width="60px" Height="060px" />
+		<MudSkeleton SkeletonType="SkeletonType.Rectangle"
+					 Width="100%" Height="150px" />
+	}
+	else
+	{
+		@if (CurrentUserIsOwnerOfActiveBoard)
+		{
+			<MudText Style="font-size:larger;font-weight:bold">
+				Invite
+			</MudText>
+			<MudPaper Class="d-flex flex-row gap-1 px-2"
+					  Elevation="0"
+					  Width="100%">
+				<MudTextField @bind-Value="Email"
+							  Class="d-flex flex-grow-1"
+							  Immediate="true"
+							  Placeholder="Enter email"
+							  DisableUnderLine="true"
+							  Variant="Variant.Outlined"
+							  Margin="Margin.Dense" />
+				<MudButton Class="d-flex flex-wrap"
+						   Size="Size.Small"
+						   Color="Color.Info"
+						   OnClick="InviteByEmail">
+					Invite
+				</MudButton>
+			</MudPaper>
+		}
+		<MudText Style="font-size:larger;font-weight:bold">
+			Permission
+		</MudText>
+		<MudPaper Class="d-flex flex-column gap-1"
+				  Style="overflow-y:scroll"
+				  Elevation="0"
+				  Width="100%"
+				  Height="150px">
+			@*for go here*@
+			@foreach (Models.Member member in Members)
+			{
+				<MudPaper Class="d-flex flex-row gap-1 px-2"
+						  Elevation="0"
+						  Width="100%">
+					<MudAvatar>
+						<MudImage Src=@(string.IsNullOrWhiteSpace(member.Profile.AvatarURL) ? Helper.GetResource("/images/catsayhello.png") : member.Profile.AvatarURL) />
+					</MudAvatar>
+					<MudText Class="d-flex flex-grow-1 align-center">
+						@member.Profile.UserName
+						@if (CurrentUserIsThis(member))
+						{
+							@(" (Me)")
+						}
+						else
+						{
+							@(string.Empty)
+						}
+					</MudText>
+					<MudMenu Class=""
+							 Size="Size.Small"
+							 FullWidth="false"
+							 DisableElevation="true"
+							 Dense="true"
+							 AnchorOrigin="Origin.BottomCenter"
+							 TransformOrigin="Origin.TopCenter"
+							 MaxHeight="250">
+						<ActivatorContent>
+							<MudText>
+								@if (IsOwnerOfActiveBoardThis(member))
+								{
+									@("Owner")
+								}
+								else
+								{
+									@member.Role
+								}
+							</MudText>
+						</ActivatorContent>
+						<ChildContent>
+							@if (CurrentUserIsOwnerOfActiveBoard && !CurrentUserIsThis(member))
+							{
+								@foreach (Models.Member.PossibleRole possibleRole
+										in Enum.GetValues<Models.Member.PossibleRole>())
+								{
+									<MudMenuItem AutoClose="false"
+												 OnClick="@(UpdateMemberRole(member, possibleRole))">
+										<MudText>
+											@possibleRole
+										</MudText>
+									</MudMenuItem>
+								}
+								<MudMenuItem AutoClose="false"
+											 OnClick="@(RemoveMember(member))">
+									<MudText>
+										Remove
+									</MudText>
+								</MudMenuItem>
+							}
+						</ChildContent>
+					</MudMenu>
+				</MudPaper>
+			}
+		</MudPaper>
+		<MudButton Disabled="CurrentUserIsOwnerOfActiveBoard"
+				   ClickPropagation="false" OnClick="LeaveOnClick">
+			<MudText>
+				Leave
+			</MudText>
+		</MudButton>
+	}
 </MudPaper>
 
 @code
 {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public string Email { get; set; } = string.Empty;
-    public string Link { get; set; } = "http//";
-    public string Permission { get; set; } = "Admin";
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
 
-    public enum Role
-    {
-        Admin, Member, Guest
-    }
-    public record Teammate()
-    {
-        public string Name { get; set; } = string.Empty;
-        public Role CurrentRole { get; set; } = Role.Guest;
-    }
-    public List<Teammate> Teammates { get; set; } = new List<Teammate>();
+	public string Email { get; set; } = string.Empty;
+	public string Link  { get; set; } = "http//";
+	public string Permission { get; set; } = "Admin";
 
-    public void InviteByEmail()
-    {
+	public RealtimeChannel RealtimeChannelMembers { get; set; } = null!;
+	public List<Models.Member> Members { get; set; } = new();
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId          { get; set; }
+	public bool        FetchingMembers { get; set; } =  true;
+	public bool CurrentUserIsOwnerOfActiveBoard
+	=> CurrentUserId ==    ActiveBoard_____.OwnerId;
+	public bool IsOwnerOfActiveBoardThis(Models.Member member)
+	=> member.ProfileId == ActiveBoard_____.OwnerId;
+	public bool CurrentUserIsThis       (Models.Member member)
+	=> CurrentUserId == member.ProfileId;
 
-    }
+	public async Task InviteByEmail()
+	{
+		try
+		{
+			(bool ok, string reason) = Email.CheckEmailFormat();
+			if  (!ok)
+			{
+				Snackbar.Add(Message.Error.CANNOT_INVITE_MEMBER(reason), Severity.Error);
+				return;
+			}
+			Models.Profile invitedProfile = 
+			(await SupabaseClient.From<Models.Profile>().Where(profile => profile.Email == Email).Single())!;
+			if (invitedProfile == null)
+			{
+				Snackbar.Add(Message.Error.CANNOT_INVITE_MEMBER(Message.Error.USER_DOESNOT_EXIST_(Email)), Severity.Warning);
+				return;
+			}
+			int alreadyExistedMemberCount = await SupabaseClient.From< Models.Member>().Where
+			(member => member.BoardId == ActiveBoard_____.Id && member.ProfileId == invitedProfile.Id
+			).Count(Postgrest.Constants.CountType.Exact);
+			if (alreadyExistedMemberCount == 1)
+			{
+				Snackbar.Add(Message.Error.CANNOT_INVITE_MEMBER(Message.Error.USER_ALREADY_EXISTS(Email)), Severity.Warning);
+				return;
+			}
+			Models.Member newMember = new()
+			{
+				  BoardId = ActiveBoard_____.Id,
+				ProfileId =   invitedProfile.Id,
+				Settings  =  string.Empty,
+				Role = Models.Member.PossibleRole.Viewer,
+				InvitationAccepted = true,
+			};
+			await SupabaseClient.From<Models.Member>().Insert(newMember, new Postgrest.QueryOptions()
+			{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+			Snackbar.Add(Message.Success.SUCCESSFULLY_INVITE_MEMBER, Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_INVITE_MEMBER(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+	}
 
-    public void InviteByLink()
-    {
+	public void InviteByLink_()
+	{
 
-    }
-    public void SetAdmin(Teammate _Mate)
-    {
-        _Mate.CurrentRole = Role.Admin;
-    }
-    public void SetMember(Teammate _Mate)
-    {
-        _Mate.CurrentRole = Role.Member;
-    }
-    public void SetGuest(Teammate _Mate)
-    {
-        _Mate.CurrentRole = Role.Guest;
-    }
-    public void RemoveTeammate(Teammate _Mate)
-    {
-        Teammates.Remove(_Mate);
-    }
+	}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        Teammates.Add(new Teammate() { Name = "Person A", CurrentRole = Role.Admin });
-        Teammates.Add(new Teammate() { Name = "Person B", CurrentRole = Role.Member });
-        Teammates.Add(new Teammate() { Name = "Person C", CurrentRole = Role.Member });
-        Teammates.Add(new Teammate() { Name = "Person D", CurrentRole = Role.Member });
-        Teammates.Add(new Teammate() { Name = "Person E", CurrentRole = Role.Member });
-        Teammates.Add(new Teammate() { Name = "Person F", CurrentRole = Role.Guest });
-        Teammates.Add(new Teammate() { Name = "Person G", CurrentRole = Role.Guest });
-        Teammates.Add(new Teammate() { Name = "Person H", CurrentRole = Role.Guest });
-    }
+	public Func<Task> RemoveMember    (Models.Member removeMember)
+	{
+		return async () =>
+		{
+			try
+			{
+				await removeMember.Delete<Models.Member>();
+				Snackbar.Add(Message.Success.SUCCESSFULLY_REMOVE_MEMBER, Severity.Success);
+			}
+			catch (Postgrest.Exceptions.PostgrestException postgrestException)
+			{
+				System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+				Snackbar.Add(Message.Error.CANNOT_REMOVE_MEMBER(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+			}
+		};
+	}
+
+	public Func<Task> UpdateMemberRole(Models.Member updateMember, Models.Member.PossibleRole newRole)
+	{
+		return async () =>
+		{
+			try
+			{
+				updateMember.Role = newRole;
+				await updateMember.Update<Models.Member>();
+				Snackbar.Add(Message.Success.SUCCESSFULLY_UPDATE_MEMBER, Severity.Success);
+			}
+			catch (Postgrest.Exceptions.PostgrestException postgrestException)
+			{
+				System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+				Snackbar.Add(Message.Error.CANNOT_UPDATE_MEMBER(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+			}
+		};
+	}
+
+	public async Task LeaveOnClick()
+	{
+		try
+		{
+			await Members
+		   .First<Models.Member>(member =>
+			member  .ProfileId == CurrentUserId).Delete<Models.Member>();
+			Snackbar.Add(Message.Success.SUCCESSFULLY_LEAVE_BOARD(ActiveBoard_____.Name), Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_LEAVE_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await SupabaseClient.Realtime.  ConnectAsync();
+		await FetchMembers();
+		RealtimeChannelMembers =
+		await SupabaseClient.From<Models.Member>().On(PostgresChangesOptions.ListenType.All,
+		async (sender, postgresChangesResponse) =>
+		{
+			await InvokeAsync(async () =>
+			{
+				await FetchMembers();
+				   StateHasChanged();
+			});
+		});
+	}
+
+	public async Task FetchMembers()
+	{
+		FetchingMembers = !false;
+		Members = (await SupabaseClient.From<Models.Member>() .Where(
+		member =>member.BoardId == ActiveBoard_____.Id).Get()).Models;
+		FetchingMembers =  false;
+	}
+
+	public void Dispose()
+	{
+		if (RealtimeChannelMembers != null)
+		    RealtimeChannelMembers.Unsubscribe();
+	}
 }
