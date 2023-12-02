@@ -1,3 +1,40 @@
 ﻿@page "/test"
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
 
+
+<MudDataGrid T="aaa" Items="@Listaaa" DragDropColumnReordering="@_reorderingEnabled" ApplyDropClassesOnDragStarted="@_applyDropClassesOnDragStarted"
+             DragIndicatorIcon="@_dragIndicatorIcon" Dense ColumnResizeMode="ResizeMode.Container">
+     <Columns>
+         <PropertyColumn Property="x=>x.Name" />
+         <PropertyColumn Property="x=>x.Blah" />
+     </Columns>
+
+ </MudDataGrid>
+
+ <div class="d-flex flex-column mt-4">
+     <MudSwitch @bind-Checked="@_reorderingEnabled" Color="Color.Primary">DragDropColumnReordering</MudSwitch>
+     <MudSwitch @bind-Checked="@_applyDropClassesOnDragStarted" Color="Color.Primary">ApplyDropClassesOnDragStarted</MudSwitch>
+ </div>
+ @code {
+    public record aaa
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Blah { get; set; } = string.Empty;
+    }
+    public List<aaa> Listaaa { get; set; } = new();
+    bool _applyDropClassesOnDragStarted = false;
+
+    string _dragIndicatorIcon = Icons.Material.Filled.DragIndicator;
+
+    bool _reorderingEnabled = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Listaaa.Add(new aaa() { Name = "aaa", Blah = "bbb" });
+        Listaaa.Add(new aaa() { Name = "aaa", Blah = "bbb" });
+        Listaaa.Add(new aaa() { Name = "aaa", Blah = "bbb" });
+        Listaaa.Add(new aaa() { Name = "aaa", Blah = "bbb" });
+    }
+
+}

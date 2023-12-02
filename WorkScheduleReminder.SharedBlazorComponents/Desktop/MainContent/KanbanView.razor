@@ -2,152 +2,285 @@
 
 @page "/kanban/{Page?}"
 <MudPaper Class="d-flex flex-row align-start gap-3 pa-3"
-		  Style="background-color:transparent; overflow-y:hidden; overflow-x:scroll;"
-		  Elevation="0"
-		  Width="100%"
-		  Height="100%">
-	@foreach (var Section in Sections)
-	{
-		<MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
-				  Style="overflow-y:hidden; overflow-x:auto"
-				  Elevation="0"
-				  MinWidth="250px"
-				  MaxWidth="250px"
-				  MaxHeight="100%">
-			<MudText Style="font-weight:bold; font-size:large;">
-				@Section.Item1
-			</MudText>
-			<MudPaper Class="f-flex flex-column gap-2"
-					  Style="overflow-y:scroll;"
-					  Elevation="0"
-					  Width="100%"
-					  MaxHeight="100%">
-				@foreach (Task task in Section.Item2)
-				{
+          Style="background-color:transparent; overflow-y:hidden; overflow-x:scroll;"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    @foreach (Section Section in SectionList)
+    {
+        <MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
+                  Style="overflow-y:hidden; overflow-x:auto"
+                  Elevation="0"
+                  MinWidth="250px"
+                  MaxWidth="250px"
+                  MaxHeight="100%">
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText Style="font-weight:bold; font-size:large;"
+                         Color="Color.Info">
+                    @Section.Name
+                </MudText>
+                <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                               Size="Size.Small" />
+            </MudPaper>
+            <MudPaper Class="f-flex flex-column gap-2"
+                      Style="overflow-y:scroll;"
+                      Elevation="0"
+                      Width="100%"
+                      MaxHeight="100%">
+                @foreach (Task Task in Section.SectionTaskList)
+                {
 
-					<MudButton Class=""
-							   FullWidth="true"
-							   Size="Size.Medium"
-							   Color="Color.Dark"
-							   OnClick="(()=>OnTaskClick(task.Title))">
-						<MudPaper Class="d-flex flex-column gap-1 align-start"
-								  Elevation="0"
-								  Width="100%">
-							<MudText>@task.Title</MudText>
-						</MudPaper>
-					</MudButton>
-				}
-			</MudPaper>
-			<MudTextField @bind-Value="@NewTask"
-						  Class=""
-						  Style=""
-						  Placeholder="Add task"
-						  Immediate="true"
-						  DisableUnderLine="true"
-						  FullWidth="true"
-						  Variant="Variant.Outlined"
-						  Margin="Margin.Dense" />
-		</MudPaper>
-	}
+                    <MudButton Class="pa-2"
+                               FullWidth="true"
+                               Size="Size.Medium"
+                               Color="Color.Dark"
+                               OnClick="(()=>OnTaskClick(Task.Title))">
+                        <MudPaper Class="d-flex flex-column gap-1 align-start"
+                                  Elevation="3"
+                                  Width="100%">
+                            <MudText>
+                                @Task.Title
+                            </MudText>
+                            @if (Task.TaggingList.Count > 0)
+                            {
+                                <MudPaper Class="align-center justify-content-start pa-3"
+                                          Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
+                                          Elevation="0"
+                                          Width="100%"
+                                          Height="50px">
+                                    @foreach (Tagging Tagging in Task.TaggingList)
+                                    {
+                                        <MudChip Text="@Tagging.Name"
+                                                 Color="Tagging.Color"
+                                                 Variant="Variant.Text"
+                                                 Size="Size.Small" />
+                                    }
+                                </MudPaper>
+                            }
+                            <MudPaper Class="d-flex flex-row gap-1 align-center justify-space-between pa-3"
+                                      Elevation="0"
+                                      Width="100%">
+                                <MudText Style="font-weight:100">
+                                    @DueDateStringAssemble(Task.DueDay, Task.DueTime)
+                                </MudText>
+                                @if (Task.SubTaskList.Count > 0)
+                                {
+                                    <MudIcon Size="Size.Small"
+                                             Icon="@Icons.Material.Filled.Checklist" />
+                                }
+                                @if (Task.FileList.Count > 0)
+                                {
+                                    <MudIcon Size="Size.Small"
+                                             Icon="@Icons.Material.Filled.Attachment" />
+                                }
+                            </MudPaper>
+                        </MudPaper>
+                    </MudButton>
+                }
+            </MudPaper>
+            <MudTextField @bind-Value="@Section.NewTask"
+                          Placeholder="Add task"
+                          Immediate="true"
+                          DisableUnderLine="true"
+                          FullWidth="true"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          TextUpdateSuppression="false"
+                          OnKeyDown="(KeyboardEventArgs e)=>AddTaskToSection(e, Section)" />
+        </MudPaper>
+    }
 </MudPaper>
 <MudOverlay Visible="@TaskDetailVisible"
-			DarkBackground="true"
-			AutoClose="true"
-			OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-	<TaskDetail @onclick:stopPropagation Title="@CurrentTitle" WorkspaceTask="true" />
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" WorkspaceTask="@WorkspaceTask" />
 </MudOverlay>
 
 @code
 {
-	[Parameter]
-	public string? Page { get; set; }
-	public string NewTask { get; set; } = string.Empty;
-	public List<(string, List<Task>)> Sections = new List<(string, List<Task>)>();
+    [Parameter]
+    public string? Page { get; set; }
 
-	public string CurrentTitle { get; set; } = string.Empty;
-	public bool TaskDetailVisible { get; set; } = false;
-	public record Task(string Title, string Tag, int Assignees, DateTime DueDay);
-	public List<Task> Tasks = new List<Task>();
-	protected override void OnParametersSet()
-	{
-		Page = Page ?? string.Empty;
-		Sections.Clear();
-		Tasks.Clear();
-		foreach (int i in Enumerable.Range(0, 30))
-		{
-			Tasks.Add(new Task(i.ToString(), (30 - i).ToString(), 45 - i, DateTime.Now.AddDays(i).Date));
-		}
-		InitSection();
-	}
-	public void OnTaskClick(string TaskTitle)
-	{
-		TaskDetailVisible = !TaskDetailVisible;
-		CurrentTitle = TaskTitle;
-	}
-	public void InitSection()
-	{
-		if (Page == "next7days")
-		{
-			foreach (int i in Enumerable.Range(0, 7))
-			{
-				List<Task> temp = new List<Task>();
-				foreach (Task task in Tasks)
-				{
-					if (task.DueDay == DateTime.Now.AddDays(i).Date)
-					{
-						temp.Add(task);
-					}
-				}
-				if (i == 0)
-				{
-					Sections.Add(("Today", temp));
-				}
-				else if (i == 1)
-				{
-					Sections.Add(("Tomorrow", temp));
-				}
-				else
-				{
-					Sections.Add((DateTime.Now.AddDays(i).DayOfWeek.ToString(), temp));
-				}
-			}
-		}
-		else if (Page == "alltasks")
-		{
-			List<Task> today = new List<Task>();
-			List<Task> tomorrow = new List<Task>();
-			List<Task> upcoming = new List<Task>();
-			List<Task> someday = new List<Task>();
-			foreach (Task task in Tasks)
-			{
-				if (task.DueDay == DateTime.Now.Date)
-				{
-					today.Add(task);
-				}
-				else if (task.DueDay == DateTime.Now.AddDays(1).Date)
-				{
-					tomorrow.Add(task);
-				}
-				else if (task.DueDay >= DateTime.Now.AddDays(2).Date &&
-						task.DueDay <= DateTime.Now.AddDays(6).Date)
-				{
-					upcoming.Add(task);
-				}
-				else
-				{
-					someday.Add(task);
-				}
-			}
-			Sections.Add(("Today", today));
-			Sections.Add(("Tomorrow", tomorrow));
-			Sections.Add(("Upcoming", upcoming));
-			Sections.Add(("Someday", someday));
-		}
-		else
-		{
-			Sections.Add(("Planning", Tasks));
-			Sections.Add(("Executing", Tasks));
-			Sections.Add(("Complete", Tasks));
-		}
-	}
+    public string CurrentTitle { get; set; } = string.Empty;
+    public bool TaskDetailVisible { get; set; } = false;
+    public bool WorkspaceTask { get; set; } = true;
+
+    public record Tagging
+    {
+        public string Name { get; set; } = default!;
+        public Color Color { get; set; } = default!;
+    }
+    public record SubTask
+    {
+        public string Name { get; set; } = default!;
+        public bool Checked { get; set; } = false;
+    }
+    public record Task
+    {
+        public string Title { get; set; } = string.Empty;
+        public List<Tagging> TaggingList { get; set; } = new();
+        public DateTime DueDay { get; set; } = default!;
+        public TimeSpan DueTime { get; set; } = default!;
+        public List<SubTask> SubTaskList { get; set; } = new();
+        public IList<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
+
+    }
+    public List<Task> TaskList = new();
+    public record Section()
+    {
+        public string Name { get; set; } = default!;
+        public string NewTask { get; set; } = string.Empty;
+        public List<Task> SectionTaskList { get; set; } = new();
+    }
+    public List<Section> SectionList { get; set; } = new();
+    public string DueDateStringAssemble(DateTime _Date, TimeSpan _Time)
+    {
+        return $"{_Date.ToString("dd")}.{_Date.ToString("MM")}.{_Date.ToString("yy")} {_Time.ToString("hh")}:{_Time.ToString("mm")}";
+    }
+    public void AddTaskToSection(KeyboardEventArgs e, Section _Section)
+    {
+        if (e.Code == "Enter" && _Section.NewTask != string.Empty)
+        {
+            if (Page == "next7days" || Page == "alltasks")
+            {
+                _Section.SectionTaskList.Add(
+                    new Task()
+                        {
+                            Title = _Section.NewTask,
+                            DueDay = DateTime.Now,
+                            DueTime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second)
+                        }
+                );
+            }
+            else
+            {
+
+            }
+            _Section.NewTask = string.Empty;
+        }
+    }
+    protected override void OnParametersSet()
+    {
+        Page = Page ?? string.Empty;
+        SectionList.Clear();
+        TaskList.Clear();
+        if (Page == "next7days" || Page == "alltasks")
+        {
+            WorkspaceTask = false;
+            List<Tagging> tempTaggingList = new();
+            tempTaggingList.Add(new Tagging() { Name = "Tag1", Color = Color.Primary });
+            tempTaggingList.Add(new Tagging() { Name = "Tag2", Color = Color.Secondary });
+            tempTaggingList.Add(new Tagging() { Name = "Tag3", Color = Color.Tertiary });
+            tempTaggingList.Add(new Tagging() { Name = "Tag4", Color = Color.Info });
+            tempTaggingList.Add(new Tagging() { Name = "Tag5", Color = Color.Success });
+            List<SubTask> tempSubTaskList = new();
+            tempSubTaskList.Add(new SubTask() { Name = "SubTask1" });
+            tempSubTaskList.Add(new SubTask() { Name = "SubTask2" });
+            tempSubTaskList.Add(new SubTask() { Name = "SubTask3" });
+            foreach (int i in Enumerable.Range(0, 30))
+            {
+                TaskList.Add(
+                    new Task()
+                        {
+                            Title = $"Task {i + 1}",
+                            DueDay = DateTime.Now.AddDays(i).Date,
+                            DueTime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                            TaggingList = tempTaggingList,
+                            SubTaskList = tempSubTaskList
+                        }
+                );
+            }
+        }
+        InitSection();
+    }
+    public void OnTaskClick(string TaskTitle)
+    {
+        TaskDetailVisible = !TaskDetailVisible;
+        CurrentTitle = TaskTitle;
+    }
+    public void InitSection()
+    {
+        if (Page == "next7days")
+        {
+            foreach (int i in Enumerable.Range(0, 7))
+            {
+                List<Task> temp = new();
+                foreach (Task task in TaskList)
+                {
+                    if (task.DueDay == DateTime.Now.AddDays(i).Date)
+                    {
+                        temp.Add(task);
+                    }
+                }
+                if (i == 0)
+                {
+                    SectionList.Add(
+                        new Section()
+                            {
+                                Name = "Today",
+                                SectionTaskList = temp
+                            }
+                    );
+                }
+                else if (i == 1)
+                {
+                    SectionList.Add(
+                        new Section()
+                            {
+                                Name = "Tomorrow",
+                                SectionTaskList = temp
+                            }
+                    );
+                }
+                else
+                {
+                    SectionList.Add(
+                        new Section()
+                            {
+                                Name = DateTime.Now.AddDays(i).DayOfWeek.ToString(),
+                                SectionTaskList = temp
+                            }
+                    );
+                }
+            }
+        }
+        else if (Page == "alltasks")
+        {
+            List<Task> TodayTask = new();
+            List<Task> TomorrowTask = new();
+            List<Task> UpcomingTask = new();
+            List<Task> SomedayTask = new();
+            foreach (Task task in TaskList)
+            {
+                if (task.DueDay == DateTime.Now.Date)
+                {
+                    TodayTask.Add(task);
+                }
+                else if (task.DueDay == DateTime.Now.AddDays(1).Date)
+                {
+                    TomorrowTask.Add(task);
+                }
+                else if (task.DueDay >= DateTime.Now.AddDays(2).Date &&
+                        task.DueDay <= DateTime.Now.AddDays(6).Date)
+                {
+                    UpcomingTask.Add(task);
+                }
+                else
+                {
+                    SomedayTask.Add(task);
+                }
+            }
+            SectionList.Add(new Section() { Name = "Today", SectionTaskList = TodayTask });
+            SectionList.Add(new Section() { Name = "Tomorrow", SectionTaskList = TomorrowTask });
+            SectionList.Add(new Section() { Name = "Upcoming", SectionTaskList = UpcomingTask });
+            SectionList.Add(new Section() { Name = "Someday", SectionTaskList = SomedayTask });
+        }
+        else
+        {
+
+        }
+    }
 }

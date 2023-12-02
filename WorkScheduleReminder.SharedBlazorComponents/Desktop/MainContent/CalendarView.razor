@@ -1,7 +1,38 @@
-﻿@page "/calendar"
-
+﻿@page "/"
+@page "/calendar"
+<MudPaper Class="d-flex flex-column pa-2"
+          Style="background-color:transparent;overflow:hidden"
+          Elevation="0"
+          Width="100%"
+          Height="100%">
+    <MudPaper Class="d-flex flex-row align-center justify-content-center"
+              Elevation="0"
+              Width="100%">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
+                       OnClick="()=>{CurrentDate=CurrentDate.AddMonths(-1);}" />
+        <MudText Style="font-weight:bold">
+            @($"{CurrentDate.ToString("MMM")} {CurrentDate.ToString("yyyy")}")
+        </MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
+                       OnClick="()=>{CurrentDate=CurrentDate.AddMonths(1);}" />
+    </MudPaper>
+    <MudPaper Class=""
+              Style="display:grid;grid-template-columns:repeat(7,1fr)"
+              Elevation="0"
+              Width="100%"
+              Height="100%">
+        @foreach (int i in Enumerable.Range(1, DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month)))
+        {
+            <MudPaper Class="border-2"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>@i</MudText>
+            </MudPaper>
+        }
+    </MudPaper>
+</MudPaper>
 
 @code
 {
-    
+    public DateTime CurrentDate { get; set; } = DateTime.Now;
 }
