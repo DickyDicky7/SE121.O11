@@ -1,32 +1,73 @@
 ﻿@page "/"
 @page "/calendar"
-<MudPaper Class="d-flex flex-column pa-2"
+<MudPaper Class="d-flex flex-column pa-2 gap-1"
           Style="background-color:transparent;overflow:hidden"
           Elevation="0"
           Width="100%"
           Height="100%">
     <MudPaper Class="d-flex flex-row align-center justify-content-center"
+              Style=""
               Elevation="0"
               Width="100%">
         <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
-                       OnClick="()=>{CurrentDate=CurrentDate.AddMonths(-1);}" />
+                       OnClick="()=>ChangeMonth(-1)" />
         <MudText Style="font-weight:bold">
-            @($"{CurrentDate.ToString("MMM")} {CurrentDate.ToString("yyyy")}")
+            @($"{ViewingMonth.ToString("MMM")} {ViewingMonth.ToString("yyyy")}")
         </MudText>
         <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
-                       OnClick="()=>{CurrentDate=CurrentDate.AddMonths(1);}" />
+                       OnClick="()=>ChangeMonth(1)" />
     </MudPaper>
     <MudPaper Class=""
-              Style="display:grid;grid-template-columns:repeat(7,1fr)"
+              Style="display:grid;grid-template-columns:repeat(7,1fr);"
               Elevation="0"
-              Width="100%"
-              Height="100%">
-        @foreach (int i in Enumerable.Range(1, DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month)))
+              Width="100%">
+        @foreach (string Day in DayOfWeek)
         {
-            <MudPaper Class="border-2"
+            <MudPaper Class="d-flex flex-row align-center justify-content-center"
                       Elevation="0"
                       Width="100%">
+                <MudText Style="font-size:larger;font-weight:bold">
+                    @Day
+                </MudText>
+            </MudPaper>
+        }
+    </MudPaper>
+    <MudPaper Class=""
+              Style="display:grid;grid-template-columns:repeat(7,1fr);grid-gap:1px;background-color:transparent"
+              Elevation="3"
+              Width="100%"
+              Height="100%">
+        @foreach (int i in Enumerable.Range(1, DaysOfPreviousMonthInFirstWeek))
+        {
+            <MudPaper Class="d-flex flex-row align-center justify-content-center"
+                      Elevation="3"
+                      Width="100%">
+                <MudText>
+                    @PreviousMonth
+                </MudText>
+            </MudPaper>
+        }
+        @foreach (int i in Enumerable.Range(1, MonthEnd.Day))
+        {
+            <MudPaper Class="d-flex flex-column pa-2"
+                      Elevation="3"
+                      Width="100%"
+                      Height="100%">
                 <MudText>@i</MudText>
+                <MudPaper Class="d-flex flex-column"
+                          Style="overflow-y:scroll">
+
+                </MudPaper>
+            </MudPaper>
+        }
+        @foreach (int i in Enumerable.Range(1, DaysOfNextMonthInLastWeek))
+        {
+            <MudPaper Class="d-flex flex-row align-center justify-content-center"
+                      Elevation="3"
+                      Width="100%">
+                <MudText>
+                    @NextMonth
+                </MudText>
             </MudPaper>
         }
     </MudPaper>
@@ -34,5 +75,30 @@
 
 @code
 {
-    public DateTime CurrentDate { get; set; } = DateTime.Now;
+    public DateTime ViewingMonth { get; set; } = DateTime.Now;
+    public int DaysOfPreviousMonthInFirstWeek { get; set; }
+    public int DaysOfNextMonthInLastWeek { get; set; }
+    public DateTime MonthStart { get; set; }
+    public DateTime MonthEnd { get; set; }
+    public string PreviousMonth { get; set; } = string.Empty;
+    public string NextMonth { get; set; } = string.Empty;
+    public List<string> DayOfWeek { get; set; } = new List<string>()
+    { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+    public void ChangeMonth(int _Value)
+    {
+        ViewingMonth = ViewingMonth.AddMonths(_Value);
+        MonthStart = new DateTime(ViewingMonth.Year, ViewingMonth.Month, 1);
+        MonthEnd = MonthStart.AddMonths(1).AddDays(-1);
+        DaysOfPreviousMonthInFirstWeek = (int)MonthStart.DayOfWeek;
+        DaysOfNextMonthInLastWeek = 6 - (int)MonthEnd.DayOfWeek;
+        PreviousMonth = $"{ViewingMonth.AddMonths(-1).ToString("MMM")} {ViewingMonth.AddMonths(-1).ToString("yyyy")}";
+        NextMonth = $"{ViewingMonth.AddMonths(1).ToString("MMM")} {ViewingMonth.AddMonths(1).ToString("yyyy")}";
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ChangeMonth(0);
+    }
 }

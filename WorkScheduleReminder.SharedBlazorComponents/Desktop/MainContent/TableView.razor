@@ -1,175 +1,173 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
 
 @page "/table"
-<MudPaper Class="pa-2"
+<MudPaper Class="d-flex flex-column gap-2 pa-2"
           Style="background-color:transparent; overflow:hidden;"
           Elevation="0"
           Width="100%"
           Height="100%">
-    @*
-    edit (),
-    section option (OK)
-    section add task (OK)
-    group by section (OK),
-    column resize (OK),
-    column re-order (),
-    row hidden by switch (OK),
-    filter by tool bar (OK)
-    *@
-    <MudDataGrid Style="height:100%; overflow-x:scroll;overflow-y:hidden;"
-                 T="Task"
-                 Items="TaskList"
-                 Height="100%"
-                 FixedHeader="true"
-                 Virtualize="true"
-                 GroupExpanded="true"
-                 ColumnResizeMode="ResizeMode.Column"
-                 SortMode="SortMode.None"
-                 RowClick="OnTaskClick" >
-        <ToolBarContent>
-            <MudPaper Class="d-flex flex-row gap-2 py-3 align-center"
+    <MudPaper Class="d-flex flex-row gap-2 align-center justify-space-between"
+              Elevation="0"
+              Width="100%">
+        <MudSwitch @bind-Checked="@ColumnPropertiesList[0].Visible"
+                   Size="Size.Small"
+                   Label="@ColumnPropertiesList[0].Name"
+                   Color="Color.Success" />
+        <MudSwitch @bind-Checked="@ColumnPropertiesList[1].Visible"
+                   Size="Size.Small"
+                   Label="@ColumnPropertiesList[1].Name"
+                   Color="Color.Success" />
+        <MudSwitch @bind-Checked="@ColumnPropertiesList[2].Visible"
+                   Size="Size.Small"
+                   Label="@ColumnPropertiesList[2].Name"
+                   Color="Color.Success" />
+        <MudSwitch @bind-Checked="@ColumnPropertiesList[3].Visible"
+                   Size="Size.Small"
+                   Label="@ColumnPropertiesList[3].Name"
+                   Color="Color.Success" />
+        <MudSwitch @bind-Checked="@ColumnPropertiesList[4].Visible"
+                   Size="Size.Small"
+                   Label="@ColumnPropertiesList[4].Name"
+                   Color="Color.Success" />
+    </MudPaper>
+    <MudPaper Class="d-flex flex-column gap-2"
+              Style="background-color:transparent;overflow:scroll;"
+              Elevation="0"
+              Width="100%"
+              Height="100%">
+        @foreach (Section Section in SectionList)
+        {
+            <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                      Style="position:sticky;top:0px;z-index:50;"
                       Elevation="0"
                       Width="100%">
-                <MudSwitch @bind-Checked="@ColumnPropertiesList[0].Visible"
-                           Size="Size.Small"
-                           Label="@ColumnPropertiesList[0].Name"
-                           Color="Color.Success" />
-                <MudSwitch @bind-Checked="@ColumnPropertiesList[1].Visible"
-                           Size="Size.Small"
-                           Label="@ColumnPropertiesList[1].Name"
-                           Color="Color.Success" />
-                <MudSwitch @bind-Checked="@ColumnPropertiesList[2].Visible"
-                           Size="Size.Small"
-                           Label="@ColumnPropertiesList[2].Name"
-                           Color="Color.Success" />
-                <MudSwitch @bind-Checked="@ColumnPropertiesList[3].Visible"
-                           Size="Size.Small"
-                           Label="@ColumnPropertiesList[3].Name"
-                           Color="Color.Success" />
-                <MudSwitch @bind-Checked="@ColumnPropertiesList[4].Visible"
-                           Size="Size.Small"
-                           Label="@ColumnPropertiesList[4].Name"
-                           Color="Color.Success" />
+                <MudPaper Class="d-flex flex-row align-center"
+                          Elevation="0">
+                    <MudToggleIconButton @bind-Toggled=@(Section.Hidden)
+                                         Size="Size.Small"
+                                         ToggledSize="Size.Small"
+                                         Icon="@Icons.Material.Filled.Visibility"
+                                         ToggledIcon="@Icons.Material.Filled.VisibilityOff"
+                                         Color="Color.Info"
+                                         ToggledColor="Color.Default" />
+                    <MudText>
+                        @Section.Name
+                    </MudText>
+                </MudPaper>
+                <MudPaper Class="d-flex flex-row align-center"
+                          Elevation="0">
+                    <MudTextField @bind-Value=@Section.NewTask
+                                  Placeholder="@($"Add task to {Section.Name}")"
+                                  Immediate="true"
+                                  DisableUnderLine="true"
+                                  FullWidth="false"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Clearable="true"
+                                  TextUpdateSuppression="false"
+                                  OnKeyDown="(KeyboardEventArgs e)=>AddTask(e, Section)" />
+                    <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                                   Size="Size.Small" />
+                </MudPaper>
             </MudPaper>
-        </ToolBarContent>
-        <Columns>
-            @*Title*@
-            <TemplateColumn Hidden="@(!ColumnPropertiesList[0].Visible)"
-                            Title="@ColumnPropertiesList[0].Name">
-                <CellTemplate>
-                    <MudPaper Class="d-flex flex-row align-center jutify-content-start"
-                              Elevation="0"
-                              Width="100%"
-                              Height="50px">
-                        <MudText>
-                            @context.Item.Title
-                        </MudText>
-                    </MudPaper>
-                </CellTemplate>
-            </TemplateColumn>
-            @*Tag*@
-            <TemplateColumn Hidden="@(!ColumnPropertiesList[1].Visible)"
-                            Title="@ColumnPropertiesList[1].Name">
-                <CellTemplate>
-                    <MudPaper Class="align-center justify-content-start"
-                              Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
-                              Elevation="0"
-                              Width="100%"
-                              Height="50px">
-                        @foreach (Tagging Tagging in context.Item.TaggingList)
-                        {
-                            <MudChip Text="@Tagging.Name"
-                                     Color="Tagging.Color"
-                                     Variant="Variant.Text"
-                                     Size="Size.Small" />
-                        }
-                    </MudPaper>
-                </CellTemplate>
-            </TemplateColumn>
-            @*Assignee*@
-            <TemplateColumn Hidden="@(!ColumnPropertiesList[2].Visible)"
-                            Title="@ColumnPropertiesList[2].Name">
-                <CellTemplate>
-                    <MudPaper Class="align-center justify-content-start"
-                              Style="overflow:scroll;display:grid;grid-template-columns:repeat(4,1fr);grid-gap:2px;"
-                              Elevation="0"
-                              Width="100%"
-                              Height="50px">
-                        @foreach (Assignee Assignee in context.Item.AssigneeList)
-                        {
-                            <MudAvatar Elevation="0"
-                                       Rounded="true"
-                                       Size="Size.Small">
-                                <MudImage Src="@Assignee.AvatarURL" />
-                            </MudAvatar>
-                        }
-                    </MudPaper>
-                </CellTemplate>
-            </TemplateColumn>
-            @*Due date*@
-            <TemplateColumn Hidden="@(!ColumnPropertiesList[3].Visible)"
-                            Title="@ColumnPropertiesList[3].Name">
-                <CellTemplate>
-                    <MudPaper Class="d-flex flex-row align-center justify-content-start"
-                              Elevation="0"
-                              Width="100%"
-                              Height="50px">
-                        <MudText>
-                            @DueDateStringAssemble(context.Item.Dueday, context.Item.Duetime)
-                        </MudText>
-                    </MudPaper>
-                </CellTemplate>
-            </TemplateColumn>
-            @*Attachment*@
-            <TemplateColumn Hidden="@(!ColumnPropertiesList[4].Visible)"
-                            Title="@ColumnPropertiesList[4].Name">
-                <CellTemplate>
-                    <MudPaper Class="d-flex flex-row align-center justify-content-start"
-                              Elevation="0"
-                              Width="100%"
-                              Height="50px">
+            <MudDataGrid Style="" hidden="@Section.Hidden"
+                         T="Task"
+                         Items="Section.TaskList"
+                         FixedHeader="true"
+                         Virtualize="true"
+                         ColumnResizeMode="ResizeMode.Column"
+                         SortMode="SortMode.None"
+                         RowClick="OnTaskClick">
+                <Columns>
+                    @*Title*@
+                    <TemplateColumn Hidden="@(!ColumnPropertiesList[0].Visible)"
+                                    Title="@ColumnPropertiesList[0].Name">
+                        <CellTemplate>
+                            <MudPaper Class="d-flex flex-row align-center jutify-content-start"
+                                      Elevation="0"
+                                      Width="100%"
+                                      Height="50px">
+                                <MudText>
+                                    @context.Item.Title
+                                </MudText>
+                            </MudPaper>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @*Tag*@
+                    <TemplateColumn Hidden="@(!ColumnPropertiesList[1].Visible)"
+                                    Title="@ColumnPropertiesList[1].Name">
+                        <CellTemplate>
+                            <MudPaper Class="align-center justify-content-start"
+                                      Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
+                                      Elevation="0"
+                                      Width="100%"
+                                      Height="50px">
+                                @foreach (Tagging Tagging in context.Item.TaggingList)
+                                {
+                                    <MudChip Text="@Tagging.Name"
+                                             Color="Tagging.Color"
+                                             Variant="Variant.Text"
+                                             Size="Size.Small" />
+                                }
+                            </MudPaper>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @*Assignee*@
+                    <TemplateColumn Hidden="@(!ColumnPropertiesList[2].Visible)"
+                                    Title="@ColumnPropertiesList[2].Name">
+                        <CellTemplate>
+                            <MudPaper Class="align-center justify-content-start"
+                                      Style="overflow:scroll;display:grid;grid-template-columns:repeat(4,1fr);grid-gap:2px;"
+                                      Elevation="0"
+                                      Width="100%"
+                                      Height="50px">
+                                @foreach (Assignee Assignee in context.Item.AssigneeList)
+                                {
+                                    <MudAvatar Elevation="0"
+                                               Rounded="true"
+                                               Size="Size.Small">
+                                        <MudImage Src="@Assignee.AvatarURL" />
+                                    </MudAvatar>
+                                }
+                            </MudPaper>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @*Due date*@
+                    <TemplateColumn Hidden="@(!ColumnPropertiesList[3].Visible)"
+                                    Title="@ColumnPropertiesList[3].Name">
+                        <CellTemplate>
+                            <MudPaper Class="d-flex flex-row align-center justify-content-start"
+                                      Elevation="0"
+                                      Width="100%"
+                                      Height="50px">
+                                <MudText>
+                                    @DueDateStringAssemble(context.Item.Dueday, context.Item.Duetime)
+                                </MudText>
+                            </MudPaper>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    @*Attachment*@
+                    <TemplateColumn Hidden="@(!ColumnPropertiesList[4].Visible)"
+                                    Title="@ColumnPropertiesList[4].Name">
+                        <CellTemplate>
+                            <MudPaper Class="d-flex flex-row align-center justify-content-start"
+                                      Elevation="0"
+                                      Width="100%"
+                                      Height="50px">
 
-                    </MudPaper>
-                </CellTemplate>
-            </TemplateColumn>
-            @*Section*@
-            <PropertyColumn Property="x=>x.Section"
-                            Groupable="true"
-                            Grouping="true"
-                            Hidden="true">
-                <GroupTemplate>
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudText>
-                            @context.Grouping.Key
-                        </MudText>
-                        <MudPaper Class="d-flex flex-row align-center"
-                                  Elevation="0">
-                            <MudTextField @bind-Value=@NewTask
-                                          Placeholder="@($"Add task to {context.Grouping.Key}")"
-                                          Immediate="true"
-                                          DisableUnderLine="true"
-                                          FullWidth="false"
-                                          Variant="Variant.Outlined"
-                                          Margin="Margin.Dense"
-                                          Clearable="true"
-                                          TextUpdateSuppression="false"
-                                          OnKeyDown="(KeyboardEventArgs e)=>AddTask(e, context?.Grouping.Key.ToString()??String.Empty)" />
-                            <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                                           Size="Size.Small" />
-                        </MudPaper>
-                    </MudPaper>
-                </GroupTemplate>
-            </PropertyColumn>
-        </Columns>
-        <NoRecordsContent>
-            <MudText>There's nothing here :(</MudText>
-        </NoRecordsContent>
-        <LoadingContent>
-            <MudText>Loading...</MudText>
-        </LoadingContent>
-    </MudDataGrid>
+                            </MudPaper>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudText>There's nothing here :(</MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Loading...</MudText>
+                </LoadingContent>
+            </MudDataGrid>
+        }
+    </MudPaper>
 </MudPaper>
 <MudOverlay Visible="@TaskDetailVisible"
             DarkBackground="true"
@@ -180,7 +178,6 @@
 
 @code {
     public bool TaskDetailVisible { get; set; } = false;
-    public string NewTask { get; set; } = string.Empty;
     public record ColumnProperties
     {
         public string Name { get; set; } = string.Empty;
@@ -205,26 +202,30 @@
         public TimeSpan Duetime { get; set; } = default!;
         public List<Tagging> TaggingList { get; set; } = new();
         public List<Assignee> AssigneeList { get; set; } = new();
-        public string Section { get; set; } = string.Empty;
     }
-    public List<Task> TaskList { get; set; } = new();
-
+    public record Section
+    {
+        public string Name { get; set; } = default!;
+        public string NewTask { get; set; } = string.Empty;
+        public List<Task> TaskList { get; set; } = new();
+        public bool Hidden { get; set; } = false;
+    }
+    public List<Section> SectionList = new();
     public string DueDateStringAssemble(DateTime _Date, TimeSpan _Time)
     {
         return $"{_Date.ToString("dd")}.{_Date.ToString("MM")}.{_Date.ToString("yy")} {_Time.ToString("hh")}:{_Time.ToString("mm")}";
     }
-    public void AddTask(KeyboardEventArgs e, string _Section)
+    public void AddTask(KeyboardEventArgs e, Section _Section)
     {
-        if (e.Code == "Enter" && NewTask != string.Empty)
+        if (e.Code == "Enter" && !string.IsNullOrWhiteSpace(_Section.NewTask))
         {
-            TaskList.Add(new Task()
+            _Section.TaskList.Add(new Task()
                 {
-                    Title = NewTask,
+                    Title = _Section.NewTask,
                     Duetime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
                     Dueday = DateTime.Now,
-                    Section = _Section
                 });
-            NewTask = string.Empty;
+            _Section.NewTask = string.Empty;
         }
     }
     public void OnTaskClick()
@@ -252,26 +253,28 @@
         tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
         tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
         tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
-        @foreach (int i in Enumerable.Range(1, 20))
+        
+        @foreach (int i in Enumerable.Range(1, 4))
         {
-            string tempSection = string.Empty;
-            if (i % 5 == 0)
-                tempSection = "Section 1";
-            else if (i % 3 == 0)
-                tempSection = "Section 2";
-            else if (i % 2 == 0)
-                tempSection = "Section 3";
-            else
-                tempSection = "Section 4";
-            TaskList.Add(new Task()
-                {
-                    Title = $"Task {i}",
-                    Duetime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
-                    Dueday = DateTime.Now,
-                    TaggingList = tempTaggingList,
-                    AssigneeList = tempAssigneeList,
-                    Section = tempSection
-                });
+            List<Task> tempTaskList = new();
+            @foreach (int j in Enumerable.Range(1, 4))
+            {
+                tempTaskList.Add(new Task()
+                    {
+                        Title = $"Task {j}",
+                        Duetime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                        Dueday = DateTime.Now,
+                        TaggingList = tempTaggingList,
+                        AssigneeList = tempAssigneeList,
+                    });
+            }
+            SectionList.Add(
+                new Section()
+                    {
+                        Name = $"Section {i}",
+                        TaskList = tempTaskList
+                    }
+            );
         }
     }
 }
