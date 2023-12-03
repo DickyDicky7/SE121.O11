@@ -8,7 +8,7 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 		{
 		}
 
-		[PrimaryKey(columnName: "id")]
+		[PrimaryKey(columnName: "id", shouldInsert: false)]
 		public Guid Id { get; set; }
 
 		public override int GetHashCode()

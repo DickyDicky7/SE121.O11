@@ -114,9 +114,26 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		}
 
 		public static string ExtractSupabaseGotrueException(this JObject message)
-		=> message["msg"]?.Value<string>()
+		=> message["msg"]              ?.Value<string>()
 		?? message["error_description"]?.Value<string>()
 		?? string.Empty;
+
+		public static string ExtractMessage
+		( this Supabase.Gotrue.Exceptions.     GotrueException    gotrueException)
+		{
+			JObject message = JObject.Parse(   gotrueException.Message);
+			return message["msg"]              ?.Value<string>()
+				?? message["error_description"]?.Value<string>()
+				?? string.Empty;
+		}
+
+		public static string ExtractMessage
+		( this Postgrest      .Exceptions.  PostgrestException postgrestException)
+		{
+			JObject message = JObject.Parse(postgrestException.Message);
+			return  message["message"]         ?.Value<string>()
+				?? string.Empty;
+		}
 
 		public static async Task<string> GetUserFriendlyContentFromRawContentInDatabaseMessages
 		(this Supabase.Client supabaseClient, string rawContent)

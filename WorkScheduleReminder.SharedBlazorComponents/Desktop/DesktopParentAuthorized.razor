@@ -1,7 +1,15 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.MainContent
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponents
 
+@inject Supabase.Client SupabaseClient
+
+<CascadingValue Name=@(nameof(CurrentUserId )) Value="CurrentUserId " TValue="Guid  " IsFixed="true">
+<CascadingValue Name=@(nameof(ActiveViewName)) Value="ActiveViewName" TValue="string">
+<CascadingValue Name=@(nameof(ActiveViewIcon)) Value="ActiveViewIcon" TValue="string">
+<CascadingValue Name=@(nameof(ActiveViewType)) Value="ActiveViewType" TValue="Helper.ViewType">
+<CascadingValue Name=@(nameof(ActiveBoard_____)) Value="ActiveBoard_____" TValue="Models.Board     ">
+<CascadingValue Name=@(nameof(ActiveCustomView)) Value="ActiveCustomView" TValue="Models.CustomView">
 <MudLayout>
 	<MudPaper Class="@($"d-flex flex-row {Theme}")"
 			  Elevation="0"
@@ -10,24 +18,28 @@
 		<DesktopBarSide @bind-ActiveViewName="ActiveViewName"
 		                @bind-ActiveViewIcon="ActiveViewIcon"
 		                @bind-ActiveViewType="ActiveViewType"
-		                @bind-ActiveBoard_____Id="ActiveBoard_____Id"
-		                @bind-ActiveCustomViewId="ActiveCustomViewId" />
+		                @bind-ActiveBoard_____="ActiveBoard_____"
+		                @bind-ActiveCustomView="ActiveCustomView" />
 		@*Top bar & mainscreen*@
 		<MudPaper Class="d-flex flex-column"
 				  Style="background-color:transparent;overflow:hidden;"
 				  Elevation="0"
 				  Width="100%" Height="100%">
 			@* Topbar *@
-			<DesktopBarTop ActiveViewName="@ActiveViewName"
-						   ActiveViewIcon="@ActiveViewIcon"
-						   ActiveViewType="@ActiveViewType"
-						   ActiveBoard_____Id="@ActiveBoard_____Id"
-						   ActiveCustomViewId="@ActiveCustomViewId" />
-			@*MainScreen*@
-			@MainChildContent
+			<DesktopBarTop />
+			<MudMainContent>
+				@*MainScreen*@
+				@MainChildContent
+			</MudMainContent>
 		</MudPaper>
 	</MudPaper>
 </MudLayout>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
 
 @code
 {
@@ -35,12 +47,19 @@
 	[Parameter]
 	public RenderFragment MainChildContent { get; set; } = null!;
 
+	public Guid   CurrentUserId  { get; set; }
 	public string ActiveViewName { get; set; } = string.Empty;
 	public string ActiveViewIcon { get; set; } = string.Empty;
-	public Guid ActiveBoard_____Id { get; set; }
-	public Guid ActiveCustomViewId { get; set; }
 	public Helper.ViewType ActiveViewType { get; set; }
+	public Models.Board      ActiveBoard_____ { get; set; } = null!;
+	public Models.CustomView ActiveCustomView { get; set; } = null!;
 	public string Theme { get; set; } = "mud-theme-info";
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		CurrentUserId = Guid.Parse(SupabaseClient.Auth.CurrentUser?.Id ?? string.Empty);
+	}
 
 	protected override async Task OnParametersSetAsync()
 	{

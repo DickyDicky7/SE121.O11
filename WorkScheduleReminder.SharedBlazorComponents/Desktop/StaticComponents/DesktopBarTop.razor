@@ -1,10 +1,5 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
-<CascadingValue Name="ViewName" Value="ActiveViewName">
-<CascadingValue Name="ViewIcon" Value="ActiveViewIcon">
-<CascadingValue Name="ViewType" Value="ActiveViewType">
-<CascadingValue Name="Board_____Id" Value="ActiveBoard_____Id">
-<CascadingValue Name="CustomViewId" Value="ActiveCustomViewId">
 <MudPaper Class="d-flex flex-row align-center pa-2 justify-space-between"
 		  Style="background-color:transparent;"
 		  Elevation="0"
@@ -60,26 +55,14 @@
 			OnClick="ToggleSearchVisible">
 	<SearchName   @onclick:stopPropagation />
 </MudOverlay>
-</CascadingValue>
-</CascadingValue>
-</CascadingValue>
-</CascadingValue>
-</CascadingValue>
 
 @code
 {
+	[CascadingParameter(Name = nameof(ActiveViewType))]
+	public Helper.ViewType ActiveViewType { get; set; }
+
 	public bool NotifiVisible { get; set; } = false;
 	public bool SearchVisible { get; set; } = false;
-	[Parameter]
-	public string ActiveViewName { get; set; } = string.Empty;
-	[Parameter]
-	public string ActiveViewIcon { get; set; } = string.Empty;
-	[Parameter]
-	public Guid ActiveBoard_____Id { get; set; }
-	[Parameter]
-	public Guid ActiveCustomViewId { get; set; }
-	[Parameter]
-	public Helper.ViewType ActiveViewType { get; set; }
 
 	public void ToggleNotifiVisible()
 	{

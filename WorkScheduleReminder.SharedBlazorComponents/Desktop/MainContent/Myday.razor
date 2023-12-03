@@ -1,4 +1,4 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
 @page "/myday"
 
@@ -166,9 +166,9 @@
     {
         
     }
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         SuggestedTasks.Add("a");
         SuggestedTasks.Add("s");
         SuggestedTasks.Add("d");

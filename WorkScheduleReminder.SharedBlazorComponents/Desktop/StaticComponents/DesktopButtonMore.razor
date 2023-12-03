@@ -1,4 +1,4 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
 		  Elevation="0">
@@ -15,7 +15,7 @@
 						   Size="Size.Small" />
 		</ActivatorContent>
 		<ChildContent>
-			@foreach (MenuItem menuItem in ViewTypeMenuItems[ViewType])
+			@foreach (MenuItem menuItem in ViewTypeMenuItems[ActiveViewType])
 			{
 				<MudMenuItem OnClick="menuItem.ToggleVisible"
 							 AutoClose=true>
@@ -27,7 +27,7 @@
 		</ChildContent>
 	</MudMenu>
 </MudPaper>
-@foreach (MenuItem menuItem in ViewTypeMenuItems[ViewType])
+@foreach (MenuItem menuItem in ViewTypeMenuItems[ActiveViewType])
 {
 	if (menuItem.Child != null)
 	{
@@ -42,8 +42,8 @@
 
 @code
 {
-	[CascadingParameter(Name = "ViewType")]
-	public Helper.ViewType  ViewType{ get; set; }
+	[CascadingParameter(Name = nameof(ActiveViewType))]
+	public Helper.ViewType ActiveViewType { get; set; }
 
 	public record MenuItem
 	{
@@ -54,62 +54,62 @@
 	}
 
 	public Dictionary<Helper.ViewType, List<MenuItem>> ViewTypeMenuItems = Enum.GetValues<Helper.ViewType>()
-		.ToDictionary<Helper.ViewType,
-						Helper.ViewType, List<MenuItem>>(
-		viewType => viewType,
-		viewType => new());
+	.    ToDictionary<Helper.ViewType,
+	                  Helper.ViewType, List<MenuItem>>(
+	viewType => viewType,
+	viewType => new()  );
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
-		List<MenuItem> DefaultViewItems = ViewTypeMenuItems[Helper.ViewType.DefaultView];
-		List<MenuItem> CustomViewItems = ViewTypeMenuItems[Helper.ViewType.CustomView];
+		List<MenuItem>   DefaultViewItems = ViewTypeMenuItems[Helper.ViewType.  DefaultView];
+		List<MenuItem>    CustomViewItems = ViewTypeMenuItems[Helper.ViewType.   CustomView];
 		List<MenuItem> WorkspaceViewItems = ViewTypeMenuItems[Helper.ViewType.WorkspaceView];
 
 		DefaultViewItems.Add(new MenuItem() { Name = "Clear completed" });
-		DefaultViewItems.Add(new MenuItem() { Name = "Multi-select" });
+		DefaultViewItems.Add(new MenuItem() { Name =    "Multi-select" });
 		DefaultViewItems.Add(new MenuItem() { Name = "Print" });
 
 		CustomViewItems.Add(new MenuItem()
-				{
-					Name = "Edit",
-					Child = @<CreateCustomView @onclick:stopPropagation />
-			});
+		{
+			Name  = "Edit",
+			Child = @<CreateCustomView @onclick:stopPropagation />
+		});
 		CustomViewItems.Add(new MenuItem()
-				{
-					Name = "Delete",
-					Child = @<Confirm @onclick:stopPropagation
-		 Title="Are you sure to delete this view"
-		 Action="Delete" />
-			});
+		{
+			Name  = "Delete",
+			Child = @<Confirm @onclick:stopPropagation
+			Title = "Are you sure to delete this view"
+			Action= "Delete" />
+		});
 
 		WorkspaceViewItems.Add(new MenuItem() { Name = "Board activity" });
 		WorkspaceViewItems.Add(new MenuItem()
-				{
-					Name = "Board tags",
-					Child = @<TagAndTagging @onclick:stopPropagation
-			   EnableTagging=false />
+		{
+			Name  = "Board tags",
+			Child = @<TagAndTagging @onclick:stopPropagation
+			          EnableTagging=false />
+		});
+		WorkspaceViewItems.Add(new MenuItem()
+		{
+			Name  = "Board Section",
+			Child = @<BoardSection  @onclick:stopPropagation />
+		});
+		WorkspaceViewItems.Add(new MenuItem() { Name =   "Multi-select" });
+		WorkspaceViewItems.Add(new MenuItem()
+		{
+			Name  = "Leave board",
+			Child = @<Confirm @onclick:stopPropagation
+			Title = "Are you sure to leave this board"
+			Action= "Leave" />
 			});
 		WorkspaceViewItems.Add(new MenuItem()
-				{
-					Name = "Board Section",
-					Child = @<BoardSection @onclick:stopPropagation />
-			});
-		WorkspaceViewItems.Add(new MenuItem() { Name = "Multi-select" });
-		WorkspaceViewItems.Add(new MenuItem()
-				{
-					Name = "Leave board",
-					Child = @<Confirm @onclick:stopPropagation
-		 Title="Are you sure to leave this board"
-		 Action="Leave" />
-			});
-		WorkspaceViewItems.Add(new MenuItem()
-				{
-					Name = "Delete board",
-					Child = @<Confirm @onclick:stopPropagation
-		 Title="Are you sure to delete this board"
-		 Action="Delete" />
+		{
+			Name  = "Delete board",
+			Child = @<Confirm @onclick:stopPropagation
+			Title = "Are you sure to delete this board"
+			Action= "Delete" />
 		});
 	}
 }

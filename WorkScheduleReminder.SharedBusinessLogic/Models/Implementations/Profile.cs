@@ -10,16 +10,24 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		{
 		}
 
-		[Column(columnName: "email")]
+		[Column(columnName: "email",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
 		public string Email     { get; set; } = default!;
 
-		[Column(columnName: "username")]
+		[Column(columnName: "username",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
 		public string UserName  { get; set; } = default!;
 
-		[Column(columnName: "fullname")]
+		[Column(columnName: "fullname",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
 		public string FullName  { get; set; } = default!;
 
-		[Column(columnName: "avatar_url")]
+		[Column(columnName: "avatar_url",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
 		public string AvatarURL { get; set; } = default!;
 	}
 }

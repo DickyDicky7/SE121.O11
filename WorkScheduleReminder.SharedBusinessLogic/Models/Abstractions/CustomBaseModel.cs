@@ -9,10 +9,14 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___
 		{
 		}
 
-		[Column(columnName: "created_timestamp")]
+		[Column(columnName: "created_timestamp",
+		        ignoreOnInsert: true,
+		        ignoreOnUpdate: true)]
 		public DateTimeOffset CreatedTimeStamp { get; set; }
 
-		[Column(columnName: "updated_timestamp")]
+		[Column(columnName: "updated_timestamp",
+		        ignoreOnInsert: true,
+		        ignoreOnUpdate: true)]
 		public DateTimeOffset UpdatedTimeStamp { get; set; }
 
 		public abstract override int GetHashCode();
