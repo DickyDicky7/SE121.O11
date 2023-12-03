@@ -158,18 +158,18 @@
     <Invite @onclick:stopPropagation />
 </MudOverlay> *@
 <MudOverlay Class="border-2"
-            Visible="CreateBoard_____Visible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateBoard_____">
-    <CreateBoard @onclick:stopPropagation />
+			Visible="CreateBoard_____Visible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateBoard_____">
+	<CreateBoard      @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
-            Visible="CreateCustomViewVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateCustomView">
-    <CreateCustomView @onclick:stopPropagation />
+			Visible="CreateCustomViewVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateCustomView">
+	<CreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 
 @code
@@ -211,17 +211,17 @@
 	public bool FetchingBoards      { get; set; } = true;
 	public bool FetchingCustomViews { get; set; } = true;
 
-    public async Task UpdateActiveViewName(string newActiveViewName)
-    {
-        ActiveViewName = newActiveViewName;
-        await ActiveViewNameChanged.InvokeAsync(ActiveViewName);
-    }
+	public async Task UpdateActiveViewName(string newActiveViewName)
+	{
+		ActiveViewName = newActiveViewName;
+		await ActiveViewNameChanged.InvokeAsync(ActiveViewName);
+	}
 
-    public async Task UpdateActiveViewIcon(string newActiveViewIcon)
-    {
-        ActiveViewIcon = newActiveViewIcon;
-        await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
-    }
+	public async Task UpdateActiveViewIcon(string newActiveViewIcon)
+	{
+		ActiveViewIcon = newActiveViewIcon;
+		await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
+	}
 
 	public async Task UpdateActiveBoard_____(Models.Board      newActiveBoard_____)
 	{
@@ -235,11 +235,11 @@
 		await ActiveCustomViewChanged.InvokeAsync(ActiveCustomView);
 	}
 
-    public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
-    {
-        ActiveViewType = newActiveViewType;
-        await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
-    }
+	public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
+	{
+		ActiveViewType = newActiveViewType;
+		await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
+	}
 
 	// public async Task Update(
 	// string newActiveViewName,
@@ -296,23 +296,23 @@
 		};
 	}
 
-    public void ToggleInvite()
-    {
-        InviteVisible = !
-        InviteVisible;
-    }
+	public void ToggleInvite()
+	{
+		InviteVisible = !
+		InviteVisible;
+	}
 
-    public void ToggleCreateBoard_____()
-    {
-        CreateBoard_____Visible = !
-        CreateBoard_____Visible;
-    }
+	public void ToggleCreateBoard_____()
+	{
+		CreateBoard_____Visible = !
+		CreateBoard_____Visible;
+	}
 
-    public void ToggleCreateCustomView()
-    {
-        CreateCustomViewVisible = !
-        CreateCustomViewVisible;
-    }
+	public void ToggleCreateCustomView()
+	{
+		CreateCustomViewVisible = !
+		CreateCustomViewVisible;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
