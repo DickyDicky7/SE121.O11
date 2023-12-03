@@ -94,16 +94,16 @@
 							@if (CurrentUserIsOwnerOfActiveBoard && !CurrentUserIsThis(member))
 							{
 								@foreach (Models.Member.PossibleRole possibleRole
-										in Enum.GetValues<Models.Member.PossibleRole>())
+						in Enum.GetValues<Models.Member.PossibleRole>())
 								{
-									<MudMenuItem AutoClose="false"
+									<MudMenuItem AutoClose="true"
 												 OnClick="@(UpdateMemberRole(member, possibleRole))">
 										<MudText>
 											@possibleRole
 										</MudText>
 									</MudMenuItem>
 								}
-								<MudMenuItem AutoClose="false"
+								<MudMenuItem AutoClose="true"
 											 OnClick="@(RemoveMember(member))">
 									<MudText>
 										Remove
