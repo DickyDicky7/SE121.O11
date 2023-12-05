@@ -63,9 +63,9 @@
 			</MudButton>
 			@*custom views*@
 			<MudListItem Class=""
-						 InitiallyExpanded="true"
+						 Dense="true"
 						 DisableGutters="true"
-						 Dense="true">
+						 InitiallyExpanded="true">
 				<ChildContent>
 					<MudPaper Class="d-flex flex-row align-center justify-space-between"
 							  Elevation="0"
@@ -88,9 +88,9 @@
 					{
 						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
 					}
-					@foreach (Models.CustomView customView in CustomViews)
-					{
-						<MudButton Class="justify-start"
+					<Virtualize Context="customView" Items="CustomViews">
+						<MudButton @key="customView.Id"
+								   Class="justify-start"
 								   StartIcon="@Icons.Material.Filled.Today"
 								   Size="Size.Medium"
 								   FullWidth="true"
@@ -100,7 +100,7 @@
 								@customView.Name
 							</MudText>
 						</MudButton>
-					}
+					</Virtualize>
 				</NestedList>
 			</MudListItem>
 			@*workspace*@
@@ -133,9 +133,9 @@
 					{
 						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
 					}
-					@foreach (Models.Board board in Boards)
-					{
-						<MudButton Class="justify-start"
+					<Virtualize Context="board" Items="Boards">
+						<MudButton @key="board.Id"
+								   Class="justify-start"
 								   Size="Size.Medium"
 								   FullWidth="true"
 								   Href="table"
@@ -144,7 +144,7 @@
 								@board.Name
 							</MudText>
 						</MudButton>
-					}
+					</Virtualize>
 				</NestedList>
 			</MudListItem>
 		</MudList>
