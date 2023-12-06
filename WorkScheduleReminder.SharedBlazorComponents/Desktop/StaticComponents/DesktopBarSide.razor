@@ -1,5 +1,6 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.Setting
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 
 @implements IDisposable
 @inject ISnackbar Snackbar
@@ -11,10 +12,10 @@
 @inject Services.Implementations.SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 
 <MudPaper Class="d-flex flex-column gap-2 pa-2"
-          Style="overflow-y:scroll"
-          Elevation="0"
-          Width="300px"
-          Height="100%">
+		  Style="overflow-y:scroll"
+		  Elevation="0"
+		  Width="300px"
+		  Height="100%">
     <MudButton Size="Size.Large"
                FullWidth="true"
                OnClick=ToggleSetting>
@@ -63,108 +64,108 @@
                        OnClick="AllMyTasksOnClick">
                 <MudText Style="font-family:inherit">All my tasks</MudText>
             </MudButton>
-            @*custom views*@
-            <MudListItem Class=""
-                         InitiallyExpanded="true"
-                         DisableGutters="true"
-                         Dense="true">
-                <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudPaper Class=" d-flex flex-row gap-2"
-                                  Elevation="0">
-                            <MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
-                                     Size="Size.Medium" />
-                            <MudText Style="font-weight:bolder;">
-                                Custom views
-                            </MudText>
-                        </MudPaper>
-                        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="ToggleCreateCustomView" />
-                    </MudPaper>
-                </ChildContent>
-                <NestedList>
-                    @if (FetchingCustomViews)
-                    {
-                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
-                    }
-                    @foreach (Models.CustomView customView in CustomViews)
-                    {
-                        <MudButton Class="justify-start"
-                                   StartIcon="@Icons.Material.Filled.Today"
-                                   Size="Size.Medium"
-                                   FullWidth="true"
-                                   Href="test"
-                                   OnClick="@(CustomViewOnClick(customView))">
-                            <MudText Style="overflow:hidden">
-                                @customView.Name
-                            </MudText>
-                        </MudButton>
-                    }
-                </NestedList>
-            </MudListItem>
-            @*workspace*@
-            <MudListItem Class=""
-                         Dense="true"
-                         DisableGutters="true"
-                         InitiallyExpanded="true">
-                <ChildContent>
-                    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudPaper Class="d-flex flex-row gap-2"
-                                  Elevation="0">
-                            <MudIcon Icon="@Icons.Material.Filled.Workspaces"
-                                     Size="Size.Medium" />
-                            <MudText Style="font-weight:bolder;">
-                                Workspaces
-                            </MudText>
-                        </MudPaper>
-                        <MudIconButton Icon="@Icons.Material.Filled.Add"
-                                       Size="Size.Small"
-                                       OnClick="ToggleCreateBoard_____" />
-                        @* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                        Size="Size.Small"
-                        OnClick="ToggleInvite" /> *@
-                    </MudPaper>
-                </ChildContent>
-                <NestedList>
-                    @if (FetchingBoards)
-                    {
-                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
-                    }
-                    @foreach (Models.Board board in Boards)
-                    {
-                        <MudButton Class="justify-start"
-                                   Size="Size.Medium"
-                                   FullWidth="true"
-                                   Href="table"
-                                   OnClick="@(BoardOnClick(board))">
-                            <MudText Style="overflow:hidden">
-                                @board.Name
-                            </MudText>
-                        </MudButton>
-                    }
-                </NestedList>
-            </MudListItem>
-        </MudList>
-    </MudPaper>
+			@*custom views*@
+			<MudListItem Class=""
+						 Dense="true"
+						 DisableGutters="true"
+						 InitiallyExpanded="true">
+				<ChildContent>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class=" d-flex flex-row gap-2"
+								  Elevation="0">
+							<MudIcon Icon="@Icons.Material.Filled.DashboardCustomize"
+									 Size="Size.Medium" />
+							<MudText Style="font-weight:bolder;">
+								Custom views
+							</MudText>
+						</MudPaper>
+						<MudIconButton Icon="@Icons.Material.Filled.Add"
+									   Size="Size.Small"
+									   OnClick="ToggleCreateCustomView" />
+					</MudPaper>
+				</ChildContent>
+				<NestedList>
+					@if (FetchingCustomViews)
+					{
+						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
+					}
+					<Virtualize Context="customView" Items="CustomViews">
+						<MudButton @key="customView.Id"
+								   Class="justify-start"
+								   StartIcon="@Icons.Material.Filled.Today"
+								   Size="Size.Medium"
+								   FullWidth="true"
+								   Href="test"
+								   OnClick="@(CustomViewOnClick(customView))">
+							<MudText Style="overflow:hidden">
+								@customView.Name
+							</MudText>
+						</MudButton>
+					</Virtualize>
+				</NestedList>
+			</MudListItem>
+			@*workspace*@
+			<MudListItem Class=""
+						 Dense="true"
+						 DisableGutters="true"
+						 InitiallyExpanded="true">
+				<ChildContent>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class="d-flex flex-row gap-2"
+								  Elevation="0">
+							<MudIcon Icon="@Icons.Material.Filled.Workspaces"
+									 Size="Size.Medium" />
+							<MudText Style="font-weight:bolder;">
+								Workspaces
+							</MudText>
+						</MudPaper>
+						<MudIconButton Icon="@Icons.Material.Filled.Add"
+									   Size="Size.Small"
+									   OnClick="ToggleCreateBoard_____" />
+						@* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+						Size="Size.Small"
+						OnClick="ToggleInvite" /> *@
+					</MudPaper>
+				</ChildContent>
+				<NestedList>
+					@if (FetchingBoards)
+					{
+						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
+					}
+					<Virtualize Context="board" Items="Boards">
+						<MudButton @key="board.Id"
+								   Class="justify-start"
+								   Size="Size.Medium"
+								   FullWidth="true"
+								   Href="table"
+								   OnClick="@(BoardOnClick(board))">
+							<MudText Style="overflow:hidden">
+								@board.Name
+							</MudText>
+						</MudButton>
+					</Virtualize>
+				</NestedList>
+			</MudListItem>
+		</MudList>
+	</MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
-            Visible="CreateBoard_____Visible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateBoard_____">
-    <CreateBoard @onclick:stopPropagation />
+			Visible="CreateBoard_____Visible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateBoard_____">
+	<CreateBoard      @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
-            Visible="CreateCustomViewVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleCreateCustomView">
-    <CreateCustomView @onclick:stopPropagation />
+			Visible="CreateCustomViewVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="ToggleCreateCustomView">
+	<CreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
             Visible="SettingVisible"
@@ -214,17 +215,17 @@
     public bool FetchingBoards { get; set; } = true;
     public bool FetchingCustomViews { get; set; } = true;
 
-    public async Task UpdateActiveViewName(string newActiveViewName)
-    {
-        ActiveViewName = newActiveViewName;
-        await ActiveViewNameChanged.InvokeAsync(ActiveViewName);
-    }
+	public async Task UpdateActiveViewName(string newActiveViewName)
+	{
+		ActiveViewName = newActiveViewName;
+		await ActiveViewNameChanged.InvokeAsync(ActiveViewName);
+	}
 
-    public async Task UpdateActiveViewIcon(string newActiveViewIcon)
-    {
-        ActiveViewIcon = newActiveViewIcon;
-        await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
-    }
+	public async Task UpdateActiveViewIcon(string newActiveViewIcon)
+	{
+		ActiveViewIcon = newActiveViewIcon;
+		await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
+	}
 
     public async Task UpdateActiveBoard_____(Models.Board newActiveBoard_____)
     {
@@ -238,11 +239,11 @@
         await ActiveCustomViewChanged.InvokeAsync(ActiveCustomView);
     }
 
-    public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
-    {
-        ActiveViewType = newActiveViewType;
-        await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
-    }
+	public async Task UpdateActiveViewType(Helper.ViewType newActiveViewType)
+	{
+		ActiveViewType = newActiveViewType;
+		await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
+	}
 
     // public async Task Update(
     // string newActiveViewName,
@@ -299,23 +300,23 @@
         };
     }
 
-    public void ToggleInvite()
-    {
-        InviteVisible = !
-        InviteVisible;
-    }
+	public void ToggleInvite()
+	{
+		InviteVisible = !
+		InviteVisible;
+	}
 
-    public void ToggleCreateBoard_____()
-    {
-        CreateBoard_____Visible = !
-        CreateBoard_____Visible;
-    }
+	public void ToggleCreateBoard_____()
+	{
+		CreateBoard_____Visible = !
+		CreateBoard_____Visible;
+	}
 
-    public void ToggleCreateCustomView()
-    {
-        CreateCustomViewVisible = !
-        CreateCustomViewVisible;
-    }
+	public void ToggleCreateCustomView()
+	{
+		CreateCustomViewVisible = !
+		CreateCustomViewVisible;
+	}
 
     public void ToggleSetting()
     {

@@ -51,9 +51,9 @@
 				  Width="100%"
 				  Height="150px">
 			@*for go here*@
-			@foreach (Models.Member member in Members)
-			{
-				<MudPaper Class="d-flex flex-row gap-1 px-2"
+			<Virtualize Context="member" Items="Members">
+				<MudPaper @key="@member.ProfileId"
+						  Class="d-flex flex-row gap-1 px-2"
 						  Elevation="0"
 						  Width="100%">
 					<MudAvatar>
@@ -93,17 +93,17 @@
 						<ChildContent>
 							@if (CurrentUserIsOwnerOfActiveBoard && !CurrentUserIsThis(member))
 							{
-								@foreach (Models.Member.PossibleRole possibleRole
-										in Enum.GetValues<Models.Member.PossibleRole>())
+                                @foreach (Models.Member.PossibleRole possibleRole
+                        in Enum.GetValues<Models.Member.PossibleRole>())
 								{
-									<MudMenuItem AutoClose="false"
+									<MudMenuItem AutoClose="true"
 												 OnClick="@(UpdateMemberRole(member, possibleRole))">
 										<MudText>
 											@possibleRole
 										</MudText>
 									</MudMenuItem>
 								}
-								<MudMenuItem AutoClose="false"
+								<MudMenuItem AutoClose="true"
 											 OnClick="@(RemoveMember(member))">
 									<MudText>
 										Remove
@@ -113,7 +113,7 @@
 						</ChildContent>
 					</MudMenu>
 				</MudPaper>
-			}
+			</Virtualize>
 		</MudPaper>
 		<MudButton Disabled="CurrentUserIsOwnerOfActiveBoard"
 				   ClickPropagation="false" OnClick="LeaveOnClick">
