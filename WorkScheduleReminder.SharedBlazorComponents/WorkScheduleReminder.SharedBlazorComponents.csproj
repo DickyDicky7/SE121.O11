@@ -13,7 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="MudBlazor" Version="6.11.1" /><PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.6.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web"           Version="7.0.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.5" />
 	</ItemGroup>
 
