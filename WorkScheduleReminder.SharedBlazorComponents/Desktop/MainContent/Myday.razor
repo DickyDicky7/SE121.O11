@@ -15,7 +15,8 @@
                    Elevation="0"
                    Width="350px"
                    Height="100%"
-                   Anchor="Anchor.Right"
+                   Anchor="MudBlazor
+                  .Anchor.Right"
                    Variant="@DrawerVariant.Persistent">
             <MudDrawerHeader>
                 <MudTextField @bind-Value=@FilterValue
@@ -28,7 +29,7 @@
                               OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
             </MudDrawerHeader>
             <MudPaper Class="d-flex flex-column gap-2 pa-2"
-                      Style="overflow:scroll"
+                      Style="overflow:auto"
                       Elevation="0"
                       Width="100%"
                       Height="100%">
@@ -68,7 +69,7 @@
             </MudPaper>
             @*List*@
             <MudPaper Class="d-flex flex-column flex-grow-1 gap-2 pa-2"
-                      Style="overflow-y:scroll;"
+                      Style="overflow-y:auto;"
                       Elevation="0"
                       Width="100%">
                 @foreach (string Name in Tasks)

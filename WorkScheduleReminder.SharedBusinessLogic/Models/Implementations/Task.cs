@@ -43,12 +43,12 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		[Column(columnName: "begin_time",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public DateTimeOffset? BeginTime { get; set; }
+		public TimeOnly? BeginTime { get; set; }
 
 		[Column(columnName: "cease_time",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public DateTimeOffset? CeaseTime { get; set; }
+		public TimeOnly? CeaseTime { get; set; }
 
 		[Column(columnName: "settings",
 		        ignoreOnInsert: false,

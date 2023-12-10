@@ -10,7 +10,8 @@
 		@if (ActiveViewType != Helper.ViewType.MyDayView)
 		{
 			<DesktopOtherViewTitle />
-			<DesktopButtonMember   />
+			<DesktopButtonMember IsIndividualToWorkspaceChanged=
+                                "IsIndividualToWorkspaceChanged" />
 			@if (ActiveViewType == Helper.ViewType.WorkspaceView)
 			{
 				<DesktopButtonView   />
@@ -60,6 +61,11 @@
 {
 	[CascadingParameter(Name = nameof(ActiveViewType))]
 	public Helper.ViewType ActiveViewType { get; set; }
+
+	[Parameter]
+	public bool                IsIndividualToWorkspace        { get; set; }
+	[Parameter]
+	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
 
 	public bool NotifiVisible { get; set; } = false;
 	public bool SearchVisible { get; set; } = false;

@@ -39,6 +39,14 @@ namespace Microsoft.Extensions.DependencyInjection
 				observableDictionaryTransferService);
 			});
 			services
+			.TryAddSingleton<SupabaseImplementModelStateProviderService>
+			(serviceProvider => 
+			{
+				Supabase.Client supabaseClient =
+				serviceProvider .GetRequiredService<Supabase.Client>();
+				return new(     supabaseClient );
+			});
+			services
 			.TryAddSingleton<AuthenticationStateProvider>
 			(serviceProvider =>
 			{
