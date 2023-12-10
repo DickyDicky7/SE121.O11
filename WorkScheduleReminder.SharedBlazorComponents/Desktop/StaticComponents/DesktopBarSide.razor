@@ -229,7 +229,7 @@
 		await ActiveViewIconChanged.InvokeAsync(ActiveViewIcon);
 	}
 
-	public async Task UpdateActiveBoard_____(Models.Board newActiveBoard_____)
+	public async Task UpdateActiveBoard_____(Models.Board      newActiveBoard_____)
 	{
 		ActiveBoard_____ = newActiveBoard_____;
 		await ActiveBoard_____Changed.InvokeAsync(ActiveBoard_____);
@@ -254,17 +254,17 @@
 		await UpdateActiveViewType(Helper.ViewType.   MyDayView);
 	}
 
-	public async Task Next7DaysOnClick()
+	public async Task  Next7DaysOnClick()
 	{
 		await UpdateActiveViewName("Next 7 days");
-		await UpdateActiveViewIcon(Icons.Material.Filled.NextWeek);
-		await UpdateActiveViewType(Helper.ViewType.DefaultView);
+		await UpdateActiveViewIcon( Icons.Material.Filled.NextWeek);
+		await UpdateActiveViewType(Helper.ViewType.    DefaultView);
 	}
 
 	public async Task AllMyTasksOnClick()
 	{
 		await UpdateActiveViewName("All my tasks");
-		await UpdateActiveViewIcon(Icons.Material.Filled.Task);
+		await UpdateActiveViewIcon( Icons.Material.Filled.Task);
 		await UpdateActiveViewType(Helper.ViewType.DefaultView);
 	}
 
@@ -288,8 +288,8 @@
 			await UpdateActiveCustomView(customView);
 			await UpdateActiveBoard_____(null!);
 			await UpdateActiveViewName(customView.Name);
-			await UpdateActiveViewIcon(Icons.Material.Filled.Today);
-			await UpdateActiveViewType(Helper.ViewType.CustomView);
+			await UpdateActiveViewIcon( Icons.Material.Filled.Today);
+			await UpdateActiveViewType(Helper.ViewType.  CustomView);
 		};
 	}
 
@@ -384,20 +384,20 @@
 		});
 	}
 
-    public async void OnRealtimeDeletesCustomView(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
-    {
-        await InvokeAsync(async () =>
-        {
-            await ReturnToMyDayView_();
-        });
-    }
+	public async void OnRealtimeDeletesCustomView(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
+	{
+		await InvokeAsync(async () =>
+		{
+		await ReturnToMyDayView_();
+		});
+	}
 
-    public async Task ReturnToMyDayView_()
-    {
-        await MyDayOnClick();
-        NavigationManager.NavigateTo("/myday", forceLoad: false);
-        StateHasChanged();
-    }
+	public async Task ReturnToMyDayView_()
+	{
+		await MyDayOnClick();
+		NavigationManager.NavigateTo("/myday", forceLoad: false);
+		   StateHasChanged();
+	}
 
 	public void Dispose()
 	{
