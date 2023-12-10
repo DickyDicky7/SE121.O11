@@ -1,13 +1,12 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.Setting
-@using Microsoft.AspNetCore.Components.Web.Virtualization
 
 @implements IDisposable
-@inject ISnackbar Snackbar
+@inject       ISnackbar Snackbar
 @inject Supabase.Client SupabaseClient
-@using Supabase.Realtime
-@using Supabase.Realtime.Interfaces
-@using Supabase.Realtime.PostgresChanges
+@using  Supabase.Realtime
+@using  Supabase.Realtime.Interfaces
+@using  Supabase.Realtime.PostgresChanges
 @inject NavigationManager NavigationManager
 @inject Services.Implementations.SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
 @inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
