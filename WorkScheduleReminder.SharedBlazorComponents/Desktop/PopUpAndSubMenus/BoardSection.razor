@@ -8,18 +8,19 @@
 	<MudText Style="font-size:larger; font-weight:bold">
 		Board section
 	</MudText>
-	<MudPaper Class="d-flex flex-column"
+	<MudPaper Class="d-flex flex-column pa-2"
 			  Style="overflow-y:scroll"
 			  Elevation="0"
 			  Width="100%"
 			  Height="100%">
 		@foreach (Section Section in Sections)
 		{
-			<MudPaper Class="d-flex flex-row gap-2"
+			<MudPaper Class="d-flex flex-row gap-2 align-center"
 					  Elevation="0"
 					  Width="100%">
 				<MudTextField @bind-Value=Section.Name
-							  Variant="Variant.Text"
+							  Variant="Variant.Outlined"
+							  Margin="Margin.Dense"
 							  DisableUnderLine="true"
 							  TextUpdateSuppression="false"
 							  Immediate="true"

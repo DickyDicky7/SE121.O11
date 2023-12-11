@@ -24,7 +24,8 @@
                              Size="Size.Small"
                              Color="Color.Info"
                              Dense="true"
-                             DisableRipple="true" />
+                             DisableRipple="true"
+                             StopClickPropagation="false" />
             </MudPaper>
         </MudButton>
     </MudPaper>
@@ -46,13 +47,14 @@
                              Size="Size.Small"
                              Color="Color.Info"
                              Dense="true"
-                             DisableRipple="true" />
+                             DisableRipple="true"
+                             StopClickPropagation="false" />
             </MudPaper>
         </MudButton>
     </MudPaper>
 </MudPaper>
 
-@code 
+@code
 {
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }

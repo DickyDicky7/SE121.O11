@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+@page "/"
 @page "/calendar"
 <MudPaper Class="d-flex flex-column pa-2 gap-1"
           Style="background-color:transparent;overflow:hidden"
@@ -86,7 +87,7 @@
                       Elevation="3"
                       Width="100%"
                       Height="100%">
-                <MudText Class="@((i==DateTime.Today.Day)?"mud-theme-info":"")"
+                <MudText Class="@((DateComparer(DateTime.Now, i))?"mud-theme-info":"")"
                          Style="border-radius:10px"
                          Align="Align.Center">
                     @i
@@ -100,16 +101,21 @@
                     {
                         if (DateComparer(Task.DueDay, i))
                         {
-                            <MudTooltip Text="@Task.Section">
-                                <MudButton Class="d-flex flex-row align-center justify-content-start"
-                                           Size="Size.Small"
-                                           FullWidth="true"
-                                           OnClick="()=>{}">
-                                    <MudText>
-                                        @Task.Title
-                                    </MudText>
-                                </MudButton>
-                            </MudTooltip>
+                            <MudPaper Class="d-flex flex-row"
+                                      Elevation="0"
+                                      Width="100%">
+                                <MudTooltip Text="@Task.Section">
+                                    <MudButton Class="d-flex flex-row align-center justify-content-start"
+                                               Size="Size.Small"
+                                               FullWidth="true"
+                                               OnClick="()=>{}">
+                                        <MudText>
+                                            @Task.Title
+                                        </MudText>
+                                    </MudButton>
+                                </MudTooltip>
+                            </MudPaper>
+
                         }
                     }
                 </MudPaper>
@@ -128,9 +134,17 @@
         }
     </MudPaper>
 </MudPaper>
-
+<MudOverlay Visible="@TaskDetailVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation WorkspaceTask="@WorkspaceTask" />
+</MudOverlay>
 @code
 {
+    public bool TaskDetailVisible { get; set; } = false;
+    public bool WorkspaceTask { get; set; } = false;
+
     public DateTime ViewingMonth { get; set; } = DateTime.Now;
     public int DaysOfPreviousMonthInFirstWeek { get; set; }
     public int DaysOfNextMonthInLastWeek { get; set; }

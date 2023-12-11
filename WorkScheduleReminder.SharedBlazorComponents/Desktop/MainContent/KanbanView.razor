@@ -169,7 +169,7 @@
         TaskList.Clear();
         if (Page == "next7days" || Page == "alltasks")
         {
-            WorkspaceTask = false;
+            WorkspaceTask = true;
             List<Tagging> tempTaggingList = new();
             tempTaggingList.Add(new Tagging() { Name = "Tag1", Color = Color.Primary });
             tempTaggingList.Add(new Tagging() { Name = "Tag2", Color = Color.Secondary });
