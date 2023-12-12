@@ -41,6 +41,8 @@ jobs:
       -
         name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.3.1
+        with:
+          vs-prerelease: true
       -
         name: Install MAUI Workloads
         run : | 
