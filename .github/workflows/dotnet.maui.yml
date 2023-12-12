@@ -50,10 +50,10 @@ jobs:
       run: dotnet restore
       
     - name: Build MAUI Windows
-      run: msbuild WorkScheduleReminder.MAUIBlazor/WorkScheduleReminder.MAUIBlazor.csproj -r -p:Configuration=Release -p:RestorePackages=false
+      run: msbuild WorkScheduleReminder.MAUIBlazor/WorkScheduleReminder.MAUIBlazor.csproj -r -p:Configuration=Debug -p:RestorePackages=false
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal
 
     
 
