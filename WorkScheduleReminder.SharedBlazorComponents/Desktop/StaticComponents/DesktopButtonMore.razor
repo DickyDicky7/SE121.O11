@@ -1,5 +1,9 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
+@inject       ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
 		  Elevation="0">
 	<MudMenu Class=""
@@ -42,8 +46,15 @@
 
 @code
 {
+
 	[CascadingParameter(Name = nameof(ActiveViewType))]
 	public Helper.ViewType ActiveViewType { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____  { get; set; } = null!;
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+	public bool CurrentUserIsOwnerOfActiveBoard
+	         => CurrentUserId ==    ActiveBoard_____.OwnerId;
 
 	public record MenuItem
 	{
@@ -74,14 +85,14 @@
 		CustomViewItems.Add(new MenuItem()
 		{
 			Name  = "Edit",
-			Child = @<CreateCustomView @onclick:stopPropagation />
+			Child = @<PopupMenuCreateCustomView @onclick:stopPropagation />
 		});
 		CustomViewItems.Add(new MenuItem()
 		{
 			Name  = "Delete",
-			Child = @<Confirm @onclick:stopPropagation
-			Title = "Are you sure to delete this view"
-			Action= "Delete" />
+			Child = @<PopupMenuConfirm @onclick:stopPropagation
+			ConfirmTitle_="Are you sure to delete this view"
+			ConfirmAction="Delete" />
 		});
 
 		WorkspaceViewItems.Add(new MenuItem() { Name = "Board activity" });
@@ -97,19 +108,55 @@
 			Child = @<BoardSection  @onclick:stopPropagation />
 		});
 		WorkspaceViewItems.Add(new MenuItem() { Name =   "Multi-select" });
-		WorkspaceViewItems.Add(new MenuItem()
-		{
-			Name  = "Leave board",
-			Child = @<Confirm @onclick:stopPropagation
-			Title = "Are you sure to leave this board"
-			Action= "Leave" />
-			});
-		WorkspaceViewItems.Add(new MenuItem()
-		{
-			Name  = "Delete board",
-			Child = @<Confirm @onclick:stopPropagation
-			Title = "Are you sure to delete this board"
-			Action= "Delete" />
-		});
 	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+		if (ActiveViewType is Helper.ViewType.WorkspaceView)
+		{
+		if (ViewTypeMenuItems[Helper.ViewType.WorkspaceView].Count == 5)
+		{
+			ViewTypeMenuItems[Helper.ViewType.WorkspaceView].RemoveAt(4);
+		}
+			if (!CurrentUserIsOwnerOfActiveBoard)
+			ViewTypeMenuItems[Helper.ViewType.WorkspaceView].Add(new MenuItem()
+			{
+				Name  = "Leave board",
+				Child = @<PopupMenuConfirm @onclick:stopPropagation
+				ConfirmTitle_="Are you sure to leave this board"
+				ConfirmAction="Leave"
+				ConfirmActionOnClick="LeaveBoardOnClick" />
+			});
+			else
+			ViewTypeMenuItems[Helper.ViewType.WorkspaceView].Add(new MenuItem()
+			{
+				Name  = "Delete board",
+				Child = @<PopupMenuConfirm @onclick:stopPropagation
+				ConfirmTitle_="Are you sure to delete this board"
+				ConfirmAction="Delete" />
+			});
+		}
+	}
+
+	public async Task LeaveBoardOnClick()
+	{
+		try
+		{
+			await SupabaseImplementModelStateProviderService
+		   .Member_s.First<
+		    Models.Member>(
+			member => member.ProfileId == CurrentUserId &&
+			member.BoardId == ActiveBoard_____.Id).Delete<Models.Member>();
+			Snackbar.Add(Message.Success.SUCCESSFULLY_LEAVE_BOARD(ActiveBoard_____.Name),
+			Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_LEAVE_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG),
+			Severity.Error);
+		}
+	}
+
 }
