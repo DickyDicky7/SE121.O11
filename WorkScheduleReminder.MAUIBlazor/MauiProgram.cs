@@ -7,9 +7,9 @@ namespace WorkScheduleReminder.MAUIBlazor
 	{
 		public static MauiApp CreateMauiApp()
 		{
-            //Environment.SetEnvironmentVariable("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", @"C:\Users\User\Downloads\Microsoft.WebView2.FixedVersionRuntime.118.0.2088.76.x64");
+			//Environment.SetEnvironmentVariable("WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", @"C:\Users\User\Downloads\Microsoft.WebView2.FixedVersionRuntime.118.0.2088.76.x64");
 
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
 			MauiAppBuilder builder = MauiApp.CreateBuilder();
 			builder

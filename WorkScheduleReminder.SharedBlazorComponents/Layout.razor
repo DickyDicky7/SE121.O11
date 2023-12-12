@@ -7,6 +7,7 @@
 @implements IDisposable
 @inject     ISnackbar Snackbar_
 @inject     Supabase.Client SupabaseClient
+@inject     Services.Implementations.SupabaseImplementModelStateProviderService SupabaseModelStateService
 
 <MudThemeProvider Theme="Helper.CustomThemes[1]" /><MudDialogProvider /><MudSnackbarProvider />
 
@@ -84,16 +85,22 @@
 				case Constants.AuthState.SignedIn:
 				     Snackbar_.Add
 				    (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
-					        .Success);
+				            .Success);
+				     SupabaseModelStateService.BeginFetching();
 				     break;
 
 				case Constants.AuthState.SignedOut:
 				     Snackbar_.Add
 				    (Message.Success.SUCCESSFULLY_LOGGING_OUT, Severity
-			            .Success);
+				            .Success);
+				     SupabaseModelStateService.CeaseFetching();
 				     break;
 
 				case Constants.AuthState.UserUpdated:
+				     Snackbar_.Add
+				    (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
+				            .Success);
+				     SupabaseModelStateService.BeginFetching();
 				     break;
 
 				case Constants.AuthState.  TokenRefreshed:

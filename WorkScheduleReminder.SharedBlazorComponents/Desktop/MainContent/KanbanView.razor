@@ -1,286 +1,501 @@
-﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopUpAndSubMenus
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
-@page "/kanban/{Page?}"
+@page "/kanban/{page}"
+
+@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@using  Supabase.Realtime
+@using  Supabase.Realtime.PostgresChanges
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+@using Centvrio.Emoji
+@inject ISnackbar Snackbar
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
 <MudPaper Class="d-flex flex-row align-start gap-3 pa-3"
-          Style="background-color:transparent; overflow-y:hidden; overflow-x:scroll;"
-          Elevation="0"
-          Width="100%"
-          Height="100%">
-    @foreach (Section Section in SectionList)
-    {
-        <MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
-                  Style="overflow-y:hidden; overflow-x:auto"
-                  Elevation="0"
-                  MinWidth="250px"
-                  MaxWidth="250px"
-                  MaxHeight="100%">
-            <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                      Elevation="0"
-                      Width="100%">
-                <MudText Style="font-weight:bold; font-size:large;"
-                         Color="Color.Info">
-                    @Section.Name
-                </MudText>
-                <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                               Size="Size.Small" />
-            </MudPaper>
-            <MudPaper Class="f-flex flex-column gap-2"
-                      Style="overflow-y:scroll;"
-                      Elevation="0"
-                      Width="100%"
-                      MaxHeight="100%">
-                @foreach (Task Task in Section.SectionTaskList)
-                {
-
-                    <MudButton Class="pa-2"
-                               FullWidth="true"
-                               Size="Size.Medium"
-                               Color="Color.Dark"
-                               OnClick="(()=>OnTaskClick(Task.Title))">
-                        <MudPaper Class="d-flex flex-column gap-1 align-start"
-                                  Elevation="3"
-                                  Width="100%">
-                            <MudText>
-                                @Task.Title
-                            </MudText>
-                            @if (Task.TaggingList.Count > 0)
-                            {
-                                <MudPaper Class="align-center justify-content-start pa-3"
-                                          Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
-                                          Elevation="0"
-                                          Width="100%"
-                                          Height="50px">
-                                    @foreach (Tagging Tagging in Task.TaggingList)
-                                    {
-                                        <MudChip Text="@Tagging.Name"
-                                                 Color="Tagging.Color"
-                                                 Variant="Variant.Text"
-                                                 Size="Size.Small" />
-                                    }
-                                </MudPaper>
-                            }
-                            <MudPaper Class="d-flex flex-row gap-1 align-center justify-space-between pa-3"
-                                      Elevation="0"
-                                      Width="100%">
-                                <MudText Style="font-weight:100">
-                                    @DueDateStringAssemble(Task.DueDay, Task.DueTime)
-                                </MudText>
-                                @if (Task.SubTaskList.Count > 0)
-                                {
-                                    <MudIcon Size="Size.Small"
-                                             Icon="@Icons.Material.Filled.Checklist" />
-                                }
-                                @if (Task.FileList.Count > 0)
-                                {
-                                    <MudIcon Size="Size.Small"
-                                             Icon="@Icons.Material.Filled.Attachment" />
-                                }
-                            </MudPaper>
-                        </MudPaper>
-                    </MudButton>
-                }
-            </MudPaper>
-            <MudTextField @bind-Value="@Section.NewTask"
-                          Placeholder="Add task"
-                          Immediate="true"
-                          DisableUnderLine="true"
-                          FullWidth="true"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          TextUpdateSuppression="false"
-                          OnKeyDown="(KeyboardEventArgs e)=>AddTaskToSection(e, Section)" />
-        </MudPaper>
-    }
+		  Style="background-color:transparent;overflow-y:hidden;overflow-x:scroll;"
+		  Elevation="0"
+		  Width="100%"
+		  Height="100%">
+	<Virtualize Context="section" Items="Sections">
+		<Animate Animation="Animations.SlideDown" Duration="TimeSpan.FromSeconds(1)" @key=section.Name
+				 style="width:100%;height:100%;">
+			<MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
+					  Style="overflow-y:auto;overflow-x:auto;"
+					  Elevation="10"
+					  Outlined="false"
+					  MinWidth="250px"
+					  MaxWidth="250px"
+					  MaxHeight="100%">
+				<MudPaper Class="d-flex flex-row align-center justify-space-between"
+						  Elevation="0"
+						  Width="100%">
+					<MudText Style="font-weight:bold;font-size:large;"
+							 Color="Color.Info">
+						@(section.Name)
+					</MudText>
+					<MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+								   Size="Size.Small" />
+				</MudPaper>
+				<MudPaper Class="f-flex flex-column gap-2"
+						  Style="overflow-y:auto;overflow-x:hidden;"
+						  Elevation="0"
+						  Width="100%"
+						  MaxHeight="100%">
+					<Virtualize Context="sectionTask" Items="section.SectionTasks">
+						<MudButton @key="sectionTask.Task.Id"
+								   Class="pa-2"
+								   FullWidth="true"
+								   Size="Size.Medium"
+								   Color="Color.Dark"
+								   OnClick=@(SectionTaskOnClick(sectionTask.Task))
+								   Style="margin:auto;">
+							<MudPaper Class="d-flex flex-column gap-1 align-start"
+									  Elevation="10"
+									  Outlined="true"
+									  Width="100%">
+								<MudText Style="margin-top:15px;margin-left:15px;margin-right:15px;">
+									@sectionTask.Task.Name
+								</MudText>
+								@if (sectionTask.Tags.Count > 0)
+								{
+									<MudChipSet Style="margin-left:15px;margin-right:15px;">
+										<Virtualize Context="tag" Items="@sectionTask.Tags">
+											<MudTooltip @key="@tag.Name"
+														Inline="true"
+														Text="@tag.Name"
+														Arrow="true"
+														Color="@tag.Color">
+												<MudChip Color="tag.Color"
+														 Variant="Variant.Filled"
+														 Size="Size.Small" Style="width:10px;height:8px;" />
+											</MudTooltip>
+										</Virtualize>
+									</MudChipSet>
+								}
+								<MudPaper Class="d-flex flex-row gap-1 align-center justify-space-between pa-3"
+										  Elevation="0"
+										  Width="100%">
+									<MudText Style="font-weight:100;">
+										@(Time.AlarmClock) Deadline:
+										<br /> @sectionTask.Task.CeaseDate?.ToString("dd-MM-yyyy")
+										<br /> @sectionTask.Task.CeaseTime?.ToString("HH:mm")
+									</MudText>
+									@if (sectionTask.Task.Done)
+									{
+										<MudTooltip Text="Completed task"
+													Arrow="true"
+													Color="Color.Success">
+											@(OtherSymbols.WhiteHeavyCheckMark)
+										</MudTooltip>
+									}
+									else
+									{
+										@if (sectionTask.Task.CeaseDate.IsOnceUponATime()
+										 || (sectionTask.Task.CeaseTime.IsOnceUponATime()
+										 && sectionTask.Task.CeaseDate.IsToday()))
+										{
+											<MudTooltip Text="Incomplete task"
+														Arrow="true"
+														Color="Color.Error">
+												@(OtherSymbols.CrossMark)
+											</MudTooltip>
+										}
+										else
+										{
+											<MudTooltip Text="Pending task"
+														Arrow="true"
+														Color="Color.Warning">
+												@(Time.HourglassNotDone)
+											</MudTooltip>
+										}
+									}
+									@if (sectionTask.SubtasksAvailable)
+									{
+										<MudTooltip Text="Subtasks available" Arrow="true" Color="Color.Dark">
+											@(Office.Folder)
+										</MudTooltip>
+									}
+									@if (sectionTask.AttachmentsAvailable)
+									{
+										<MudTooltip Text="Attachments available" Arrow="true" Color="Color.Dark">
+											<MudIcon Size="Size.Small"
+													 Icon="@Icons.Material.Filled.Attachment" />
+										</MudTooltip>
+									}
+								</MudPaper>
+							</MudPaper>
+						</MudButton>
+					</Virtualize>
+				</MudPaper>
+				<MudTextField @bind-Value="section.NewTask"
+							  Placeholder="Add task"
+							  Immediate="true"
+							  DisableUnderLine="true"
+							  FullWidth="true"
+							  Variant="Variant.Outlined"
+							  Margin="Margin.Dense"
+							  TextUpdateSuppression="false"
+							  OnKeyDown=@(InsertTaskToSection(section)) />
+			</MudPaper>
+		</Animate>
+	</Virtualize>
 </MudPaper>
-<MudOverlay Visible="@TaskDetailVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" WorkspaceTask="@WorkspaceTask" />
+<MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="TogglePopupMenuTaskDetailVisible">
+	<PopupMenuTaskDetail @onclick:stopPropagation Task="SelectedTask" />
 </MudOverlay>
 
 @code
 {
-    [Parameter]
-    public string? Page { get; set; }
+	[Parameter]
+	public string? Page { get; set; }
+	[CascadingParameter(Name = nameof(IsIndividualToWorkspace))]
+	public bool IsIndividualToWorkspace { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid           CurrentUserId { get; set; }
 
-    public string CurrentTitle { get; set; } = string.Empty;
-    public bool TaskDetailVisible { get; set; } = false;
-    public bool WorkspaceTask { get; set; } = true;
+	public System.Timers.Timer Timer { get; set; } = null!;
+	public Models.Task  SelectedTask { get; set; } = null!;
+	public List<Section>    Sections { get; set; } = new();
+	public bool PopupMenuTaskDetailVisible { get; set; } = false;
 
-    public record Tagging
-    {
-        public string Name { get; set; } = default!;
-        public Color Color { get; set; } = default!;
-    }
-    public record SubTask
-    {
-        public string Name { get; set; } = default!;
-        public bool Checked { get; set; } = false;
-    }
-    public record Task
-    {
-        public string Title { get; set; } = string.Empty;
-        public List<Tagging> TaggingList { get; set; } = new();
-        public DateTime DueDay { get; set; } = default!;
-        public TimeSpan DueTime { get; set; } = default!;
-        public List<SubTask> SubTaskList { get; set; } = new();
-        public IList<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
+	public async Task MapSectionTasksToSectionsInTheNext7Days()
+	{
+		Sections.Clear();
+		List<SectionTask> SectionTasks = new();
+		if (IsIndividualToWorkspace)
+		{
+			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where(
+			task => (
+			task.CeaseDate.IsInTheNext7DaysFromToday()) && task.BoardId != null)
+				.OrderByDescending(task => task.CreatedTimeStamp))
+			{
+				SectionTasks.Add(new()
+				{
+					Task = task,
+					Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
+					taggingByBoard =>
+					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Tag>(
+					taggingByBoard => new()
+					{ 
+						Name  = taggingByBoard.TagByBoard.Name,
+						Color = taggingByBoard.TagByBoard.ParseColor(),
+					}).ToList(),
+					   SubtasksAvailable = task.  Checklist != "[]",
+					AttachmentsAvailable = task.Attachments != "[]",
+				});
+			}
+		}
+		else
+		{
+			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where(
+			task => (
+			task.CeaseDate.IsInTheNext7DaysFromToday()) && task.BoardId == null)
+				.OrderByDescending(task => task.CreatedTimeStamp))
+			{
+				SectionTasks.Add(new()
+				{
+					Task = task,
+					Tags = SupabaseImplementModelStateProviderService.TaggingByProfiles.Where(
+					taggingByProfile =>
+					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Tag>(
+					taggingByProfile => new()
+					{
+						Name  = taggingByProfile.TagByProfile.Name,
+						Color = taggingByProfile.TagByProfile.ParseColor(), 
+					}).ToList(),
+					   SubtasksAvailable = task.  Checklist != "[]",
+					AttachmentsAvailable = task.Attachments != "[]",
+				});
+			}
+		}
+		foreach ((DateOnly dateOnly, int daysOffset) in Helper.CalculateTheNext7DaysFromToday())
+		{
+			Sections.Add(new()
+			{
+				Name = dateOnly.DayOfWeek.ToString(),
+				DaysOffset   = daysOffset,
+				SectionTasks =
+				SectionTasks.Where(
+				sectionTask => 
+				sectionTask.Task.BeginDate == dateOnly ||
+				sectionTask.Task.CeaseDate == dateOnly).ToList(),
+			});
+		}
+		Sections[0].Name = "Today";
+		Sections[1].Name = "Tomorrow";
+	}
 
-    }
-    public List<Task> TaskList = new();
-    public record Section()
-    {
-        public string Name { get; set; } = default!;
-        public string NewTask { get; set; } = string.Empty;
-        public List<Task> SectionTaskList { get; set; } = new();
-    }
-    public List<Section> SectionList { get; set; } = new();
-    public string DueDateStringAssemble(DateTime _Date, TimeSpan _Time)
-    {
-        return $"{_Date.ToString("dd")}.{_Date.ToString("MM")}.{_Date.ToString("yy")} {_Time.ToString("hh")}:{_Time.ToString("mm")}";
-    }
-    public void AddTaskToSection(KeyboardEventArgs e, Section _Section)
-    {
-        if (e.Code == "Enter" && _Section.NewTask != string.Empty)
-        {
-            if (Page == "next7days" || Page == "alltasks")
-            {
-                _Section.SectionTaskList.Add(
-                    new Task()
-                        {
-                            Title = _Section.NewTask,
-                            DueDay = DateTime.Now,
-                            DueTime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second)
-                        }
-                );
-            }
-            else
-            {
+	public async Task MapSectionTasksToSectionsOfAllMyTasks__()
+	{
+		Sections.Clear();
+		List<SectionTask> SectionTasks = new();
+		if (IsIndividualToWorkspace)
+		{
+			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where
+					(task => task.BoardId != null).OrderByDescending(task => task.CreatedTimeStamp))
+			{
+				SectionTasks.Add(new()
+				{
+					Task = task,
+					Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
+					taggingByBoard =>
+					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Tag>(
+					taggingByBoard => new()
+					{ 
+						Name  = taggingByBoard.TagByBoard.Name,
+						Color = taggingByBoard.TagByBoard.ParseColor(),
+					}).ToList(),
+					   SubtasksAvailable = task.  Checklist != "[]",
+					AttachmentsAvailable = task.Attachments != "[]",
+				});
+			}
+		}
+		else
+		{
+			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where
+					(task => task.BoardId == null).OrderByDescending(task => task.CreatedTimeStamp))
+			{
+				SectionTasks.Add(new()
+				{
+					Task = task,
+					Tags = SupabaseImplementModelStateProviderService.TaggingByProfiles.Where(
+					taggingByProfile =>
+					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Tag>(
+					taggingByProfile => new()
+					{
+						Name  = taggingByProfile.TagByProfile.Name,
+						Color = taggingByProfile.TagByProfile.ParseColor(),
+					}).ToList(),
+					   SubtasksAvailable = task.  Checklist != "[]",
+					AttachmentsAvailable = task.Attachments != "[]",
+				});
+			}
+		}
+		Sections.Add(new()
+		{
+			Name = "Once Upon A Time",
+			DaysOffset = -1,
+			SectionTasks = new(),
+		});
+		Sections.Add(new()
+		{
+			Name = "Today",
+			DaysOffset = +0,
+			SectionTasks = new(),
+		});
+		Sections.Add(new()
+		{
+			Name = "Tomorrow",
+			DaysOffset = +1,
+			SectionTasks = new(),
+		});
+		Sections.Add(new()
+		{
+			Name = "Upcoming",
+			DaysOffset = +3,
+			SectionTasks = new(),
+		});
+		Sections.Add(new()
+		{
+			Name = "Someday",
+			DaysOffset = +7,
+			SectionTasks = new(),
+		});
+		foreach (SectionTask sectionTask in SectionTasks)
+		{
+			if (sectionTask.Task.CeaseDate.IsOnceUponATime())
+			{
+				Sections[0].SectionTasks.Add(sectionTask);
+			}
+			else
+			if (sectionTask.Task.CeaseDate.IsToday())
+			{
+				Sections[1].SectionTasks.Add(sectionTask);
+			}
+			else
+			if (sectionTask.Task.CeaseDate.IsTomorrow())
+			{
+				Sections[2].SectionTasks.Add(sectionTask);
+			}
+			else
+			if (sectionTask.Task.CeaseDate.IsUpcoming())
+			{
+				Sections[3].SectionTasks.Add(sectionTask);
+			}
+			else
+			if (sectionTask.Task.CeaseDate.IsSomeday())
+			{
+				Sections[4].SectionTasks.Add(sectionTask);
+			}
+			else
+			{
+				System.Diagnostics.Debug.WriteLine("SectionTask Not In Any Section");
+			}
+		}
+	}
 
-            }
-            _Section.NewTask = string.Empty;
-        }
-    }
-    protected override void OnParametersSet()
-    {
-        Page = Page ?? string.Empty;
-        SectionList.Clear();
-        TaskList.Clear();
-        if (Page == "next7days" || Page == "alltasks")
-        {
-            WorkspaceTask = true;
-            List<Tagging> tempTaggingList = new();
-            tempTaggingList.Add(new Tagging() { Name = "Tag1", Color = Color.Primary });
-            tempTaggingList.Add(new Tagging() { Name = "Tag2", Color = Color.Secondary });
-            tempTaggingList.Add(new Tagging() { Name = "Tag3", Color = Color.Tertiary });
-            tempTaggingList.Add(new Tagging() { Name = "Tag4", Color = Color.Info });
-            tempTaggingList.Add(new Tagging() { Name = "Tag5", Color = Color.Success });
-            List<SubTask> tempSubTaskList = new();
-            tempSubTaskList.Add(new SubTask() { Name = "SubTask1" });
-            tempSubTaskList.Add(new SubTask() { Name = "SubTask2" });
-            tempSubTaskList.Add(new SubTask() { Name = "SubTask3" });
-            foreach (int i in Enumerable.Range(0, 30))
-            {
-                TaskList.Add(
-                    new Task()
-                        {
-                            Title = $"Task {i + 1}",
-                            DueDay = DateTime.Now.AddDays(i).Date,
-                            DueTime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
-                            TaggingList = tempTaggingList,
-                            SubTaskList = tempSubTaskList
-                        }
-                );
-            }
-        }
-        InitSection();
-    }
-    public void OnTaskClick(string TaskTitle)
-    {
-        TaskDetailVisible = !TaskDetailVisible;
-        CurrentTitle = TaskTitle;
-    }
-    public void InitSection()
-    {
-        if (Page == "next7days")
-        {
-            foreach (int i in Enumerable.Range(0, 7))
-            {
-                List<Task> temp = new();
-                foreach (Task task in TaskList)
-                {
-                    if (task.DueDay == DateTime.Now.AddDays(i).Date)
-                    {
-                        temp.Add(task);
-                    }
-                }
-                if (i == 0)
-                {
-                    SectionList.Add(
-                        new Section()
-                            {
-                                Name = "Today",
-                                SectionTaskList = temp
-                            }
-                    );
-                }
-                else if (i == 1)
-                {
-                    SectionList.Add(
-                        new Section()
-                            {
-                                Name = "Tomorrow",
-                                SectionTaskList = temp
-                            }
-                    );
-                }
-                else
-                {
-                    SectionList.Add(
-                        new Section()
-                            {
-                                Name = DateTime.Now.AddDays(i).DayOfWeek.ToString(),
-                                SectionTaskList = temp
-                            }
-                    );
-                }
-            }
-        }
-        else if (Page == "alltasks")
-        {
-            List<Task> TodayTask = new();
-            List<Task> TomorrowTask = new();
-            List<Task> UpcomingTask = new();
-            List<Task> SomedayTask = new();
-            foreach (Task task in TaskList)
-            {
-                if (task.DueDay == DateTime.Now.Date)
-                {
-                    TodayTask.Add(task);
-                }
-                else if (task.DueDay == DateTime.Now.AddDays(1).Date)
-                {
-                    TomorrowTask.Add(task);
-                }
-                else if (task.DueDay >= DateTime.Now.AddDays(2).Date &&
-                        task.DueDay <= DateTime.Now.AddDays(6).Date)
-                {
-                    UpcomingTask.Add(task);
-                }
-                else
-                {
-                    SomedayTask.Add(task);
-                }
-            }
-            SectionList.Add(new Section() { Name = "Today", SectionTaskList = TodayTask });
-            SectionList.Add(new Section() { Name = "Tomorrow", SectionTaskList = TomorrowTask });
-            SectionList.Add(new Section() { Name = "Upcoming", SectionTaskList = UpcomingTask });
-            SectionList.Add(new Section() { Name = "Someday", SectionTaskList = SomedayTask });
-        }
-        else
-        {
+	public record Section
+	{
+		public bool IsSectionByBoard                { get; init; } = false;
+		public Models.SectionByBoard SectionByBoard { get; init; } = null!;
+		public int DaysOffset { get; set; }
+		public string Name    { get; set; } = null!;
+		public string NewTask { get; set; } = string.Empty;
+		public List<SectionTask> SectionTasks { get;  init; } = null!;
+	}
 
-        }
-    }
+	public record Tag
+	{
+		public Color Color { get; set; } = default;
+		public string Name { get; set; } = null!;
+	}
+
+	public record SectionTask
+	{
+		public Models.Task Task { get; init; } = null!;
+		public List<Tag>   Tags { get; init; } = null!;
+		public bool    SubtasksAvailable { get; init; } = false;
+		public bool AttachmentsAvailable { get; init; } = false;
+	}
+
+	public Func<KeyboardEventArgs, Task> InsertTaskToSection(Section section)
+	{
+		return async (keyboardEventArgs) =>
+		{
+			if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(section.NewTask))
+			{
+				if (section.IsSectionByBoard)
+				{
+
+				}
+				else
+				{
+					Models.Task newTask = new()
+					{
+						Name = section.NewTask,
+						Done = false,
+						Note =     string.Empty,
+						Settings = string.Empty,
+						Reminder = string.Empty,
+						Checklist = "[]",
+						BeginDate = null,
+						BeginTime = null,
+						CeaseDate = DateOnly.FromDateTime(DateTime.Now).AddDays(section.DaysOffset),
+						CeaseTime = TimeOnly.MaxValue.AddHours(+0).AddMinutes(-1),
+						  BoardId = null,
+						ProfileId = CurrentUserId,
+						Attachments = "[]",
+					};
+					await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
+						{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					section.NewTask = string.Empty;
+				}
+			}
+		};
+	}
+
+	public void OnChangedTask___s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionTasksToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTaggingByBoard__s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionTasksToSections();
+			StateHasChanged();
+		});
+
+	}
+	public void OnChangedTaggingByProfiles()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionTasksToSections();
+			StateHasChanged();
+		});
+	}
+
+	public void ResetInterval(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+	{
+		Timer.Interval = (TimeSpan.FromDays(1)
+		 - DateTime.Now.TimeOfDay).TotalMilliseconds;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Timer = new(interval: TimeSpan.FromDays(1) - DateTime.Now.TimeOfDay);
+		Timer.  Enabled = true;
+		Timer.AutoReset = true;
+		Timer.Elapsed += ResetInterval;
+		Timer.Start();
+		SupabaseImplementModelStateProviderService.ChangedTask___s += OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s += OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles += OnChangedTaggingByProfiles;
+	}
+
+	public async Task MapSectionTasksToSections()
+	{
+		if (Page == "next-7-days")
+		{
+			await MapSectionTasksToSectionsInTheNext7Days();
+		}
+		else
+		if (Page == "all-my-tasks")
+		{
+			await MapSectionTasksToSectionsOfAllMyTasks__();
+		}
+	}
+
+	public void OnElapsedMapSectionTasksToSectionsAgain(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+	{
+		InvokeAsync(MapSectionTasksToSections);
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+		await SupabaseClient.Realtime    .ConnectAsync();
+		Page = Page ?? string.Empty;
+		await MapSectionTasksToSections();
+		Timer.Elapsed -= OnElapsedMapSectionTasksToSectionsAgain;
+		if (Page is "next-7-days" or "all-my-tasks")
+		Timer.Elapsed += OnElapsedMapSectionTasksToSectionsAgain;
+	}
+
+	public Action SectionTaskOnClick(Models.Task selectedTask)
+	{
+		return () =>
+		{
+			SelectedTask = selectedTask;
+			TogglePopupMenuTaskDetailVisible();
+		};
+	}
+
+	public void TogglePopupMenuTaskDetailVisible()
+	{
+		PopupMenuTaskDetailVisible = !
+		PopupMenuTaskDetailVisible;
+	}
+
+	public void Dispose()
+	{
+		SupabaseImplementModelStateProviderService.ChangedTask___s -= OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s -= OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles -= OnChangedTaggingByProfiles;
+		Timer.Stop();
+		Timer.Elapsed -= ResetInterval;
+		Timer.Close();
+		Timer.Dispose();
+	}
 }
