@@ -45,7 +45,7 @@ jobs:
       run: dotnet restore
       
     - name: Build MAUI Windows
-      run: msbuild WorkScheduleReminder.MAUIBlazor/WorkScheduleReminder.MAUIBlazor.csproj -r -p:Configuration=Release -p:RestorePackages=false -p:TargetFramework=net7.0-windows10.0.19041.0
+      run: msbuild WorkScheduleReminder.MAUIBlazor/WorkScheduleReminder.MAUIBlazor.csproj -r -p:Configuration=Release -p:RestorePackages=false
       
     - name: Test
       run: dotnet test --no-build --verbosity normal
