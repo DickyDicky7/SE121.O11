@@ -46,9 +46,12 @@ jobs:
       run: | 
         dotnet workload install maui --ignore-failed-sources
 
+    - name: Chocolatey Action
+      uses: crazy-max/ghaction-chocolatey@v3.0.0
+            
     - name: Install Edge Webview2 Runtime
       run: |
-        MicrosoftEdgeWebview2Setup.exe /silent /install
+        choco install webview2-runtime
           
     - name: Restore dependencies
       run: dotnet restore
