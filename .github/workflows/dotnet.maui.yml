@@ -45,6 +45,10 @@ jobs:
     - name: Install MAUI Workloads
       run: | 
         dotnet workload install maui --ignore-failed-sources
+
+    - name: Install Edge Webview2 Runtime
+      run: |
+        MicrosoftEdgeWebview2Setup.exe /silent /install
           
     - name: Restore dependencies
       run: dotnet restore
