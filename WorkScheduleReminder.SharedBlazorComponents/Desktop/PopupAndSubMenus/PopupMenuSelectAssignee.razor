@@ -48,10 +48,10 @@
 
 	public record Assignee()
 	{
-		public string  Name { get; set; } = string.Empty;
+		public string Name { get; set; } = string.Empty;
 		public bool Checked { get; set; } = false;
-		public void ToggleChecked() => 
-		Checked = ! Checked;
+		public void ToggleChecked() =>
+		Checked = !Checked;
 	}
 
 	public List<Assignee> Assignees = new List<Assignee>();

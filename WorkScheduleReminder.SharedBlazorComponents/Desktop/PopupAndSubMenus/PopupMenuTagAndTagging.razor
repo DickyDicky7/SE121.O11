@@ -1,0 +1,504 @@
+﻿@implements IDisposable
+@inject       ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+@using  Supabase.Realtime
+@using  Supabase.Realtime.PostgresChanges
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes="AdditionalAttributes"
+			  Class="d-flex flex-column gap-2 pa-2 justify-center"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  Width="400px"
+			  Height="400px"
+			  MaxHeight="80vh">
+		@if (CurrentMode != Mode.Select)
+		{
+			@*Navigation bar*@
+			<MudPaper Class="d-flex flex-row justify-start"
+					  Elevation="0">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+							   Size="Size.Small"
+							   OnClick="ChangeMode(Mode.Select, null!)" />
+				@if (CurrentMode == Mode.Add)
+				{
+					<MudText Style="font-size:larger;font-weight:bold;">
+						Add tag
+					</MudText>
+				}
+				else
+				{
+					<MudText Style="font-size:larger;font-weight:bold;">
+						Edit tag
+					</MudText>
+				}
+			</MudPaper>
+			@*Enter tag's name*@
+			<MudTextField @bind-Value="ChosenTag.Name"
+						  MaxLength="15"
+						  Counter="15"
+						  Variant="Variant.Outlined"
+						  Immediate="true"
+						  Clearable="true"
+						  Required="true"
+						  AutoFocus="true"
+						  TextUpdateSuppression="false"
+						  Label="Name your tag!" />
+			@*Choose tag's color*@
+			<MudChipSet @bind-SelectedChip="SelectedColoredChip" @bind-SelectedChip:after="SetSelectedColoredChip"
+						Style="display:grid;grid-gap:8px;grid-template-columns:repeat(2,1fr);"
+						Filter="true"
+						Mandatory="true">
+				@foreach (Color color in Colors)
+				{
+					<MudChip Default="@(color == ChosenTag.Color)"
+							 Text="#Tag"
+							 Size="Size.Small"
+							 Color="color"
+							 SelectedColor="color"
+							 Variant="Variant.Text" />
+				}
+			</MudChipSet>
+			@*Action button(s)*@
+			@if (CurrentMode == Mode.Add)
+			{
+				@*Add tag*@
+				<MudButton Class="rounded-pill"
+						   Size="Size.Small"
+						   FullWidth="true"
+						   Disabled="string.IsNullOrWhiteSpace(ChosenTag.Name)"
+						   OnClick="CreateNewTag">
+					<MudText Color="Color.Info">Save</MudText>
+				</MudButton>
+			}
+			else
+			{
+				@*Edit tag*@
+				<MudPaper Class="d-flex flex-row"
+						  Elevation="0"
+						  Width="100%">
+					<MudPaper Elevation="0"
+							  Width="50%">
+						<MudButton Class="rounded-pill"
+								   Size="Size.Small"
+								   Color="Color.Error"
+								   FullWidth="true"
+								   OnClick="DeleteOldTag">
+							<MudText>Delete</MudText>
+						</MudButton>
+					</MudPaper>
+					<MudPaper Elevation="0"
+							  Width="50%">
+						<MudButton Class="rounded-pill"
+								   Size="Size.Small"
+								   FullWidth="true"
+								   Color="Color.Info"
+								   Disabled="string.IsNullOrWhiteSpace(ChosenTag.Name)"
+								   OnClick="UpdateOldTag">
+							<MudText>Save</MudText>
+						</MudButton>
+					</MudPaper>
+				</MudPaper>
+			}
+		}
+		else
+		{
+			@*Navigation bar*@
+			<MudPaper Class="d-flex flex-row justify-space-between"
+					  Elevation="0">
+				<MudText Style="font-size:larger;font-weight:bold;">
+					@(EnableTaggings ? "Select tag(s)" : "View tag")
+				</MudText>
+				<MudIconButton Icon="@Icons.Material.Filled.Add"
+							   Size="Size.Small"
+							   OnClick="ChangeMode(Mode.Add, null!)" />
+			</MudPaper>
+			@*list of tags*@
+			<MudPaper Style="overflow:auto;"
+					  Elevation="0"
+					  Width="100%"
+					  Height="100%">
+				<Virtualize Context="tag" Items="Tags">
+					<MudPaper @key="@tag.Id"
+							  Class="d-flex flex-row pa-2 justify-space-between align-center"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class="d-flex flex-row pa-1 align-center"
+								  Elevation="0">
+							@if (EnableTaggings)
+							{
+								<MudCheckBox @bind-Checked=@tag.NewChecked
+											 Size="Size.Small"
+											 Color="tag.Color"
+											 Dense="true" />
+							}
+							<MudText Color="tag.Color">@tag.Name</MudText>
+						</MudPaper>
+						<MudIconButton Icon="@Icons.Material.Filled.Edit"
+									   Size="Size.Small"
+									   OnClick="ChangeMode(Mode.Edit, tag)" />
+					</MudPaper>
+				</Virtualize>
+			</MudPaper>
+			@*Action button*@
+			if (EnableTaggings)
+			{
+				<MudButton Class="rounded-pill"
+						   Size="Size.Small"
+						   FullWidth="true"
+						   OnClick="SaveTaggings">
+					<MudText Color="Color.Info">Save</MudText>
+				</MudButton>
+			}
+		}
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+	[Parameter]
+	public   Models.Task Task { get; set; } = null!;
+	[Parameter]
+	public EventCallback TogglePopupMenuTagAndTaggingVisible { get; set; }
+
+	public bool EnableTaggings => !Task.IsBoardTask() || SupabaseImplementModelStateProviderService.Member_s.Any(member
+	=> member.  BoardId ==  Task.BoardId
+	&& member.ProfileId == CurrentUserId
+	&& member.Role == Models.Member.PossibleRole.Editor);
+
+	public Tag ChosenTag { get; set; } = null!;
+	public List<Tag  > Tags   { get; set; } = new();
+	public List<Color> Colors { get; set; } = new();
+	public enum Mode { Select, Add, Edit, }
+	public Mode CurrentMode = Mode.Select;
+	public MudChip SelectedColoredChip { get; set; } = null!;
+
+	public record Tag
+	{
+		public Guid Id { get; set; }
+		public bool NewChecked { get; set; }
+		public bool OldChecked { get; set; }
+		public string Name { get; set; } = null!;
+		public Color Color { get; set; }
+	}
+
+	public async Task MapTagAndTaggingModelsToTagRecords()
+	{
+		Tags.Clear();
+		if (Task.IsBoardTask())
+		{
+			foreach (Models.TagByBoard tagByBoard in SupabaseImplementModelStateProviderService
+				.Tag____ByBoard__s.OrderBy
+				(tag____ByBoard__ => tag____ByBoard__.CreatedTimeStamp))
+			{
+				Tags.Add(new()
+				{
+					Id = tagByBoard.Id,
+					NewChecked = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Any(taggingByBoard__ =>
+					taggingByBoard__.TagByBoardId == tagByBoard.Id &&
+					taggingByBoard__.TaskId == Task.Id),
+					Name  = tagByBoard.Name,
+					Color = tagByBoard.ParseColor(),
+				});
+				Tag lastTag = Tags.Last();
+				lastTag.OldChecked = lastTag.NewChecked;
+			}
+		}
+		else
+		{
+			foreach (Models.TagByProfile tagByProfile in SupabaseImplementModelStateProviderService
+				.Tag____ByProfiles.OrderBy
+				(tag____ByProfile => tag____ByProfile.CreatedTimeStamp))
+			{
+				Tags.Add(new()
+				{
+					Id = tagByProfile.Id,
+					NewChecked = SupabaseImplementModelStateProviderService.TaggingByProfiles.Any(taggingByProfile =>
+					taggingByProfile.TagByProfileId == tagByProfile.Id &&
+					taggingByProfile.TaskId == Task.Id),
+					Name  = tagByProfile.Name,
+					Color = tagByProfile.ParseColor(),
+				});
+				Tag lastTag = Tags.Last();
+				lastTag.OldChecked = lastTag.NewChecked;
+			}
+		}
+	}
+
+	public void SetSelectedColoredChip()
+	{
+		ChosenTag.Color = SelectedColoredChip.Color;
+	}
+
+	public Action ChangeMode(Mode nextMode, Tag chosenTag)
+	{
+		return () =>
+		{
+			    CurrentMode  = nextMode;
+			if (CurrentMode == Mode.Add)
+			{
+				ChosenTag = new()
+				{
+					NewChecked = false,
+					OldChecked = false,
+					Color = Color.Success,
+				};
+			}
+			else
+			if (CurrentMode == Mode.Edit)
+			{
+				ChosenTag = chosenTag;
+			}
+		};
+	}
+
+	public async Task CreateNewTag()
+	{
+		try
+		{
+			if (Tags.Any(tag => tag.Name == ChosenTag.Name))
+			{
+				Snackbar.Add
+				(Message.Error.CANNOT_CREATE_TAG (
+				 Message.Error.TAG_ALREADY_EXISTS), Severity.Error);
+				return;
+			}
+
+			JObject settings = new();
+			settings[nameof(ChosenTag.Color)] = ChosenTag.Color.ToString();
+			if (Task.IsBoardTask())
+			{
+				Models.TagByBoard newTagByBoard = new()
+				{
+					   Name = ChosenTag.Name,
+					BoardId = Task.BoardId! .Value,
+					Settings = settings.ToString(),
+				};
+				await SupabaseClient.From<Models.TagByBoard>().Insert(newTagByBoard,
+				          new Postgrest.QueryOptions()
+				{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+			}
+			else
+			{
+				Models.TagByProfile newTagByProfile = new()
+				{
+					Name = ChosenTag.Name,
+					ProfileId = Task.ProfileId!.Value,
+					 Settings = settings . ToString(),
+				};
+				await SupabaseClient.From<Models.TagByProfile>().Insert(newTagByProfile,
+				          new Postgrest.QueryOptions()
+				{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+			}
+			Snackbar.Add(Message.Success.SUCCESSFULLY_CREATE_TAG, Severity.Success);
+
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			  System.Diagnostics.Debug.WriteLine(   postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_CREATE_TAG(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		CurrentMode = Mode.Select;
+		  ChosenTag = null!;
+	}
+
+	public async Task UpdateOldTag()
+	{
+		try
+		{
+			if (Tags.Any(tag => tag.Name == ChosenTag.Name))
+			{
+				Snackbar.Add
+				(Message.Error.CANNOT_UPDATE_TAG (
+				 Message.Error.TAG_ALREADY_EXISTS), Severity.Error);
+				return;
+			}
+
+			JObject settings = new();
+			settings[nameof(ChosenTag.Color)] = ChosenTag.Color.ToString();
+			if (Task.IsBoardTask())
+			{
+				await SupabaseClient.From<Models.TagByBoard>().Where(tagByBoard => tagByBoard.Id == ChosenTag.Id)
+				.Set(tagByBoard => tagByBoard.    Name, ChosenTag.Name      )
+				.Set(tagByBoard => tagByBoard.Settings, settings .ToString()).Update();
+			}
+			else
+			{
+				await SupabaseClient.From<Models.TagByProfile>().Where(tagByProfile => tagByProfile.Id == ChosenTag.Id)
+				.Set(tagByProfile => tagByProfile.    Name, ChosenTag.Name      )
+				.Set(tagByProfile => tagByProfile.Settings, settings .ToString()).Update();
+			}
+			Snackbar.Add(Message.Success.SUCCESSFULLY_UPDATE_TAG, Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			  System.Diagnostics.Debug.WriteLine(   postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_TAG(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		CurrentMode = Mode.Select;
+		  ChosenTag = null!;
+	}
+
+	public async Task DeleteOldTag()
+	{
+		try
+		{
+			if (Task.IsBoardTask())
+			{
+				await SupabaseClient.From<Models.TagByBoard>().Delete(new Models.TagByBoard()
+				{
+					Id = ChosenTag.Id,
+				}, new Postgrest.QueryOptions() { Returning =
+				       Postgrest.QueryOptions.ReturnType.Minimal, });
+			}
+			else
+			{
+				await SupabaseClient.From<Models.TagByProfile>().Delete(new Models.TagByProfile()
+				{
+					Id = ChosenTag.Id,
+				}, new Postgrest.QueryOptions() { Returning =
+				       Postgrest.QueryOptions.ReturnType.Minimal, });
+			}
+			Snackbar.Add(Message.Success.SUCCESSFULLY_DELETE_TAG, Severity.Success);
+
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			  System.Diagnostics.Debug.WriteLine(   postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_DELETE_TAG(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		CurrentMode = Mode.Select;
+		  ChosenTag = null!;
+	}
+
+	public async Task SaveTaggings()
+	{
+		try
+		{
+			List<Tag> taggingsToUpsert = new();
+			List<Tag> taggingsToDelete = new();
+			foreach (Tag tag in Tags)
+			{
+				if  (tag.NewChecked != tag.OldChecked)
+				{
+				if  (tag.NewChecked)
+					{
+						taggingsToUpsert.Add(tag);
+					}
+					else
+					{
+						taggingsToDelete.Add(tag);
+					}
+				}
+			}
+			if (Task.IsBoardTask())
+			{
+				if (taggingsToUpsert.Count > 0)
+				{
+					await SupabaseClient.From<           Models.TaggingByBoard>()
+					.OnConflict("task_id, tag_by_board___id")
+					.Upsert(taggingsToUpsert.Select<Tag, Models.TaggingByBoard>(taggingToUpsert
+					=> new()
+					{
+						TagByBoardId = taggingToUpsert.Id,
+						      TaskId =            Task.Id,
+					}).ToList(), new Postgrest.QueryOptions()
+					{   Returning  = Postgrest.QueryOptions.ReturnType.Minimal, });
+				}
+				foreach (Tag taggingToDelete in taggingsToDelete)
+				{
+					await SupabaseClient.From<Models.TaggingByBoard>().Delete(new Models.TaggingByBoard()
+					{
+						TagByBoardId = taggingToDelete.Id,
+						      TaskId =            Task.Id,
+					}, new Postgrest.QueryOptions() { Returning =
+					       Postgrest.QueryOptions.ReturnType.Minimal, });
+				}
+			}
+			else
+			{
+				if (taggingsToUpsert.Count > 0)
+				{
+					await SupabaseClient.From<           Models.TaggingByProfile>()
+					.OnConflict("task_id, tag_by_profile_id")
+					.Upsert(taggingsToUpsert.Select<Tag, Models.TaggingByProfile>(taggingToUpsert
+					=> new()
+					{
+						TagByProfileId = taggingToUpsert.Id,
+						        TaskId =            Task.Id,
+					}).ToList(), new Postgrest.QueryOptions()
+					{   Returning  = Postgrest.QueryOptions.ReturnType.Minimal, });
+				}
+				foreach (Tag taggingToDelete in taggingsToDelete)
+				{
+					await SupabaseClient.From<Models.TaggingByProfile>().Delete(new Models.TaggingByProfile()
+					{
+						TagByProfileId = taggingToDelete.Id,
+						        TaskId =            Task.Id,
+					}, new Postgrest.QueryOptions() { Returning =
+					       Postgrest.QueryOptions.ReturnType.Minimal, });
+				}
+			}
+			Snackbar.Add(Message.Success.SUCCESSFULLY_UPDATE_TAGGINGS, Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			  System.Diagnostics.Debug.WriteLine(  postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_TAGGINGS(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		await TogglePopupMenuTagAndTaggingVisible.InvokeAsync();
+	}
+
+	public void OnChangedTag____ByBoard__s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapTagAndTaggingModelsToTagRecords();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTag____ByProfiles()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapTagAndTaggingModelsToTagRecords();
+			StateHasChanged();
+		});
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Colors.Add(Color.Success);
+		Colors.Add(Color.Error);
+		Colors.Add(Color.Primary);
+		Colors.Add(Color.Secondary);
+		Colors.Add(Color.Tertiary);
+		Colors.Add(Color.Info);
+		Colors.Add(Color.Dark);
+		Colors.Add(Color.Warning);
+		await MapTagAndTaggingModelsToTagRecords();
+		if (Task.IsBoardTask())
+		SupabaseImplementModelStateProviderService.ChangedTag____ByBoard__s += OnChangedTag____ByBoard__s;
+		else
+		SupabaseImplementModelStateProviderService.ChangedTag____ByProfiles += OnChangedTag____ByProfiles;
+	}
+
+	public void Dispose()
+	{
+		if (Task.IsBoardTask())
+		SupabaseImplementModelStateProviderService.ChangedTag____ByBoard__s -= OnChangedTag____ByBoard__s;
+		else
+		SupabaseImplementModelStateProviderService.ChangedTag____ByProfiles -= OnChangedTag____ByProfiles;
+	}
+}

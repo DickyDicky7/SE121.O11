@@ -110,9 +110,9 @@
 		WorkspaceViewItems.Add(new MenuItem() { Name =   "Multi-select" });
 	}
 
-	protected override async Task OnParametersSetAsync()
+	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		await base.OnParametersSetAsync();
+		await base.OnAfterRenderAsync(firstRender);
 		if (ActiveViewType is Helper.ViewType.WorkspaceView)
 		{
 		if (ViewTypeMenuItems[Helper.ViewType.WorkspaceView].Count == 5)

@@ -19,6 +19,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG E COMMON 01 </summary>
 			public const string SOMETHING_WENT_WRONG = @"Something went wrong";
 
+			/// <summary> MSG E TAG 01 </summary>
+			public const string TAG_ALREADY_EXISTS = @"Tag already exists";
+
 			/// <summary> MSG E AUTH 01 </summary>
 			public const string EMPTY_PASSWORD        = @"Empty password";
 			/// <summary> MSG E AUTH 02 </summary>
@@ -54,6 +57,19 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG E MEMBER 03 </summary>
 			public static string CANNOT_REMOVE_MEMBER(string reason)
 			=> @$"Cannot remove member: {reason}";
+
+			/// <summary> MSG E TAG 02 </summary>
+			public static string CANNOT_CREATE_TAG(string reason)
+			=> $@"Cannot create tag: {reason}";
+			/// <summary> MSG E TAG 03 </summary>
+			public static string CANNOT_UPDATE_TAG(string reason)
+			=> $@"Cannot update tag: {reason}";
+			/// <summary> MSG E TAG 04 </summary>
+			public static string CANNOT_DELETE_TAG(string reason)
+			=> $@"Cannot delete tag: {reason}";
+			/// <summary> MSG E TAG 05 </summary>
+			public static string CANNOT_UPDATE_TAGGINGS(string reason)
+			=> $@"Cannot update taggings: {reason}";
 
 			/// <summary> MSG E TASK 01 </summary>
 			public static string CANNOT_CREATE_TASK(string reason)
@@ -134,6 +150,15 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			public const string SUCCESSFULLY_UPDATE_MEMBER = @"Successfully update member";
 			/// <summary> MSG S MEMBER 03 </summary>
 			public const string SUCCESSFULLY_REMOVE_MEMBER = @"Successfully remove member";
+
+			/// <summary> MSG S TAG 01 </summary>
+			public const string SUCCESSFULLY_CREATE_TAG = @"Successfully create tag";
+			/// <summary> MSG S TAG 02 </summary>
+			public const string SUCCESSFULLY_UPDATE_TAG = @"Successfully update tag";
+			/// <summary> MSG S TAG 03 </summary>
+			public const string SUCCESSFULLY_DELETE_TAG = @"Successfully delete tag";
+			/// <summary> MSG S TAG 04 </summary>
+			public const string SUCCESSFULLY_UPDATE_TAGGINGS = @"Successfully update taggings";
 
 			/// <summary> MSG S TASK 01 </summary>
 			public const string SUCCESSFULLY_CREATE_TASK = @"Successfully create task";

@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
+using H.NotifyIcon;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace WorkScheduleReminder.MAUIBlazor
 {
@@ -13,8 +15,29 @@ namespace WorkScheduleReminder.MAUIBlazor
 
 			MauiAppBuilder builder = MauiApp.CreateBuilder();
 			builder
-				.UseMauiApp<App>()
+				.UseMauiApp<App>().UseNotifyIcon()
 				.UseMauiCommunityToolkit()
+				.ConfigureLifecycleEvents(lifecycleEvents =>
+				{
+#if WINDOWS
+					lifecycleEvents.AddWindows(windowsLifecycleBuilder =>
+					{
+						windowsLifecycleBuilder.OnWindowCreated(window =>
+						{
+							var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+							var _idWindow = Microsoft.UI.Win32Interop    .GetWindowIdFromWindow(windowHandle);
+							var appWindow = Microsoft.UI.Windowing
+							   .AppWindow.GetFromWindowId(_idWindow);
+
+							appWindow.Closing += async (sender, appWindow_ClosingEventArgs) =>
+							{
+							appWindow_ClosingEventArgs.Cancel = true;
+							appWindow.Hide();
+							};
+						});   
+					});
+#endif
+				})
 				.ConfigureFonts(fonts =>
 				{
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

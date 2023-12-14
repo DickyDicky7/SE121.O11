@@ -131,12 +131,14 @@ Debug.WriteLine("[Begin 2]");
 					async (sender, postgresChangesResponse) =>
 					{
 						await FetchAndNotifyChangedTag____ByBoard__s();
+						await FetchAndNotifyChangedTaggingByBoard__s();
 					});
 					realtimeChannelAllTag____ByProfiles =
 					await supabaseClient.From<Models.TagByProfile    >().On(PostgresChangesOptions.ListenType.All,
 					async (sender, postgresChangesResponse) =>
 					{
 						await FetchAndNotifyChangedTag____ByProfiles();
+						await FetchAndNotifyChangedTaggingByProfiles();
 					});
 					realtimeChannelAllTaggingByBoard__s =
 					await supabaseClient.From<Models.TaggingByBoard  >().On(PostgresChangesOptions.ListenType.All,

@@ -10,6 +10,16 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 {
 	public static class Common
 	{
+		public record ReminderRecurringSettings
+		{
+			public List<string> DaysOfWeek { get; set; } = new();
+			public int Every { get; set; } = 1;
+			public void IncreaseEveryByOne() => ++Every;
+			public void DecreaseEveryByOne() => --Every;
+			public static string[] GetDaysOfWeek()
+			=> new string[7] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+		}
+
 		//public static async Task<bool> LogIn(
 		//	SupabaseAuthenticationStateProviderService
 		//	supabaseAuthenticationStateProviderService,

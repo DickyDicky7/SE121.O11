@@ -15,8 +15,8 @@ namespace WorkScheduleReminder.MAUIBlazor
 			Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
 			{
 #if WINDOWS
-				Microsoft.UI.Xaml.Window nativeWindow = handler.PlatformView;
-				Microsoft.UI.Windowing.AppWindow appWindow = nativeWindow.GetAppWindow();
+				Microsoft.UI.Xaml     .   Window nativeWindow =      handler.PlatformView  ;
+				Microsoft.UI.Windowing.AppWindow    appWindow = nativeWindow.GetAppWindow();
 				if (appWindow != null)
 				{
 					appWindow.Resize(new Windows.Graphics.SizeInt32(windowW, windowH));

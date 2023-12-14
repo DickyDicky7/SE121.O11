@@ -15,19 +15,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="bunit" Version="1.24.10" />
+		<PackageReference Include="bunit" Version="1.25.3" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
 		<PackageReference Include="coverlet.collector" Version="6.0.0">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Playwright.NUnit" Version="1.39.0" />
-		<PackageReference Include="Moq" Version="4.20.69" />
+		<PackageReference Include="Microsoft.Playwright.NUnit" Version="1.40.0" />
+		<PackageReference Include="Moq" Version="4.20.70" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-		<PackageReference Include="NUnit" Version="3.14.0" />
+		<PackageReference Include="NUnit" Version="4.0.1" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
 	</ItemGroup>
 

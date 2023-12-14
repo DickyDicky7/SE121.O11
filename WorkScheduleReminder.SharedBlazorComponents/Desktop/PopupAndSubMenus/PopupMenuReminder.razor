@@ -1,0 +1,331 @@
+﻿@using Newtonsoft.Json
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=@AdditionalAttributes
+			  Class="d-flex flex-column flex-wrap gap-2 pa-2 justify-center"
+			  Style="border-radius:20px;"
+			  Elevation="10"
+			  Outlined="false"
+			  Width="500px">
+		@*Deadline*@
+		<MudText Style="font-weight:bold;font-size:larger;">
+			Deadline
+		</MudText>
+		<MudPaper Class="d-flex flex-row pa-2 gap-2"
+				  Elevation="0"
+				  Width="100%">
+			<MudTimePicker @bind-Time=@DueTime
+						   AmPm="true"
+						   Label="Due Time"
+						   PickerVariant="PickerVariant.Dialog"
+						   AnchorOrigin="Origin.BottomCenter"
+						   TransformOrigin="Origin.TopCenter"
+						   Variant="Variant.Outlined" />
+			<MudDatePicker @bind-Date=@DueDate
+						   DateFormat="dd/MM/yyyy"
+						   Label="Due Date"
+						   ImmediateText="true"
+						   PickerVariant="PickerVariant.Dialog"
+						   AnchorOrigin="Origin.BottomCenter"
+						   TransformOrigin="Origin.TopCenter"
+						   Variant="Variant.Outlined" />
+		</MudPaper>
+		@*Recurring Reminder*@
+		<MudText Style="font-weight:bold;font-size:large;">
+			Recurring Reminder
+		</MudText>
+		<MudChipSet @bind-SelectedChip="@ReminderRecurringModeChip" @bind-SelectedChip:after="SetReminderRecurringMode"
+					Style="display:grid;grid-gap:8px;grid-template-columns:repeat(2,1fr);grid-gap:8px">
+			@foreach (Models.Task.PossibleReminderRecurringMode possibleReminderRecurringMode
+	in Enum.GetValues<Models.Task.PossibleReminderRecurringMode>().Skip(1))
+			{
+				<MudChip @key="@(possibleReminderRecurringMode)"
+						 Text="@(possibleReminderRecurringMode.ToString())"
+						 Class="rounded-pill"
+						 Default=@(ReminderRecurringMode == possibleReminderRecurringMode.ToString())
+						 Variant="Variant.Text"
+						 SelectedColor="Color.Info" />
+			}
+		</MudChipSet>
+		@if (ReminderRecurringModeChip != null)
+		{
+			@if (ReminderRecurringMode != Models.Task.PossibleReminderRecurringMode.Empty.ToString())
+			{
+				@*Begin recurring*@
+				<MudPaper Class="d-flex flex-row pa-2 gap-2"
+						  Elevation="0"
+						  Width="100%">
+					<MudTimePicker @bind-Time=@ReminderBeginTime
+								   AmPm="true"
+								   Label="Begin time"
+								   PickerVariant="PickerVariant.Dialog"
+								   AnchorOrigin="Origin.BottomCenter"
+								   TransformOrigin="Origin.TopCenter"
+								   Variant="Variant.Outlined" />
+					<MudDatePicker @bind-Date=@ReminderBeginDate
+								   DateFormat="dd/MM/yyyy"
+								   Label="Begin date"
+								   ImmediateText="true"
+								   PickerVariant="PickerVariant.Dialog"
+								   AnchorOrigin="Origin.BottomCenter"
+								   TransformOrigin="Origin.TopCenter"
+								   Variant="Variant.Outlined" />
+				</MudPaper>
+				<MudPaper Class="d-flex flex-row align-center justify-space-between"
+						  Elevation="0"
+						  Width="100%">
+					<MudText>Repeat every</MudText>
+					<MudPaper Class="d-flex flex-row gap-2 pa-2 align-center"
+							  Elevation="0">
+						<MudIconButton Size="Size.Small"
+									   Icon="@Icons.Material.Filled.ArrowLeft"
+									   Disabled="@(ReminderRecurringSettings.Every == 01)"
+									   OnClick ="@(ReminderRecurringSettings.DecreaseEveryByOne)" />
+						<MudText>@ReminderRecurringSettings.Every</MudText>
+						<MudIconButton Size="Size.Small"
+									   Icon="@Icons.Material.Filled.ArrowRight"
+									   Disabled="@(ReminderRecurringSettings.Every == 30)"
+									   OnClick ="@(ReminderRecurringSettings.IncreaseEveryByOne)" />
+					</MudPaper>
+					<MudText>@ReminderRecurringText</MudText>
+				</MudPaper>
+				if (ReminderRecurringMode == Models.Task.PossibleReminderRecurringMode.Weekly.ToString())
+				{
+					<MudPaper Class="d-flex flex-column gap-2"
+							  Elevation="0"
+							  Width="100%">
+						<MudText>Repeat on</MudText>
+						<MudChipSet @bind-SelectedChips="@DayOfWeekMudChips" @bind-SelectedChips:after="SetDayOfWeekMudChips"
+									MultiSelection="true">
+							<MudPaper Class="d-flex flex-row justify-space-between"
+									  Elevation="0"
+									  Width="100%">
+								@foreach (string dayOfWeek 
+								in Common.ReminderRecurringSettings.GetDaysOfWeek())
+								{
+									<MudChip @key="@(dayOfWeek)"
+											 Text="@(dayOfWeek)"
+											 Class="rounded-pill"
+											 Default="ReminderRecurringSettings
+.DaysOfWeek.Any(presentDayOfWeek => presentDayOfWeek == dayOfWeek)"
+											 Variant="Variant.Text" SelectedColor="Color.Info" />
+								}
+							</MudPaper>
+						</MudChipSet>
+					</MudPaper>
+				}
+				<MudSwitch @bind-Checked="@HasReminderNeverEnd"
+						   Label="Has reminder never end"
+						   Color="Color.Tertiary"
+						   ThumbIcon="@Icons.Material.Filled.Stop" />
+				if (!HasReminderNeverEnd)
+				{
+					@*Cease recurring*@
+					<MudPaper Class="d-flex flex-row pa-2 gap-2"
+							  Elevation="0"
+							  Width="100%">
+						<MudTimePicker @bind-Time=@ReminderCeaseTime
+									   AmPm="true"
+									   Label="Cease time"
+									   PickerVariant="PickerVariant.Dialog"
+									   AnchorOrigin="Origin.BottomCenter"
+									   TransformOrigin="Origin.TopCenter"
+									   Variant="Variant.Outlined" />
+						<MudDatePicker @bind-Date=@ReminderCeaseDate
+									   DateFormat="dd/MM/yyyy"
+									   Label="Cease date"
+									   ImmediateText="true"
+									   PickerVariant="PickerVariant.Dialog"
+									   AnchorOrigin="Origin.BottomCenter"
+									   TransformOrigin="Origin.TopCenter"
+									   Variant="Variant.Outlined" />
+					</MudPaper>
+				}
+			}
+		}
+		<MudPaper Class="d-flex flex-row"
+				  Elevation="0"
+				  Width="100%">
+			<MudPaper Elevation="0"
+					  Width="50%">
+				<MudButton Class="rounded-pill"
+						   Size="Size.Small"
+						   FullWidth="true"
+						   Color="Color.Error"
+						   Disabled=@(Task.ReminderRecurringMode
+					== Models.Task.PossibleReminderRecurringMode.Empty.ToString())
+						   OnClick="DeleteReminder">
+					<MudText>Delete</MudText>
+				</MudButton>
+			</MudPaper>
+			<MudPaper Elevation="0"
+					  Width="50%">
+				<MudButton Class="rounded-pill"
+						   Size="Size.Small"
+						   FullWidth="true"
+						   Color="Color.Info"
+						   OnClick="Save__Reminder">
+					<MudText>Save</MudText>
+				</MudButton>
+			</MudPaper>
+		</MudPaper>
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter]
+	public EventCallback TogglePopupMenuReminderVisible { get; set; }
+	[Parameter]
+	public   Models.Task Task { get; set; } = null!;
+	[Parameter]
+	public bool                ShouldUpdateTask        { get; set; }
+	[Parameter]
+	public EventCallback<bool> ShouldUpdateTaskChanged { get; set; }
+
+	public TimeSpan? DueTime { get; set; }
+	public DateTime? DueDate { get; set; }
+	public TimeSpan? ReminderBeginTime { get; set; }
+	public DateTime? ReminderBeginDate { get; set; }
+	public TimeSpan? ReminderCeaseTime { get; set; }
+	public DateTime? ReminderCeaseDate { get; set; }
+
+	public MudChip ReminderRecurringModeChip { get; set; } = null!;
+	public MudChip[]       DayOfWeekMudChips { get; set; } = null!;
+	public string ReminderRecurringMode { get; set; } = null!;
+	public string ReminderRecurringText { get; set; } = null!;
+	public bool HasReminderNeverEnd { get; set; }
+	public Common.ReminderRecurringSettings ReminderRecurringSettings { get; set; } = null!;
+
+	public void SetDayOfWeekMudChips()
+	{
+		ReminderRecurringSettings.DaysOfWeek.Clear();
+		ReminderRecurringSettings.DaysOfWeek.AddRange
+		(DayOfWeekMudChips.Select<MudChip, string>(mudChip => mudChip.Text));
+	}
+
+	public void SetReminderRecurringMode()
+	{
+		ReminderRecurringMode = ReminderRecurringModeChip.Text;
+		switch (ReminderRecurringMode)
+		{
+			case "Daily":
+				ReminderRecurringText = "day(s)";
+				break;
+			case "Weekly":
+				ReminderRecurringText = "week(s)";
+				break;
+			case "Monthly":
+				ReminderRecurringText = "month(s)";
+				break;
+			case "Yearly":
+				ReminderRecurringText = "year(s)";
+				break;
+			default:
+				ReminderRecurringText = string.Empty;
+				break;
+		}
+	}
+
+	public async Task DeleteReminder()
+	{
+		Task.ReminderBeginDate = null;
+		Task.ReminderBeginTime = null;
+		Task.ReminderCeaseDate = null;
+		Task.ReminderCeaseTime = null;
+		Task.ReminderRecurringMode  = Models.Task.PossibleReminderRecurringMode.Empty.ToString();
+		Task.ReminderRecurringSettings = JsonConvert.SerializeObject(new Common.ReminderRecurringSettings());
+		ShouldUpdateTask = true;
+		await ShouldUpdateTaskChanged.InvokeAsync(ShouldUpdateTask);
+		await TogglePopupMenuReminderVisible.InvokeAsync();
+	}
+
+	public async Task Save__Reminder()
+	{
+		if (DueTime != null)
+		{
+			TimeOnly dueTime = TimeOnly.FromTimeSpan(DueTime.Value);
+			if (Task.DueTime != dueTime)
+			{
+				Task.DueTime  = dueTime;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (DueDate != null)
+		{
+			DateOnly dueDate = DateOnly.FromDateTime(DueDate.Value);
+			if (Task.DueDate != dueDate)
+			{
+				Task.DueDate  = dueDate;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (ReminderBeginTime != null)
+		{
+			TimeOnly reminderBeginTime = TimeOnly.FromTimeSpan(ReminderBeginTime.Value);
+			if (Task.ReminderBeginTime != reminderBeginTime)
+			{
+				Task.ReminderBeginTime  = reminderBeginTime;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (ReminderBeginDate != null)
+		{
+			DateOnly reminderBeginDate = DateOnly.FromDateTime(ReminderBeginDate.Value);
+			if (Task.ReminderBeginDate != reminderBeginDate)
+			{
+				Task.ReminderBeginDate  = reminderBeginDate;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (ReminderCeaseTime != null)
+		{
+			TimeOnly reminderCeaseTime = TimeOnly.FromTimeSpan(ReminderCeaseTime.Value);
+			if (Task.ReminderCeaseTime != reminderCeaseTime)
+			{
+				Task.ReminderCeaseTime  = reminderCeaseTime;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (ReminderCeaseDate != null)
+		{
+			DateOnly reminderCeaseDate = DateOnly.FromDateTime(ReminderCeaseDate.Value);
+			if (Task.ReminderCeaseDate != reminderCeaseDate)
+			{
+				Task.ReminderCeaseDate  = reminderCeaseDate;
+				ShouldUpdateTask = true;
+			}
+		}
+		if (Task.ReminderRecurringMode != ReminderRecurringMode)
+		{
+			Task.ReminderRecurringMode  = ReminderRecurringMode;
+			ShouldUpdateTask = true;
+		}
+		string   reminderRecurringSettings  = JsonConvert.SerializeObject(ReminderRecurringSettings);
+		if (Task.ReminderRecurringSettings != reminderRecurringSettings)
+		{
+			Task.ReminderRecurringSettings  = reminderRecurringSettings;
+			ShouldUpdateTask = true;
+		}
+		await ShouldUpdateTaskChanged.InvokeAsync(ShouldUpdateTask);
+		await TogglePopupMenuReminderVisible.InvokeAsync();
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		HasReminderNeverEnd = Task.HasReminderNeverEnd();
+		DueTime = Task.DueTime.ToTimeSpan();
+		DueDate = Task.DueDate.ToDateTime(TimeOnly.MinValue);
+		ReminderBeginTime = Task.ReminderBeginTime?.ToTimeSpan() ?? TimeOnly.FromDateTime(DateTime.Now).ToTimeSpan();
+		ReminderBeginDate = Task.ReminderBeginDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Now;
+		ReminderCeaseTime = Task.ReminderCeaseTime?.ToTimeSpan() ?? TimeOnly.FromDateTime(DateTime.Now).ToTimeSpan();
+		ReminderCeaseDate = Task.ReminderCeaseDate?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Now;
+		ReminderRecurringMode = Task.ReminderRecurringMode;
+		ReminderRecurringSettings = JsonConvert.DeserializeObject<Common.ReminderRecurringSettings>(Task.ReminderRecurringSettings) ?? new();
+	}
+}

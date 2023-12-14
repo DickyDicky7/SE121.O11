@@ -222,6 +222,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		(this TimeOnly? timeOnly) => timeOnly != null && timeOnly.Value.IsOnceUponATime();
 
 		public static Color ParseColor(this ITag tag)
-		=> Enum.Parse<Color>(JObject.Parse(tag.Settings)["color"]?.Value<string>() ?? nameof(Color.Default));
+		=> Enum.Parse<Color>(JObject.Parse(tag.Settings)["Color"]?.Value<string>() ?? nameof(Color.Default));
+
+		public static DateOnly DefaultDueDate(int daysOffset) => DateOnly.FromDateTime(DateTime.Now).AddDays(daysOffset);
+		public static TimeOnly DefaultDueTime(              ) => TimeOnly.MaxValue.AddHours(+0).AddMinutes(-1);
 	}
 }

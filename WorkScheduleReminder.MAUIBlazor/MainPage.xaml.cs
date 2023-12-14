@@ -1,5 +1,7 @@
 ﻿#nullable enable
 
+using CommunityToolkit.Mvvm.Input;
+using H.NotifyIcon;
 using System.Web;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Components.WebView;
@@ -17,6 +19,7 @@ namespace WorkScheduleReminder.MAUIBlazor
 		public MainPage()
 		{
 			InitializeComponent();
+			BindingContext = this;
 		}
 
 		protected override async void OnHandlerChanged()
@@ -70,5 +73,33 @@ namespace WorkScheduleReminder.MAUIBlazor
 #endif
 		}
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+		private bool IsWindowVisible { get; set; } = true;
+
+		[RelayCommand]
+		public void ShowOHideWindow()
+		{
+			var window = Microsoft.Maui.Controls.Application.Current?.MainPage?.Window;
+			if (window == null)
+			{
+				return;
+			}
+
+			if (IsWindowVisible)
+			{
+				window.Hide();
+			}
+			else
+			{
+				window.Show();
+			}
+			IsWindowVisible = !IsWindowVisible;
+		}
+
+		[RelayCommand]
+		public void ExitApplication()
+		{
+			Microsoft.Maui.Controls.Application.Current?.Quit();
+		}
 	}
 }

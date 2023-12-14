@@ -30,40 +30,55 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		        ignoreOnUpdate: false)]
 		public string Checklist { get; set; } = default!;
 
-		[Column(columnName: "begin_date",
+		[Column(columnName: "reminder_begin_date",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public DateOnly? BeginDate {  get; set; }
+		public DateOnly? ReminderBeginDate {  get; set; }
 
-		[Column(columnName: "cease_date",
+		[Column(columnName: "reminder_cease_date",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public DateOnly? CeaseDate { get; set; }
+		public DateOnly? ReminderCeaseDate { get; set; }
 
-		[Column(columnName: "begin_time",
+		[Column(columnName: "reminder_begin_time",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public TimeOnly? BeginTime { get; set; }
+		public TimeOnly? ReminderBeginTime { get; set; }
 
-		[Column(columnName: "cease_time",
+		[Column(columnName: "reminder_cease_time",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public TimeOnly? CeaseTime { get; set; }
+		public TimeOnly? ReminderCeaseTime { get; set; }
 
 		[Column(columnName: "settings",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
 		public string Settings { get; set; } = default!;
 
-		[Column(columnName: "reminder",
+		[Column(columnName: "reminder_recurring_mode",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
-		public string Reminder { get; set; } = default!;
+		public string ReminderRecurringMode     { get; set; } = default!;
+
+		[Column(columnName: "reminder_recurring_settings",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+		public string ReminderRecurringSettings { get; set; } = default!;
 
 		[Column(columnName: "attachments",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
 		public string Attachments { get; set; } = default!;
+
+		[Column(columnName: "due_date",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+		public DateOnly DueDate { get; set; }
+
+		[Column(columnName: "due_time",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+		public TimeOnly DueTime { get; set; }
 
 		[Column(columnName: "board___id",
 		        ignoreOnInsert: false,
@@ -92,5 +107,25 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		           ignoreOnInsert: true,
 		           ignoreOnUpdate: true)]
 		public Profile? Profile { get; set; }
+
+		public bool IsBoardTask() => BoardId != null;
+
+		public bool HasReminder() => ReminderRecurringMode != PossibleReminderRecurringMode.Empty.ToString()
+		&& ReminderBeginDate != null
+		&& ReminderBeginTime != null;
+
+		public bool HasReminderNeverEnd()
+		=>          HasReminder()
+		&& ReminderCeaseDate == null
+		&& ReminderCeaseTime == null;
+
+		public enum PossibleReminderRecurringMode
+		{
+			Empty,
+			Daily,
+			Weekly,
+			Monthly,
+			Yearly,
+		}
 	}
 }

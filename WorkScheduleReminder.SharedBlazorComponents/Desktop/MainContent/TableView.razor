@@ -233,9 +233,9 @@
         TaskDetailVisible = !TaskDetailVisible;
         //do something more
     }
-    protected override void OnInitialized()
+    protected override async System.Threading.Tasks.Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         ColumnPropertiesList.Add(new ColumnProperties() { Name = "Title" });
         ColumnPropertiesList.Add(new ColumnProperties() { Name = "Tags" });
         ColumnPropertiesList.Add(new ColumnProperties() { Name = "Assignees" });

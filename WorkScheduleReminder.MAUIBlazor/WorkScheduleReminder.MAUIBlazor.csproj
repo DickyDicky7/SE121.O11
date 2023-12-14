@@ -52,7 +52,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Maui" Version="6.0.0" />
+        <PackageReference Include="H.NotifyIcon.Maui" Version="2.0.118" />
+        <PackageReference Include="CommunityToolkit.WinUI.Notifications"
+                          Version="7.1.2" />
+        <PackageReference Include="CommunityToolkit.Mvvm"
+                          Version="8.2.2" />
+        <PackageReference Include="CommunityToolkit.Maui"
+                          Version="6.1.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" /><PackageReference Include="Toolbelt.Blazor.ViewTransition" Version="1.0.3" />
     </ItemGroup>
 
