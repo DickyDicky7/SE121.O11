@@ -384,6 +384,8 @@
 						Settings  = string.Empty,
 						ReminderRecurringMode = Models.Task
 						.PossibleReminderRecurringMode.Empty.ToString(),
+						ReminderRecurringSettings = JsonConvert
+						.SerializeObject(new Common.ReminderRecurringSettings()),
 						Checklist = "[]",
 						DueDate = Helper.DefaultDueDate(section.DaysOffset),
 						DueTime = Helper.DefaultDueTime(                  ),
