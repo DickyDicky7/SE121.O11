@@ -9,7 +9,7 @@ namespace WorkScheduleReminder.Testing
 		public async Task TheContentOfTheAppShouldNotBeEmpty()
 		{
 			string content = await Page.ContentAsync();
-			Assert.IsTrue(!string.IsNullOrWhiteSpace(content));
+			Assert.That(!string.IsNullOrWhiteSpace(content), Is.True);
 		}
 	}
 }
