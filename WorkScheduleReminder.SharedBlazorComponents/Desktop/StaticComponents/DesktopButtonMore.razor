@@ -134,8 +134,26 @@
 				Name  = "Delete board",
 				Child = @<PopupMenuConfirm @onclick:stopPropagation
 				ConfirmTitle_="Are you sure to delete this board"
-				ConfirmAction="Delete" />
+				ConfirmAction="Delete"
+				ConfirmActionOnClick="DeleteBoardOnClick" />
 			});
+		}
+	}
+
+	public async Task DeleteBoardOnClick()
+	{
+		try
+		{
+			await ActiveBoard_____
+			.Delete<Models.Board>();
+			Snackbar.Add(Message.Success.SUCCESSFULLY_REMOVE_BOARD(ActiveBoard_____.Name),
+			Severity.Success);
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_REMOVE_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG),
+			Severity.Error);
 		}
 	}
 
