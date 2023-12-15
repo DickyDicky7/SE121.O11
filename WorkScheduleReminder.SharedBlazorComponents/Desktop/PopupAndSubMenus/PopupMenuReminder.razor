@@ -210,7 +210,26 @@
 
 	public void SetReminderRecurringMode()
 	{
-		ReminderRecurringMode = ReminderRecurringModeChip.Text;
+		if (ReminderRecurringModeChip != null)
+		{
+			ReminderRecurringMode = ReminderRecurringModeChip.Text;
+		}
+		else
+		{	
+			         ReminderRecurringMode  = "Empty";
+			if (Task.ReminderRecurringMode != "Empty")
+			{
+			         ReminderRecurringMode  = Task.ReminderRecurringMode;
+			}
+			else
+			{
+				ReminderBeginTime = null;
+				ReminderBeginDate = null;
+				ReminderCeaseTime = null;
+				ReminderCeaseDate = null;
+				ReminderRecurringSettings = new();
+			}
+		}
 		switch (ReminderRecurringMode)
 		{
 			case "Daily":
