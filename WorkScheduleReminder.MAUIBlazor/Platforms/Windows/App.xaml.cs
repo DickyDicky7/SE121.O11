@@ -39,12 +39,44 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 			this.InitializeComponent();
 			//ToastNotificationManagerCompat.Uninstall();
 
-			timer = new(TimeSpan.FromHours(3));
-			timer.AutoReset = true;
-			timer.Elapsed  += Timer_Elapsed;
+			deadlineTimer = new(TimeSpan.FromMinutes(001));
+			deadlineTimer.AutoReset = true;
+			deadlineTimer.Elapsed  += DeadlineTimer_Elapsed;
+
+			reminderTimer = new(TimeSpan.FromMinutes(180));
+			reminderTimer.AutoReset = true;
+			reminderTimer.Elapsed  += ReminderTimer_Elapsed;
 		}
 
-		private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+		private void DeadlineTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+		{
+			Supabase.Client supabaseClient = Application.Handler
+					.MauiContext.Services.GetRequiredService<Supabase.Client>();
+			Guid currentUserId = Guid.Parse(supabaseClient.Auth.CurrentUser.Id);
+			SupabaseImplementModelStateProviderService supabaseImplementModelStateProviderService
+			=  Application.Handler.MauiContext.Services.GetRequiredService<
+			SupabaseImplementModelStateProviderService>();
+			supabaseImplementModelStateProviderService.Task___s.ForEach(task =>
+			{
+				if (!task.IsBoardTask() || task.ProfileId == currentUserId)
+				{
+					DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+					TimeOnly currentTimeOnly = TimeOnly.FromDateTime(DateTime.Now);
+					if (task.DueDate == currentDateOnly
+					&&  task.DueTime >= currentTimeOnly.AddMinutes(-1)
+					&&  task.DueTime <= currentTimeOnly.AddMinutes(+1))
+					{
+						ShowNotification(
+							$@"Deadline Notification",
+							$@"Deadline Notification",
+							$@"Task ""{task.Name}"" has just met deadline {Time.AlarmClock}."
+						);
+					}
+				}
+			});
+		}
+
+		private void ReminderTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
 		{
 			Supabase.Client supabaseClient = Application.Handler
 					.MauiContext.Services.GetRequiredService<Supabase.Client>();
@@ -82,7 +114,11 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 											ShowNotification(
 												$@"Daily Reminder",
 												$@"Daily Reminder",
-												DetermineTaskStatus(task,currentDateOnly)
+												DetermineReminderTaskStatus(
+													task,
+													currentDateOnly,
+													currentTimeOnly
+												)
 											);
 										}
 									}
@@ -96,7 +132,11 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 											ShowNotification(
 												$@"Weekly Reminder",
 												$@"Weekly Reminder",
-												DetermineTaskStatus(task, currentDateOnly)
+												DetermineReminderTaskStatus(
+													task,
+													currentDateOnly,
+													currentTimeOnly
+												)
 											);
 										}
 									}
@@ -110,7 +150,11 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 											ShowNotification(
 												$@"Monthly Reminder",
 												$@"Monthly Reminder",
-												DetermineTaskStatus(task, currentDateOnly)
+												DetermineReminderTaskStatus(
+													task,
+													currentDateOnly,
+													currentTimeOnly
+												)
 											);
 										}
 									}
@@ -124,7 +168,11 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 											ShowNotification(
 												$@"Yearly Reminder",
 												$@"Yearly Reminder",
-												DetermineTaskStatus(task, currentDateOnly)
+												DetermineReminderTaskStatus(
+													task,
+													currentDateOnly,
+													currentTimeOnly
+												)
 											);
 										}
 									}
@@ -139,9 +187,13 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 		private readonly Uri appLogoImageUri = new
 		(Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, $@"my_app.scale-100.png"));
 
-		private readonly System.Timers.Timer timer;
+		private readonly System.Timers.Timer deadlineTimer;
+		private readonly System.Timers.Timer reminderTimer;
 
-		private static string DetermineTaskStatus(Models.Task task, DateOnly currentDateOnly)
+		private static string DetermineReminderTaskStatus(
+			Models.Task task,
+			DateOnly currentDateOnly,
+			TimeOnly currentTimeOnly)
 		{
 
 			int daysDifference = Math.Abs
@@ -162,19 +214,19 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 				_.Append($@"{weeksDifference} week(s) ");
 			if (  daysDifference > 0)
 				_.Append($@"{daysDifference} day(s) ");
-			
+
 			if (task.DueDate > currentDateOnly)
 			{
-				return $@"Task ""{task.Name}"" will be due on {task.DueDate:dd-MM-yyyy}. {_}left before deadline {Time.AlarmClock}.";
+				return $@"Task ""{task.Name}"" will be due at {task.DueTime:HH:mm} on {task.DueDate:dd-MM-yyyy}. {_}left before deadline {Time.AlarmClock}.";
 			}
 			else
 			if (task.DueDate < currentDateOnly)
 			{
-				return $@"Task ""{task.Name}"" was due on {task.DueDate:dd-MM-yyyy}. Overdue {_}ago {Time.AlarmClock}.";
+				return $@"Task ""{task.Name}"" was due at {task.DueTime:HH:mm} on {task.DueDate:dd-MM-yyyy}. Overdue {_}ago {Time.AlarmClock}.";
 			}
 			else
 			{
-				return $@"Task ""{task.Name}"" is due today {Time.AlarmClock}.";
+				return $@"Task ""{task.Name}"" is due at {task.DueTime:HH:mm} today {Time.AlarmClock}.";
 			}
 		}
 
@@ -213,8 +265,10 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 				{
 					await Task.Delay(TimeSpan.FromSeconds(10));
 				}
-				Timer_Elapsed(null, null);
-				timer.Start();
+				Task.Run(() => DeadlineTimer_Elapsed(null, null));
+				Task.Run(() => ReminderTimer_Elapsed(null, null));
+				deadlineTimer.Start();
+				reminderTimer.Start();
 			});
 		}
 
