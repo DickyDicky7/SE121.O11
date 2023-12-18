@@ -1,280 +1,443 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
-@page "/table"
-<MudPaper Class="d-flex flex-column gap-2 pa-2"
-          Style="background-color:transparent; overflow:hidden;"
-          Elevation="0"
-          Width="100%"
-          Height="100%">
-    <MudPaper Class="d-flex flex-row gap-2 align-center justify-space-between"
-              Elevation="0"
-              Width="100%">
-        <MudSwitch @bind-Checked="@ColumnPropertiesList[0].Visible"
-                   Size="Size.Small"
-                   Label="@ColumnPropertiesList[0].Name"
-                   Color="Color.Success" />
-        <MudSwitch @bind-Checked="@ColumnPropertiesList[1].Visible"
-                   Size="Size.Small"
-                   Label="@ColumnPropertiesList[1].Name"
-                   Color="Color.Success" />
-        <MudSwitch @bind-Checked="@ColumnPropertiesList[2].Visible"
-                   Size="Size.Small"
-                   Label="@ColumnPropertiesList[2].Name"
-                   Color="Color.Success" />
-        <MudSwitch @bind-Checked="@ColumnPropertiesList[3].Visible"
-                   Size="Size.Small"
-                   Label="@ColumnPropertiesList[3].Name"
-                   Color="Color.Success" />
-        <MudSwitch @bind-Checked="@ColumnPropertiesList[4].Visible"
-                   Size="Size.Small"
-                   Label="@ColumnPropertiesList[4].Name"
-                   Color="Color.Success" />
-    </MudPaper>
-    <MudPaper Class="d-flex flex-column gap-2"
-              Style="background-color:transparent;overflow:scroll;"
-              Elevation="0"
-              Width="100%"
-              Height="100%">
-        @foreach (Section Section in SectionList)
-        {
-            <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                      Style="position:sticky;top:0px;"
-                      Elevation="0"
-                      Width="100%">
-                <MudPaper Class="d-flex flex-row align-center"
-                          Elevation="0">
-                    <MudToggleIconButton @bind-Toggled=@(Section.Hidden)
-                                         Size="Size.Small"
-                                         ToggledSize="Size.Small"
-                                         Icon="@Icons.Material.Filled.Visibility"
-                                         ToggledIcon="@Icons.Material.Filled.VisibilityOff"
-                                         Color="Color.Info"
-                                         ToggledColor="Color.Default" />
-                    <MudText>
-                        @Section.Name
-                    </MudText>
-                </MudPaper>
-                <MudPaper Class="d-flex flex-row align-center"
-                          Elevation="0">
-                    <MudTextField @bind-Value=@Section.NewTask
-                                  Placeholder="@($"Add task to {Section.Name}")"
-                                  Immediate="true"
-                                  DisableUnderLine="true"
-                                  FullWidth="false"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Clearable="true"
-                                  TextUpdateSuppression="false"
-                                  OnKeyDown="(KeyboardEventArgs e)=>AddTask(e, Section)" />
-                    <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                                   Size="Size.Small" />
-                </MudPaper>
-            </MudPaper>
-            <MudDataGrid Style="" hidden="@Section.Hidden"
-                         T="Task"
-                         Items="Section.TaskList"
-                         FixedHeader="true"
-                         Virtualize="true"
-                         ColumnResizeMode="ResizeMode.Column"
-                         SortMode="SortMode.None"
-                         RowClick="OnTaskClick">
-                <Columns>
-                    @*Title*@
-                    <TemplateColumn Hidden="@(!ColumnPropertiesList[0].Visible)"
-                                    Title="@ColumnPropertiesList[0].Name">
-                        <CellTemplate>
-                            <MudPaper Class="d-flex flex-row align-center jutify-content-start"
-                                      Elevation="0"
-                                      Width="100%"
-                                      Height="50px">
-                                <MudText>
-                                    @context.Item.Title
-                                </MudText>
-                            </MudPaper>
-                        </CellTemplate>
-                    </TemplateColumn>
-                    @*Tag*@
-                    <TemplateColumn Hidden="@(!ColumnPropertiesList[1].Visible)"
-                                    Title="@ColumnPropertiesList[1].Name">
-                        <CellTemplate>
-                            <MudPaper Class="align-center justify-content-start"
-                                      Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
-                                      Elevation="0"
-                                      Width="100%"
-                                      Height="50px">
-                                @foreach (Tagging Tagging in context.Item.TaggingList)
-                                {
-                                    <MudChip Text="@Tagging.Name"
-                                             Color="Tagging.Color"
-                                             Variant="Variant.Text"
-                                             Size="Size.Small" />
-                                }
-                            </MudPaper>
-                        </CellTemplate>
-                    </TemplateColumn>
-                    @*Assignee*@
-                    <TemplateColumn Hidden="@(!ColumnPropertiesList[2].Visible)"
-                                    Title="@ColumnPropertiesList[2].Name">
-                        <CellTemplate>
-                            <MudPaper Class="align-center justify-content-start"
-                                      Style="overflow:scroll;display:grid;grid-template-columns:repeat(4,1fr);grid-gap:2px;"
-                                      Elevation="0"
-                                      Width="100%"
-                                      Height="50px">
-                                @foreach (Assignee Assignee in context.Item.AssigneeList)
-                                {
-                                    <MudAvatar Elevation="0"
-                                               Rounded="true"
-                                               Size="Size.Small">
-                                        <MudImage Src="@Assignee.AvatarURL" />
-                                    </MudAvatar>
-                                }
-                            </MudPaper>
-                        </CellTemplate>
-                    </TemplateColumn>
-                    @*Due date*@
-                    <TemplateColumn Hidden="@(!ColumnPropertiesList[3].Visible)"
-                                    Title="@ColumnPropertiesList[3].Name">
-                        <CellTemplate>
-                            <MudPaper Class="d-flex flex-row align-center justify-content-start"
-                                      Elevation="0"
-                                      Width="100%"
-                                      Height="50px">
-                                <MudText>
-                                    @DueDateStringAssemble(context.Item.Dueday, context.Item.Duetime)
-                                </MudText>
-                            </MudPaper>
-                        </CellTemplate>
-                    </TemplateColumn>
-                    @*Attachment*@
-                    <TemplateColumn Hidden="@(!ColumnPropertiesList[4].Visible)"
-                                    Title="@ColumnPropertiesList[4].Name">
-                        <CellTemplate>
-                            <MudPaper Class="d-flex flex-row align-center justify-content-start"
-                                      Elevation="0"
-                                      Width="100%"
-                                      Height="50px">
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
 
-                            </MudPaper>
-                        </CellTemplate>
-                    </TemplateColumn>
-                </Columns>
-                <NoRecordsContent>
-                    <MudText>There's nothing here :(</MudText>
-                </NoRecordsContent>
-                <LoadingContent>
-                    <MudText>Loading...</MudText>
-                </LoadingContent>
-            </MudDataGrid>
-        }
-    </MudPaper>
+@page "/table"
+@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<MudPaper Class="d-flex flex-column gap-2 pa-2"
+		  Style="background-color:transparent;overflow:hidden;"
+		  Elevation="0"
+		  Width="100%"
+		  Height="100%">
+	<MudPaper Class="d-flex flex-row gap-2 align-center justify-space-between"
+			  Style="padding:3px 0px;"
+			  Elevation="10"
+			  Width="100%">
+		<MudSwitch @bind-Checked="@ColumnPropertiesList[0].Visible"
+				   Size="Size.Small"
+				   Label="@ColumnPropertiesList[0].Name"
+				   Color="Color.Success" />
+		<MudSwitch @bind-Checked="@ColumnPropertiesList[1].Visible"
+				   Size="Size.Small"
+				   Label="@ColumnPropertiesList[1].Name"
+				   Color="Color.Success" />
+		<MudSwitch @bind-Checked="@ColumnPropertiesList[2].Visible"
+				   Size="Size.Small"
+				   Label="@ColumnPropertiesList[2].Name"
+				   Color="Color.Success" />
+		<MudSwitch @bind-Checked="@ColumnPropertiesList[3].Visible"
+				   Size="Size.Small"
+				   Label="@ColumnPropertiesList[3].Name"
+				   Color="Color.Success" />
+		<MudSwitch @bind-Checked="@ColumnPropertiesList[4].Visible"
+				   Size="Size.Small"
+				   Label="@ColumnPropertiesList[4].Name"
+				   Color="Color.Success" />
+	</MudPaper>
+	<MudPaper Class="d-flex flex-column gap-2"
+			  Style="background-color:transparent;overflow:scroll;"
+			  Elevation="0"
+			  Width="100%"
+			  Height="100%">
+		<Virtualize Context="section" Items="Sections">
+			<MudPaper @key=@(section.SectionByBoard.Id)
+					  Class="d-flex flex-row align-center justify-space-between"
+					  Style="position:sticky;top:0px;"
+					  Elevation="10"
+					  Width="100%">
+				<MudPaper Class="d-flex flex-row align-center"
+						  Elevation="0">
+					<MudToggleIconButton @bind-Toggled=@(section.Hidden)
+										 Size="Size.Small"
+										 ToggledSize="Size.Small"
+										 Icon="@Icons.Material.Filled.Visibility"
+										 ToggledIcon="@Icons.Material.Filled.VisibilityOff"
+										 Color="Color.Info"
+										 ToggledColor="Color.Default" />
+					<MudText>
+						@(section.Name)
+					</MudText>
+				</MudPaper>
+				<MudPaper Class="d-flex flex-row align-center"
+						  Elevation="0">
+					<MudTextField @bind-Value=@(section.NewTask)
+								  Style="margin:5px 0px;"
+								  T="string"
+								  Placeholder="@($@"Add task to ""{section.Name}""")"
+								  Immediate="true"
+								  DisableUnderLine="true"
+								  FullWidth="false"
+								  Variant="Variant.Outlined"
+								  Margin="Margin.Dense"
+								  Clearable="true"
+								  TextUpdateSuppression="false"
+								  OnKeyDown=@(InsertTaskToSection(section)) />
+					<MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+								   Size="Size.Small" />
+				</MudPaper>
+			</MudPaper>
+			<MudDataGrid @bind-SelectedItem=@(SelectedSectionTask)
+						 Style="" hidden=@(section.Hidden)
+						 T="Common.SectionTask"
+						 Items="section.SectionTasks"
+						 FixedHeader="true"
+						 Virtualize="true"
+						 Elevation="10"
+						 ColumnResizeMode="ResizeMode.Column"
+						 SortMode="SortMode.None"
+						 RowClick="SectionTaskOnClick">
+				<Columns>
+					@*Title*@
+					<TemplateColumn Hidden="@(!ColumnPropertiesList[0].Visible)" Title="@ColumnPropertiesList[0].Name">
+						<CellTemplate>
+							<MudPaper Class="d-flex flex-row align-center jutify-content-start"
+									  Elevation="0"
+									  Width="100%"
+									  Height="50px">
+								<MudText>
+									@context.Item.Task.Name
+								</MudText>
+							</MudPaper>
+						</CellTemplate>
+					</TemplateColumn>
+					@*Tags*@
+					<TemplateColumn Hidden="@(!ColumnPropertiesList[1].Visible)" Title="@ColumnPropertiesList[1].Name">
+						<CellTemplate>
+							<MudPaper Class="align-center justify-content-start"
+									  Style="overflow:scroll;display:grid;grid-template-columns:repeat(3,1fr);grid-gap:2px;"
+									  Elevation="0"
+									  Width="100%"
+									  Height="50px">
+								<Virtualize Context="tag" Items="context.Item.Tags">
+									<MudChip @key=@(tag.Id)
+											 Text=@(tag.Name)
+											 Size="Size.Small"
+											 Color="tag.Color"
+											 Variant="Variant.Text" />
+								</Virtualize>
+							</MudPaper>
+						</CellTemplate>
+					</TemplateColumn>
+					@*Assignees*@
+					<TemplateColumn Hidden="@(!ColumnPropertiesList[2].Visible)" Title="@ColumnPropertiesList[2].Name">
+						<CellTemplate>
+							<MudPaper Class="align-center justify-content-start"
+									  Style="position:sticky;"
+									  Elevation="0"
+									  Width="100%"
+									  Height="50px">
+								<MudAvatarGroup Spacing="0"
+												Max="3"
+												MaxColor="Color.Dark">
+									@foreach (Models.Profile assignee in context.Item.Assignees)
+									{
+										<MudTooltip @key=@(assignee.Id)
+													Text="@assignee.Email"
+													Arrow="true"
+													Color="Color.Dark">
+											<MudAvatar Color="Color.Primary" Size="Size.Medium"
+													   Variant="Variant.Filled">
+												@if (string.IsNullOrWhiteSpace(assignee.AvatarURL))
+												{
+													@(assignee.Email[0].ToString().ToUpper())
+												}
+												else
+												{
+													<MudImage Src="@assignee.AvatarURL" />
+												}
+											</MudAvatar>
+										</MudTooltip>
+									}
+								</MudAvatarGroup>
+							</MudPaper>
+						</CellTemplate>
+					</TemplateColumn>
+					@*Due date & time*@
+					<TemplateColumn Hidden="@(!ColumnPropertiesList[3].Visible)" Title="@ColumnPropertiesList[3].Name">
+						<CellTemplate>
+							<MudPaper Class="d-flex flex-row align-center justify-content-start"
+									  Elevation="0"
+									  Width="100%"
+									  Height="50px">
+								<MudText>
+									@(DueDateDueTimeStringAssemble(
+										context.Item.Task.DueDate,
+										context.Item.Task.DueTime))
+								</MudText>
+							</MudPaper>
+						</CellTemplate>
+					</TemplateColumn>
+					@*Attachments*@
+					<TemplateColumn Hidden="@(!ColumnPropertiesList[4].Visible)" Title="@ColumnPropertiesList[4].Name">
+						<CellTemplate>
+							<MudPaper Class="d-flex flex-row align-center justify-content-start"
+									  Elevation="0"
+									  Width="100%"
+									  Height="50px">
+
+							</MudPaper>
+						</CellTemplate>
+					</TemplateColumn>
+				</Columns>
+				<NoRecordsContent>
+					<MudText>There's nothing here :(</MudText>
+				</NoRecordsContent>
+				<LoadingContent>
+					<MudText>Loading...</MudText>
+				</LoadingContent>
+			</MudDataGrid>
+		</Virtualize>
+	</MudPaper>
 </MudPaper>
-<MudOverlay Visible="@TaskDetailVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation />
+<MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="TogglePopupMenuTaskDetailVisible">
+	<PopupMenuTaskDetail @onclick:stopPropagation
+						 Task=@(SelectedSectionTask.Task)
+						 TogglePopupMenuTaskDetailVisible="TogglePopupMenuTaskDetailVisible" />
 </MudOverlay>
 
-@code {
-    public bool TaskDetailVisible { get; set; } = false;
-    public record ColumnProperties
-    {
-        public string Name { get; set; } = string.Empty;
-        public bool Visible { get; set; } = true;
-    }
-    public List<ColumnProperties> ColumnPropertiesList = new();
+@code
+{
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
 
-    public record Assignee
-    {
-        public string AvatarURL { get; set; } = default!;
-    }
-    public record Tagging
-    {
-        public string Name { get; set; } = default!;
-        public Color Color { get; set; } = default!;
-    }
-    public record Task
-    {
-        public string Title { get; set; } = default!;
-        public IList<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
-        public DateTime Dueday { get; set; } = default!;
-        public TimeSpan Duetime { get; set; } = default!;
-        public List<Tagging> TaggingList { get; set; } = new();
-        public List<Assignee> AssigneeList { get; set; } = new();
-    }
-    public record Section
-    {
-        public string Name { get; set; } = default!;
-        public string NewTask { get; set; } = string.Empty;
-        public List<Task> TaskList { get; set; } = new();
-        public bool Hidden { get; set; } = false;
-    }
-    public List<Section> SectionList = new();
-    public string DueDateStringAssemble(DateTime _Date, TimeSpan _Time)
-    {
-        return $"{_Date.ToString("dd")}.{_Date.ToString("MM")}.{_Date.ToString("yy")} {_Time.ToString("hh")}:{_Time.ToString("mm")}";
-    }
-    public void AddTask(KeyboardEventArgs e, Section _Section)
-    {
-        if (e.Code == "Enter" && !string.IsNullOrWhiteSpace(_Section.NewTask))
-        {
-            _Section.TaskList.Add(new Task()
-                {
-                    Title = _Section.NewTask,
-                    Duetime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
-                    Dueday = DateTime.Now,
-                });
-            _Section.NewTask = string.Empty;
-        }
-    }
-    public void OnTaskClick()
-    {
-        TaskDetailVisible = !TaskDetailVisible;
-        //do something more
-    }
-    protected override async System.Threading.Tasks.Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        ColumnPropertiesList.Add(new ColumnProperties() { Name = "Title" });
-        ColumnPropertiesList.Add(new ColumnProperties() { Name = "Tags" });
-        ColumnPropertiesList.Add(new ColumnProperties() { Name = "Assignees" });
-        ColumnPropertiesList.Add(new ColumnProperties() { Name = "Due date" });
-        ColumnPropertiesList.Add(new ColumnProperties() { Name = "Attachments", Visible = false });
+	public record class ColumnProperties
+	{
+		public bool Visible { get; set; } = true;
+		public string  Name { get; set; } = string.Empty;
+	}
 
-        List<Tagging> tempTaggingList = new();
-        tempTaggingList.Add(new Tagging() { Name = "Tag1", Color = Color.Primary });
-        tempTaggingList.Add(new Tagging() { Name = "Tag2", Color = Color.Secondary });
-        tempTaggingList.Add(new Tagging() { Name = "Tag3", Color = Color.Tertiary });
-        tempTaggingList.Add(new Tagging() { Name = "Tag4", Color = Color.Info });
-        tempTaggingList.Add(new Tagging() { Name = "Tag5", Color = Color.Success });
-        List<Assignee> tempAssigneeList = new();
-        tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
-        tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
-        tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
-        tempAssigneeList.Add(new Assignee() { AvatarURL = Helper.GetResource("/images/catsayhello.png") });
-        
-        @foreach (int i in Enumerable.Range(1, 4))
-        {
-            List<Task> tempTaskList = new();
-            @foreach (int j in Enumerable.Range(1, 4))
-            {
-                tempTaskList.Add(new Task()
-                    {
-                        Title = $"Task {j}",
-                        Duetime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
-                        Dueday = DateTime.Now,
-                        TaggingList = tempTaggingList,
-                        AssigneeList = tempAssigneeList,
-                    });
-            }
-            SectionList.Add(
-                new Section()
-                    {
-                        Name = $"Section {i}",
-                        TaskList = tempTaskList
-                    }
-            );
-        }
-    }
+	public record class Section     : Common.Section
+	{
+		public bool Hidden { get; set; } = false;
+	}
+
+	public record class SectionTask : Common.SectionTask
+	{
+		public IList<IBrowserFile> FileList { get; set; } = new List<IBrowserFile>();
+	}
+
+	public List<Section> Sections { get; set; } = new();
+	public bool        PopupMenuTaskDetailVisible { get; set; } = false;
+	public Common.SectionTask SelectedSectionTask { get; set; } = null!;
+	public List<ColumnProperties> ColumnPropertiesList { get; set; } = new();
+
+	public async Task MapSectionsByBoardsToSections()
+	{
+		Sections.Clear();
+		foreach(Models.SectionByBoard sectionByBoard in
+		SupabaseImplementModelStateProviderService.Section___ByBoards.Where(
+		sectionByBoard => 
+		sectionByBoard.BoardId == ActiveBoard_____.Id))
+		{
+			Sections.Add(new()
+			{
+				Name = sectionByBoard.Name,
+				IsSectionByBoard = true ,
+				  SectionByBoard = sectionByBoard,
+				  SectionTasks   = new(),
+			});
+		}
+
+		IEnumerable<Models.Member> members = SupabaseImplementModelStateProviderService.Member_s
+		.  Where(member => member.BoardId == ActiveBoard_____.Id);
+		
+		foreach (Models.SectioningByBoard sectioningByBoard in SupabaseImplementModelStateProviderService.SectioningByBoards
+		.Where(sectioningByBoard => sectioningByBoard.SectionByBoard.BoardId == ActiveBoard_____.Id))
+		{
+			Common.Section section = Sections.First(
+			section => section.SectionByBoard.Id == sectioningByBoard
+			.SectionByBoardId);
+
+			List<Guid> assigneeIds = JsonConvert.DeserializeObject<List<Guid>>(sectioningByBoard.Task.Assignees)!;
+			IEnumerable<Models.Profile> assignees = members.Where(
+			member =>  assigneeIds.Contains(member.ProfileId)).Select<Models.Member,
+			            Models.Profile>(member =>   member .Profile);
+
+			section.SectionTasks.Add(new()
+			{
+				Task = sectioningByBoard.Task,
+				Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
+				taggingByBoard =>
+				taggingByBoard.TaskId == sectioningByBoard.TaskId)
+				.Select
+				<Models.TaggingByBoard, Common.Tag>(taggingByBoard => new()
+				{
+					   Id = taggingByBoard.TagByBoard.  Id,
+					Name  = taggingByBoard.TagByBoard.Name,
+					Color = taggingByBoard.TagByBoard.ParseColor(),
+				}).ToList(),
+				Assignees = assignees.ToList(),
+			});
+		}
+	}
+
+	public string DueDateDueTimeStringAssemble(DateOnly dueDate, TimeOnly dueTime)
+	{
+		return $@"{dueDate:dd-MM-yyyy} {dueTime:HH:mm}";
+	}
+
+	public void TogglePopupMenuTaskDetailVisible()
+	{
+		PopupMenuTaskDetailVisible = !PopupMenuTaskDetailVisible;
+	}
+
+	public void SectionTaskOnClick()
+	{
+		TogglePopupMenuTaskDetailVisible();
+	}
+
+	public Func<KeyboardEventArgs, Task> InsertTaskToSection(Common.Section section)
+	{
+		return async (keyboardEventArgs) =>
+		{
+			try
+			{
+				if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(section.NewTask))
+				{
+					if (section
+						.IsSectionByBoard)
+					{
+						Models.Task newTask = new()
+						{
+							Name = section.NewTask,
+							Done = false,
+							Note =      string.Empty,
+							Settings  = string.Empty,
+							ReminderRecurringMode = Models.Task
+							.PossibleReminderRecurringMode.Empty.ToString(),
+							ReminderRecurringSettings = JsonConvert
+							.SerializeObject(new Common.ReminderRecurringSettings()),
+							Checklist = "[]",
+							Assignees = "[]",
+							DueDate = Helper.DefaultDueDate(section.DaysOffset),
+							DueTime = Helper.DefaultDueTime(                  ),
+							ReminderBeginDate = null,
+							ReminderBeginTime = null,
+							ReminderCeaseDate = null,
+							ReminderCeaseTime = null,
+							  BoardId = ActiveBoard_____.Id,
+							ProfileId = null,
+							Attachments = "[]",
+						};
+						newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
+							{ Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+						section.NewTask = string.Empty;
+
+						Models
+						.SectioningByBoard newSectioningByBoard = new()
+						{
+							SectionByBoardId =section.SectionByBoard.Id,
+							TaskId = newTask.Id,
+						};
+						await SupabaseClient.From<Models.SectioningByBoard>()
+						.Insert(newSectioningByBoard,
+						              new Postgrest.QueryOptions()
+						    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					}
+					else
+					{
+						// Models.Task newTask = new()
+						// {
+						// 	Name = section.NewTask,
+						// 	Done = false,
+						// 	Note =      string.Empty,
+						// 	Settings  = string.Empty,
+						// 	ReminderRecurringMode = Models.Task
+						// 	.PossibleReminderRecurringMode.Empty.ToString(),
+						// 	ReminderRecurringSettings = JsonConvert
+						// 	.SerializeObject(new Common.ReminderRecurringSettings()),
+						// 	Checklist = "[]",
+						//  Assignees = "[]",
+						// 	DueDate = Helper.DefaultDueDate(section.DaysOffset),
+						// 	DueTime = Helper.DefaultDueTime(                  ),
+						// 	ReminderBeginDate = null,
+						// 	ReminderBeginTime = null,
+						// 	ReminderCeaseDate = null,
+						// 	ReminderCeaseTime = null,
+						// 	  BoardId = null,
+						// 	ProfileId = CurrentUserId,
+						// 	Attachments = "[]",
+						// };
+						// await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
+						// 	{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+						// section.NewTask = string.Empty;
+					}
+				}
+			}
+			catch (Postgrest.Exceptions.PostgrestException postgrestException)
+			{
+				System
+				.Diagnostics.Debug.WriteLine(postgrestException.Message);
+			}
+		};
+	}
+
+	public void OnChangedTask___s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTaggingByBoard__s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSection___ByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSectioningByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		ColumnPropertiesList.Add(new ColumnProperties() { Name = "Title", });
+		ColumnPropertiesList.Add(new ColumnProperties() { Name =        "Tags", });
+		ColumnPropertiesList.Add(new ColumnProperties() { Name =   "Assignees", });
+		ColumnPropertiesList.Add(new ColumnProperties() { Name =    "Due date", });
+		ColumnPropertiesList.Add(new ColumnProperties() { Name = "Attachments", });
+		SupabaseImplementModelStateProviderService.ChangedTask___s += OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s += OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards += OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards += OnChangedSectioningByBoards;
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+		await MapSectionsByBoardsToSections();
+	}
+
+	public void Dispose()
+	{
+		SupabaseImplementModelStateProviderService.ChangedTask___s -= OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s -= OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards -= OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards -= OnChangedSectioningByBoards;
+	}
 }

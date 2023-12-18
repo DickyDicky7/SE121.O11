@@ -1,87 +1,146 @@
-﻿<MudPaper @attributes=AdditionalAttributes
-		  Class="d-flex flex-column gap-2 pa-2"
-		  Style="border-radius:20px;overflow:hidden"
-		  Elevation="0"
-		  Width="400px"
-		  Height="400px">
-	<MudText Style="font-size:larger;font-weight:bold">
-		Select section
-	</MudText>
-	<MudPaper Class="d-flex flex-column"
-			  Style="overflow-y:scroll"
-			  Elevation="0"
-			  Width="100%"
-			  Height="100%">
-		@foreach (Section Section in Sections)
-		{
-			<MudPaper Class="d-flex flex-row"
-					  Elevation="0"
-					  Width="100%">
-				<MudButton Class="rounded pill"
-						   FullWidth="true"
-						   OnClick="() => OnSectionSelected(Section)">
-					<MudPaper Class="d-flex flex-row align-center justify-space-between"
-							  Style="background-color:transparent"
-							  Elevation="0"
-							  Width="100%">
-						<MudText>@Section.Name</MudText>
-						<MudCheckBox @bind-Checked=Section.Selected
-									 ReadOnly="true"
-									 CheckedIcon="@Icons.Material.Filled.Check"
-									 UncheckedIcon="null"
-									 Size="Size.Small"
-									 Color="Color.Info"
-									 Dense="true"
-									 DisableRipple="true" 
-									 StopClickPropagation="false"/>
-					</MudPaper>
-				</MudButton>
-			</MudPaper>
-		}
+﻿@implements IAsyncDisposable
+@inject ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column gap-2 pa-2"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  Width="400px"
+			  Height="400px">
+		<MudText Style="font-size:larger;font-weight:bold;">
+			Select section
+		</MudText>
+		<MudPaper Class="d-flex flex-column"
+				  Style="overflow-y:auto;"
+				  Elevation="0"
+				  Width="100%"
+				  Height="100%">
+			<Virtualize Context="section" Items="Sections">
+				<MudPaper @key=@(section.Name)
+						  Class="d-flex flex-row"
+						  Elevation="0"
+						  Width="100%">
+					<MudButton Class="rounded pill"
+							   FullWidth="true"
+							   OnClick="SectionOnClick(section)">
+						<MudPaper Class="d-flex flex-row align-center justify-space-between"
+								  Style="background-color:transparent;"
+								  Elevation="0"
+								  Width="100%">
+							<MudText>
+								@(section.Name)
+							</MudText>
+							<MudCheckBox @bind-Checked=@(section.Selected)
+										 ReadOnly="true"
+										 CheckedIcon ="@Icons.Material.Filled.Check"
+										 UncheckedIcon="null"
+										 Color="Color.Info" Size="Size.Small"
+										 Dense="true"
+										 DisableRipple="true"
+										 StopClickPropagation="false">
+							</MudCheckBox>
+						</MudPaper>
+					</MudButton>
+				</MudPaper>
+			</Virtualize>
+		</MudPaper>
 	</MudPaper>
-</MudPaper>
+</Animate>
 
 @code
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	[Parameter]
+	public Models.Task  Task { get; set; } =  null!;
 
-	public record Section
+	public record class Section : Common.Section
 	{
-		public string   Name { get; set; } = string.Empty;
-		public bool Selected { get; set; } = false;
+		public bool Selected { get; set; }
 	}
 
-	//input has only 1 Section with selected = true
-	public List<Section> Sections = new List<Section>();
+	public List<Section>                 Sections { get; set; } = new();
+	public      Section  PreviousSelectedSection  { get; set; } = null!;
 
-	public void OnSectionSelected(Section selectedSection)
+	public async Task MapSectionAndSectioningByBoardModelsToSectionRecords()
 	{
-		foreach (Section section in Sections)
+		Sections.Clear();
+		foreach (Models.SectionByBoard sectionByBoard in SupabaseImplementModelStateProviderService.Section___ByBoards
+		.Where(sectionByBoard => sectionByBoard.BoardId == ActiveBoard_____.Id))
 		{
-			    section.Selected =  false;
+			Sections.Add(new()
+			{
+				Name = sectionByBoard.Name,
+				Selected = false,
+				IsSectionByBoard = true   ,
+				  SectionByBoard = sectionByBoard,
+			});
 		}
-		selectedSection.Selected = !false;
+		Models.SectioningByBoard        sectioningByBoard =  SupabaseImplementModelStateProviderService
+		      .SectioningByBoards.First(sectioningByBoard => sectioningByBoard.TaskId == Task.Id);
+		PreviousSelectedSection = Sections.First(section => section.Name == sectioningByBoard.SectionByBoard.Name);
+		PreviousSelectedSection . Selected = true;
+	}
+
+	public Action SectionOnClick(Section selectedSection)
+	{
+		return () =>
+		{
+			foreach (Section section in Sections)
+			         section.Selected = false;
+			 selectedSection.Selected = true ;
+		};
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		Sections.Add(new Section() { Name = "Section 1", Selected = true });
-		Sections.Add(new Section() { Name = "Section 2", });
-		Sections.Add(new Section() { Name = "Section 3", });
-		Sections.Add(new Section() { Name = "Section 4", });
-		Sections.Add(new Section() { Name = "Section 5", });
-		Sections.Add(new Section() { Name = "Section 6", });
-		Sections.Add(new Section() { Name = "Section 7", });
-		Sections.Add(new Section() { Name = "Section 8", });
-		Sections.Add(new Section() { Name = "Section 9", });
-		Sections.Add(new Section() { Name = "Section 10", });
-		Sections.Add(new Section() { Name = "Section 11", });
-		Sections.Add(new Section() { Name = "Section 12", });
-		Sections.Add(new Section() { Name = "Section 13", });
-		Sections.Add(new Section() { Name = "Section 14", });
-		Sections.Add(new Section() { Name = "Section 15", });
-		Sections.Add(new Section() { Name = "Section 16", });
+		await MapSectionAndSectioningByBoardModelsToSectionRecords();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		Section sectioningToUpsert = Sections.First(section => section.Selected);
+		Section sectioningToDelete = PreviousSelectedSection;
+		try
+		{
+			if (sectioningToUpsert != sectioningToDelete)
+			{
+				await SupabaseClient.From<Models.SectioningByBoard>()
+				.OnConflict("task_id, section_by_board___id").Upsert(new Models.SectioningByBoard()
+				{
+					SectionByBoardId = sectioningToUpsert.SectionByBoard.Id,
+					TaskId = Task.Id,
+				},  new Postgrest.QueryOptions() { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+
+				await SupabaseClient.From<Models.SectioningByBoard>()
+				  .Delete(new Models.SectioningByBoard()
+				{
+					SectionByBoardId = sectioningToDelete.SectionByBoard.Id,
+					TaskId = Task.Id,
+				},  new Postgrest.QueryOptions() { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+
+				Snackbar.Add(Message.Success.SUCCESSFULLY_UPDATE_SECTIONING(
+				sectioningToDelete.Name,
+				sectioningToUpsert.Name,
+				Task.Name), Severity.Success);
+			}
+
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_SECTIONING(
+			sectioningToDelete.Name,
+			sectioningToUpsert.Name,
+			Task.Name, Message.Error.SOMETHING_WENT_WRONG),Severity.Error  );
+		}
 	}
 }

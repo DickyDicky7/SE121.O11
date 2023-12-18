@@ -176,20 +176,18 @@
 	&& member.ProfileId == CurrentUserId
 	&& member.Role == Models.Member.PossibleRole.Editor);
 
-	public Tag ChosenTag { get; set; } = null!;
-	public List<Tag  > Tags   { get; set; } = new();
+	public      Tag ChosenTag  { get; set; } = null!;
+	public List<Tag>      Tags { get; set; } = new();
+	public string ChosenTagOldName    { get; set; } = null!;
 	public List<Color> Colors { get; set; } = new();
 	public enum Mode { Select, Add, Edit, }
 	public Mode CurrentMode = Mode.Select;
 	public MudChip SelectedColoredChip { get; set; } = null!;
 
-	public record Tag
+	public record class Tag : Common.Tag
 	{
-		public Guid Id { get; set; }
 		public bool NewChecked { get; set; }
 		public bool OldChecked { get; set; }
-		public string Name { get; set; } = null!;
-		public Color Color { get; set; }
 	}
 
 	public async Task MapTagAndTaggingModelsToTagRecords()
@@ -253,11 +251,13 @@
 					OldChecked = false,
 					Color = Color.Success,
 				};
+				ChosenTagOldName = string.Empty;
 			}
 			else
 			if (CurrentMode == Mode.Edit)
 			{
 				ChosenTag = chosenTag;
+				ChosenTagOldName = chosenTag.Name;
 			}
 		};
 	}
@@ -316,11 +316,12 @@
 	{
 		try
 		{
-			if (Tags.Any(tag => tag.Name == ChosenTag.Name))
+			if (Tags.Any(tag => tag.Name == ChosenTag.Name && tag != ChosenTag))
 			{
 				Snackbar.Add
 				(Message.Error.CANNOT_UPDATE_TAG (
 				 Message.Error.TAG_ALREADY_EXISTS), Severity.Error);
+				ChosenTag.Name = ChosenTagOldName;
 				return;
 			}
 

@@ -1,79 +1,105 @@
-﻿<MudPaper @attributes=AdditionalAttributes
-		  Class="d-flex flex-column gap-2 pa-2"
-		  Style="border-radius:20px;overflow:hidden"
-		  Elevation="0"
-		  Width="400px"
-		  Height="400px">
-	<MudText Style="font-size:larger;font-weight:bold">
-		Select assignees
-	</MudText>
-	<MudPaper Class="d-flex flex-column"
-			  Style="overflow-y:scroll"
-			  Elevation="0"
-			  Width="100%"
-			  Height="100%">
-		@foreach (Assignee Assignee in Assignees)
-		{
-			<MudPaper Class="d-flex flex-row"
-					  Elevation="0"
-					  Width="100%">
-				<MudButton Class="rounded pill"
-						   FullWidth="true"
-						   OnClick="Assignee.ToggleChecked">
-					<MudPaper Class="d-flex flex-row align-center justify-space-between"
-							  Style="background-color:transparent"
-							  Elevation="0"
-							  Width="100%">
-						<MudText>@Assignee.Name</MudText>
-						<MudCheckBox @bind-Checked=Assignee.Checked
-									 ReadOnly="true"
-									 CheckedIcon="@Icons.Material.Filled.Check"
-									 UncheckedIcon="null"
-									 Size="Size.Small"
-									 Color="Color.Info"
-									 Dense="true"
-									 DisableRipple="true" 
-									 StopClickPropagation="false"/>
-					</MudPaper>
-				</MudButton>
-			</MudPaper>
-		}
+﻿@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+@implements IAsyncDisposable
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column gap-2 pa-2"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  Width="400px"
+			  Height="400px">
+		<MudText Style="font-size:larger;font-weight:bold;">
+			Select assignees
+		</MudText>
+		<MudPaper Class="d-flex flex-column"
+				  Style="overflow-y:auto;"
+				  Elevation="0"
+				  Width="100%"
+				  Height="100%">
+			<Virtualize Context="assignee" Items="Assignees">
+				<MudPaper Class="d-flex flex-row"
+						  Elevation="0"
+						  Width="100%">
+					<MudButton Class="rounded pill"
+							   FullWidth="true"
+							   OnClick="assignee.ToggleChecked">
+						<MudPaper Class="d-flex flex-row align-center justify-space-between"
+								  Style="background-color:transparent;"
+								  Elevation="0"
+								  Width="100%">
+							<MudText>
+								@(assignee.Profile.Email)
+							</MudText>
+							<MudCheckBox @bind-Checked=@(assignee.Checked)
+										 ReadOnly="true"
+										 CheckedIcon ="@Icons.Material.Filled.Check"
+										 UncheckedIcon="null"
+										 Color="Color.Info" Size="Size.Small"
+										 Dense="true"
+										 DisableRipple="true"
+										 StopClickPropagation="false">
+							</MudCheckBox>
+						</MudPaper>
+					</MudButton>
+				</MudPaper>
+			</Virtualize>
+		</MudPaper>
 	</MudPaper>
-</MudPaper>
+</Animate>
 
 @code
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter]
+	public Models.Task Task { get; set; } = null!;
+	[Parameter]
+	public bool                ShouldUpdateTask        { get; set; }
+	[Parameter]
+	public EventCallback<bool> ShouldUpdateTaskChanged { get; set; }
 
-	public record Assignee()
+	public record class Assignee
 	{
-		public string Name { get; set; } = string.Empty;
-		public bool Checked { get; set; } = false;
-		public void ToggleChecked() =>
-		Checked = !Checked;
+		public Models.Profile Profile { get; set; } = null!;
+		public bool           Checked { get; set; } = false;
+		public void ToggleChecked() => Checked = !Checked;
 	}
 
-	public List<Assignee> Assignees = new List<Assignee>();
+	public List<Assignee> Assignees { get; set; } = null!;
+
+	public async Task MapTaskAssigneeProfileIdsToAssigneeRecords()
+	{
+		List<Guid> assigneeIds = JsonConvert.DeserializeObject<List<Guid>>(Task.Assignees)!;
+		Assignees = SupabaseImplementModelStateProviderService.Member_s.Where(member => member.BoardId == Task.BoardId)
+		.Select<Models.Member, Assignee>(member => new Assignee()
+		{
+			Profile =                      member.Profile   ,
+			Checked = assigneeIds.Contains(member.ProfileId),
+		})
+		.ToList();
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
-		Assignees.Add(new Assignee() { Name = "Member 1" });
-		Assignees.Add(new Assignee() { Name = "Member 2" });
-		Assignees.Add(new Assignee() { Name = "Member 3" });
-		Assignees.Add(new Assignee() { Name = "Member 4" });
-		Assignees.Add(new Assignee() { Name = "Member 5" });
-		Assignees.Add(new Assignee() { Name = "Member 6" });
-		Assignees.Add(new Assignee() { Name = "Member 7" });
-		Assignees.Add(new Assignee() { Name = "Member 8" });
-		Assignees.Add(new Assignee() { Name = "Member 9" });
-		Assignees.Add(new Assignee() { Name = "Member 10" });
-		Assignees.Add(new Assignee() { Name = "Member 11" });
-		Assignees.Add(new Assignee() { Name = "Member 12" });
-		Assignees.Add(new Assignee() { Name = "Member 13" });
-		Assignees.Add(new Assignee() { Name = "Member 14" });
-		Assignees.Add(new Assignee() { Name = "Member 15" });
-		Assignees.Add(new Assignee() { Name = "Member 16" });
+		await MapTaskAssigneeProfileIdsToAssigneeRecords();
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		string assigneeIds = JsonConvert.SerializeObject(Assignees.Where(assignee => assignee.Checked).
+		Select(assignee => 
+		       assignee.Profile.Id));
+		if (Task.Assignees != assigneeIds)
+		{
+			Task.Assignees  = assigneeIds;
+			ShouldUpdateTask= true;
+			await ShouldUpdateTaskChanged.InvokeAsync(ShouldUpdateTask);
+		}
 	}
 }

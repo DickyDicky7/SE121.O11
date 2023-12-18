@@ -244,7 +244,7 @@
 			AutoClose="true"
 			ZIndex="30"
 			OnClick="TogglePopupMenuReminderVisible">
-	<PopupMenuReminder @onclick:stopPropagation @bind-ShouldUpdateTask=ShouldUpdateTask
+	<PopupMenuReminder @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
 					   Task="Task"
 					   TogglePopupMenuReminderVisible="TogglePopupMenuReminderVisible" />
 </MudOverlay>
@@ -264,7 +264,8 @@
 			AutoClose="true"
 			ZIndex="30"
 			OnClick="TogglePopupMenuSelectSection_Visible">
-	<PopupMenuSelectSection  @onclick:stopPropagation />
+	<PopupMenuSelectSection  @onclick:stopPropagation
+							 Task="Task" />
 </MudOverlay>
 <MudOverlay Class="border-2"
 			Visible="PopupMenuSelectAssigneeVisible"
@@ -272,7 +273,8 @@
 			AutoClose="true"
 			ZIndex="30"
 			OnClick="TogglePopupMenuSelectAssigneeVisible">
-	<PopupMenuSelectAssignee @onclick:stopPropagation />
+	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
+							 Task="Task" />
 </MudOverlay>
 
 @code
@@ -284,26 +286,17 @@
 
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
-	
+
 	[Parameter]
 	public string Link { get; set; } = "Example/Link";
-	
 	[Parameter]
-	[EditorRequired]
-	public Models.Task Task { get; set; } = null!;
-
-	// [Parameter]
-	// public EventCallback<Models.Task> TaskChanged { get; set; }
-	
-	[Parameter]
-	[EditorRequired]
 	public string Page { get; set; } = null!;
-	
+
+	[Parameter]
+	public  Models.Task Task  { get; set; } = null!;
 	[CascadingParameter(Name = nameof(CurrentUserId))]
 	public Guid CurrentUserId { get; set; }
-	
 	[Parameter]
-	[EditorRequired]
 	public EventCallback TogglePopupMenuTaskDetailVisible { get; set; }
 
 	public bool IsInMyDay_ { get; set; } = false;
@@ -481,7 +474,10 @@
 			}
 			if (ShouldUpdateTask)
 			{
-				await Task.Update<Models.Task>();
+				if   (Task.BaseUrl != null)
+				await Task.Update        <Models.Task>();
+				else
+				await SupabaseClient.From<Models.Task>().Update(Task, new Postgrest.QueryOptions() { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
 				Snackbar  .Add(  Message.Success.SUCCESSFULLY_UPDATE_TASK, Severity.Success);
 			}
 		}

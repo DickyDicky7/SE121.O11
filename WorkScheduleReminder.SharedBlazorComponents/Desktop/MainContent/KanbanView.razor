@@ -19,8 +19,8 @@
 		  Width="100%"
 		  Height="100%">
 	<Virtualize Context="section" Items="Sections">
-		<Animate Animation="Animations.SlideDown" Duration="TimeSpan.FromSeconds(1)" @key=section.Name
-				 style="width:100%;height:100%;">
+		<Animate @key=@( section.Name)
+				 style="width:100%;height:100%;" Animation="Animations.SlideDown" Duration="TimeSpan.FromSeconds(1)">
 			<MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-lg"
 					  Style="overflow-y:auto;overflow-x:auto;"
 					  Elevation="10"
@@ -162,13 +162,13 @@
 
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public Models.Task  SelectedTask { get; set; } = null!;
-	public List<Section>    Sections { get; set; } = new();
+	public List<Common.Section>   Sections { get; set; } = new();
 	public bool PopupMenuTaskDetailVisible { get; set; } = false;
 
 	public async Task MapSectionTasksToSectionsInTheNext7Days()
 	{
 		Sections.Clear();
-		List<SectionTask> SectionTasks = new();
+		List<Common.SectionTask> SectionTasks = new();
 		if (IsIndividualToWorkspace)
 		{
 			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where(
@@ -181,9 +181,10 @@
 					Task = task,
 					Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
 					taggingByBoard =>
-					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Tag>(
+					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Common.Tag>(
 					taggingByBoard => new()
 					{ 
+						   Id = taggingByBoard.TagByBoard.  Id,
 						Name  = taggingByBoard.TagByBoard.Name,
 						Color = taggingByBoard.TagByBoard.ParseColor(),
 					}).ToList(),
@@ -204,9 +205,10 @@
 					Task = task,
 					Tags = SupabaseImplementModelStateProviderService.TaggingByProfiles.Where(
 					taggingByProfile =>
-					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Tag>(
+					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Common.Tag>(
 					taggingByProfile => new()
 					{
+						   Id = taggingByProfile.TagByProfile.  Id,
 						Name  = taggingByProfile.TagByProfile.Name,
 						Color = taggingByProfile.TagByProfile.ParseColor(), 
 					}).ToList(),
@@ -234,7 +236,7 @@
 	public async Task MapSectionTasksToSectionsOfAllMyTasks__()
 	{
 		Sections.Clear();
-		List<SectionTask> SectionTasks = new();
+		List<Common.SectionTask> SectionTasks = new();
 		if (IsIndividualToWorkspace)
 		{
 			foreach (Models.Task task in SupabaseImplementModelStateProviderService.Task___s.Where
@@ -245,9 +247,10 @@
 					Task = task,
 					Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
 					taggingByBoard =>
-					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Tag>(
+					taggingByBoard.TaskId == task.Id).Select<  Models.TaggingByBoard, Common.Tag>(
 					taggingByBoard => new()
-					{ 
+					{
+						   Id = taggingByBoard.TagByBoard.  Id,
 						Name  = taggingByBoard.TagByBoard.Name,
 						Color = taggingByBoard.TagByBoard.ParseColor(),
 					}).ToList(),
@@ -266,9 +269,10 @@
 					Task = task,
 					Tags = SupabaseImplementModelStateProviderService.TaggingByProfiles.Where(
 					taggingByProfile =>
-					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Tag>(
+					taggingByProfile.TaskId == task.Id).Select<Models.TaggingByProfile, Common.Tag>(
 					taggingByProfile => new()
 					{
+						   Id = taggingByProfile.TagByProfile.  Id,
 						Name  = taggingByProfile.TagByProfile.Name,
 						Color = taggingByProfile.TagByProfile.ParseColor(),
 					}).ToList(),
@@ -307,7 +311,7 @@
 			DaysOffset = +7,
 			SectionTasks = new(),
 		});
-		foreach (SectionTask sectionTask in SectionTasks)
+		foreach (Common.SectionTask sectionTask in SectionTasks)
 		{
 			if (sectionTask.Task.DueDate.IsOnceUponATime())
 			{
@@ -340,37 +344,40 @@
 		}
 	}
 
-	public record Section
-	{
-		public bool IsSectionByBoard                { get; init; } = false;
-		public Models.SectionByBoard SectionByBoard { get; init; } = null!;
-		public int DaysOffset { get; set; }
-		public string Name    { get; set; } = null!;
-		public string NewTask { get; set; } = string.Empty;
-		public List<SectionTask> SectionTasks { get;  init; } = null!;
-	}
+	// public record class Section
+	// {
+	// 	public bool IsSectionByBoard                { get; init; } = false;
+	// 	public Models.SectionByBoard SectionByBoard { get; init; } = null!;
+	// 	public int DaysOffset { get; set; }
+	// 	public string Name    { get; set; } = null!;
+	// 	public string NewTask { get; set; } = string.Empty;
+	// 	public List<SectionTask> SectionTasks { get;  init; } = null!;
+	// }
 
-	public record Tag
-	{
-		public Color Color { get; set; } = default;
-		public string Name { get; set; } = null!;
-	}
+	// public record class Tag
+	// {
+	// 	public Color Color { get; set; } = default;
+	// 	public string Name { get; set; } = null!;
+	// }
 
-	public record SectionTask
-	{
-		public Models.Task Task { get; init; } = null!;
-		public List<Tag>   Tags { get; init; } = null!;
-		public bool    SubtasksAvailable { get; init; } = false;
-		public bool AttachmentsAvailable { get; init; } = false;
-	}
+	// public record class SectionTask
+	// {
+	// 	public Models.Task Task { get; init; } = null!;
+	// 	public List<Tag>   Tags { get; init; } = null!;
+	// 	public bool    SubtasksAvailable { get; init; } = false;
+	// 	public bool AttachmentsAvailable { get; init; } = false;
+	// }
 
-	public Func<KeyboardEventArgs, Task> InsertTaskToSection(Section section)
+	public Func<KeyboardEventArgs, Task> InsertTaskToSection(Common.Section section)
 	{
 		return async (keyboardEventArgs) =>
 		{
+			try
+			{
 			if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(section.NewTask))
 			{
-				if (section.IsSectionByBoard)
+				if (section
+					.IsSectionByBoard)
 				{
 
 				}
@@ -387,6 +394,7 @@
 						ReminderRecurringSettings = JsonConvert
 						.SerializeObject(new Common.ReminderRecurringSettings()),
 						Checklist = "[]",
+						Assignees = "[]",
 						DueDate = Helper.DefaultDueDate(section.DaysOffset),
 						DueTime = Helper.DefaultDueTime(                  ),
 						ReminderBeginDate = null,
@@ -401,6 +409,12 @@
 						{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
 					section.NewTask = string.Empty;
 				}
+			}
+			}
+			catch (Postgrest.Exceptions.PostgrestException postgrestException)
+			{
+				System
+				.Diagnostics.Debug.WriteLine(postgrestException.Message);
 			}
 		};
 	}
