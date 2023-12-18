@@ -106,6 +106,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG E SECTION 04 </summary>
 			public static string CANNOT_CREATE_SECTIONS_OF_BOARD(string boardName, string reason)
 			=> $@"Cannot create sections of board ""{boardName}"": {reason}";
+			/// <summary> MSG E SECTION 07 </summary>
+			public static string CANNOT_UPDATE_SECTIONING(
+			string fstBoardName,
+			string sndBoardName,
+			string taskName, string reason)
+			=> $@"Cannot move task ""{taskName}"" from board ""{fstBoardName}"" to board ""{sndBoardName}"": {reason}";
 
 			/// <summary> MSG E SECTION 05 </summary>
 			public static string SECTION_ALREADY_EXISTS(string sectionName)
@@ -192,6 +198,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG S SECTION 04 </summary>
 			public static string SUCCESSFULLY_CREATE_SECTIONS_OF_BOARD(string boardName)
 			=> $@"Successfully create sections of board ""{boardName}""";
+			/// <summary> MSG S SECTION 05 </summary>
+			public static string SUCCESSFULLY_UPDATE_SECTIONING(
+			string fstBoardName,
+			string sndBoardName,
+			string taskName)
+			=> $@"Successfully move task ""{taskName}"" from board ""{fstBoardName}"" to board ""{sndBoardName}""";
 
 			/// <summary> MSG S AUTH 04 </summary>
 			public static string SUCCESSFULLY_SIGNING_UP(string email)

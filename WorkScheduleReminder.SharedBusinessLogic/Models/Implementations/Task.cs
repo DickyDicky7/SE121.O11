@@ -30,6 +30,11 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		        ignoreOnUpdate: false)]
 		public string Checklist { get; set; } = default!;
 
+		[Column(columnName: "assignees",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+		public string Assignees { get; set; } = default!;
+
 		[Column(columnName: "reminder_begin_date",
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]

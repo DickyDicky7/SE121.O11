@@ -58,7 +58,10 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 			SupabaseImplementModelStateProviderService>();
 			supabaseImplementModelStateProviderService.Task___s.ForEach(task =>
 			{
-				if (!task.IsBoardTask() || task.ProfileId == currentUserId)
+				List<Guid> assignees = JsonConvert.DeserializeObject<List<Guid>>(task.Assignees);
+				if (!task.IsBoardTask()
+				||   task.ProfileId == currentUserId
+				||  assignees.Contains(currentUserId))
 				{
 					DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
 					TimeOnly currentTimeOnly = TimeOnly.FromDateTime(DateTime.Now);
@@ -86,7 +89,9 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 			SupabaseImplementModelStateProviderService>();
 			supabaseImplementModelStateProviderService.Task___s.ForEach(task =>
 			{
-				if (!task.IsBoardTask() || task.ProfileId == currentUserId)
+				List<Guid> assignees = JsonConvert.DeserializeObject<List<Guid>>(task.Assignees);
+				if (!task.IsBoardTask()
+				||   task.ProfileId == currentUserId || assignees.Contains(currentUserId))
 				{
 					if (task.ReminderRecurringMode != Models.Task.PossibleReminderRecurringMode.Empty.ToString())
 					{
@@ -260,7 +265,8 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 			{
 				SupabaseImplementModelStateProviderService supabaseImplementModelStateProviderService
 				=  Application.Handler.MauiContext.Services.GetRequiredService<
-				SupabaseImplementModelStateProviderService>();
+				SupabaseImplementModelStateProviderService> ();
+					await Task.Delay(TimeSpan.FromSeconds(10));
 				while (!supabaseImplementModelStateProviderService.OnFetching)
 				{
 					await Task.Delay(TimeSpan.FromSeconds(10));
