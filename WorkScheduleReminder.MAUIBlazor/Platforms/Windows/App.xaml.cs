@@ -239,11 +239,18 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 		{
 			try
 			{
-				new ToastContentBuilder()
-						.AddAppLogoOverride(appLogoImageUri)
-						.AddHeader(notificationId, notificationHeader, string.Empty)
-						.AddText(notificationContent)
-						.Show();
+				MainThread.BeginInvokeOnMainThread(() =>
+				{
+			try
+			{
+						new ToastContentBuilder().AddAppLogoOverride(appLogoImageUri).AddHeader(notificationId, notificationHeader, string.Empty).AddText(notificationContent)
+								.Show();
+			}
+			catch (System.Runtime.InteropServices.COMException exception)
+			{
+				Debug.WriteLine(exception.HResult);
+			}
+				});
 			}
 			catch (   Exception exception)
 			{
