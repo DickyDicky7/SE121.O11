@@ -90,24 +90,32 @@
 		CustomViewItems.Add(new MenuItem()
 		{
 			Name  = "Delete",
-			Child = @<PopupMenuConfirm @onclick:stopPropagation
+			Child = @<PopupMenuConfirm          @onclick:stopPropagation
 			ConfirmTitle_="Are you sure to delete this view"
 			ConfirmAction="Delete" />
 		});
 
-		WorkspaceViewItems.Add(new MenuItem() { Name = "Board activity" });
-		WorkspaceViewItems.Add(new MenuItem()
-		{
-			Name  = "Board tags",
-			Child = @<TagAndTagging @onclick:stopPropagation
-			          EnableTagging=false />
-		});
-		WorkspaceViewItems.Add(new MenuItem()
-		{
-			Name  = "Board Section",
-			Child = @<BoardSection  @onclick:stopPropagation />
-		});
-		WorkspaceViewItems.Add(new MenuItem() { Name =   "Multi-select" });
+		MenuItem workspaceViewMenuItem1 = new MenuItem() ;
+		workspaceViewMenuItem1.Name  = "Board activities";
+		workspaceViewMenuItem1.Child = null!;
+		WorkspaceViewItems.Add(workspaceViewMenuItem1);
+		
+		MenuItem workspaceViewMenuItem2 = new MenuItem();
+		workspaceViewMenuItem2.Name  = "Board tags";
+		workspaceViewMenuItem2.Child = @<PopupMenuTagAndTagging @onclick:stopPropagation
+		TogglePopupMenuTagAndTaggingVisible="workspaceViewMenuItem2.ToggleVisible" />;
+		WorkspaceViewItems.Add(workspaceViewMenuItem2);
+
+		MenuItem workspaceViewMenuItem3 = new MenuItem();
+		workspaceViewMenuItem3.Name  = "Board sections" ;
+		workspaceViewMenuItem3.Child = @<PopupMenuBoardSections @onclick:stopPropagation
+		TogglePopupMenuBoardSectionsVisible="workspaceViewMenuItem3.ToggleVisible" />;
+		WorkspaceViewItems.Add(workspaceViewMenuItem3);
+
+		MenuItem workspaceViewMenuItem4 = new MenuItem();
+		workspaceViewMenuItem4.Name  = "Multi-select" ;
+		workspaceViewMenuItem4.Child = null!;
+		WorkspaceViewItems.Add(workspaceViewMenuItem4);
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)

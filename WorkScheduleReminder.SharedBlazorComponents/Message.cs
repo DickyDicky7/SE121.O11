@@ -106,6 +106,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG E SECTION 04 </summary>
 			public static string CANNOT_CREATE_SECTIONS_OF_BOARD(string boardName, string reason)
 			=> $@"Cannot create sections of board ""{boardName}"": {reason}";
+			/// <summary> MSG E SECTION 08 </summary>
+			public static string CANNOT_UPDATE_SECTIONS_OF_BOARD(string boardName, string reason)
+			=> $@"Cannot update sections of board ""{boardName}"": {reason}";
+			/// <summary> MSG E SECTION 09 </summary>
+			public static string CANNOT_REMOVE_SECTIONS_OF_BOARD(string boardName, string reason)
+			=> $@"Cannot remove sections of board ""{boardName}"": {reason}";
 			/// <summary> MSG E SECTION 07 </summary>
 			public static string CANNOT_UPDATE_SECTIONING(
 			string fstBoardName,
@@ -198,6 +204,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			/// <summary> MSG S SECTION 04 </summary>
 			public static string SUCCESSFULLY_CREATE_SECTIONS_OF_BOARD(string boardName)
 			=> $@"Successfully create sections of board ""{boardName}""";
+			/// <summary> MSG S SECTION 06 </summary>
+			public static string SUCCESSFULLY_UPDATE_SECTIONS_OF_BOARD(string boardName)
+			=> $@"Successfully update sections of board ""{boardName}""";
+			/// <summary> MSG S SECTION 07 </summary>
+			public static string SUCCESSFULLY_REMOVE_SECTIONS_OF_BOARD(string boardName)
+			=> $@"Successfully remove sections of board ""{boardName}""";
 			/// <summary> MSG S SECTION 05 </summary>
 			public static string SUCCESSFULLY_UPDATE_SECTIONING(
 			string fstBoardName,

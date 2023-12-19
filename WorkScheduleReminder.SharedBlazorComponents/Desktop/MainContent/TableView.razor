@@ -234,7 +234,9 @@
 		foreach(Models.SectionByBoard sectionByBoard in
 		SupabaseImplementModelStateProviderService.Section___ByBoards.Where(
 		sectionByBoard => 
-		sectionByBoard.BoardId == ActiveBoard_____.Id))
+		sectionByBoard.BoardId == ActiveBoard_____.Id)
+		 .OrderBy(sectionByBoard => sectionByBoard.CreatedTimeStamp)
+		 .OrderBy(sectionByBoard => sectionByBoard.Name))
 		{
 			Sections.Add(new()
 			{

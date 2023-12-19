@@ -1,0 +1,215 @@
+﻿@inject       ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes="AdditionalAttributes"
+			  Class="d-flex flex-column gap-2 pa-2 justify-center"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  Width="400px"
+			  Height="400px"
+			  MaxHeight="80vh">
+		<MudText Style="font-size:larger; font-weight:bold">
+			Board sections
+		</MudText>
+		<MudPaper Class="d-flex flex-column pa-2"
+				  Style="overflow-y:scroll"
+				  Elevation="0"
+				  Width="100%"
+				  Height="100%">
+			<Virtualize Context="section" Items="Sections.Reverse<Common.Section>().ToList()">
+				<MudPaper Class="d-flex flex-row gap-2 align-center"
+						  Elevation="0"
+						  Width="100%">
+					<MudTextField @bind-Value=@(section.Name)
+								  Variant="Variant.Outlined"
+								  Margin="Margin.Dense"
+								  DisableUnderLine="true"
+								  TextUpdateSuppression="false"
+								  Immediate="true"
+								  FullWidth="true"
+								  Disabled="@IfCurrentUserHasPermissionDenied" />
+					<MudIconButton Size="Size.Small"
+								   Icon="@Icons.Material.Filled.Delete"
+								   OnClick=@(RemoveSection(section))
+								   hidden="@IfCurrentUserHasPermissionDenied" />
+				</MudPaper>
+			</Virtualize>
+		</MudPaper>
+		<MudTextField @bind-Value="NewSectionName"
+					  Variant="Variant.Outlined"
+					  Margin="Margin.Dense"
+					  DisableUnderLine="true"
+					  Immediate="true"
+					  Clearable="true"
+					  TextUpdateSuppression="false"
+					  FullWidth="true"
+					  Placeholder="Add section"
+					  OnKeyDown="CreateSection"
+					  hidden="@IfCurrentUserHasPermissionDenied" />
+		<MudButton Color="Color.Info"
+				   OnClick="SaveOnClick"
+				   Variant="Variant.Text">
+			<MudText Color="  Color.Info">
+				Save
+			</MudText>
+		</MudButton>
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter]
+	public EventCallback TogglePopupMenuBoardSectionsVisible { get; set; }
+
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+
+	public bool IfCurrentUserHasPermissionDenied
+	=> CurrentUserMembership.Role == Models.Member.PossibleRole.Viewer;
+	public string NewSectionName { get; set; } = string.Empty;
+	public Models.Member   CurrentUserMembership { get; set; } = null!;
+	public List<Common.Section> Sections         { get; set; } = null!;
+	public List<Common.Section> SectionsToRemove { get; set; } = new();
+
+	public async Task MapSectionByBoardModelsToSectionRecords()
+	{
+		Sections = SupabaseImplementModelStateProviderService.Section___ByBoards
+		.Where(
+		sectionByBoard =>
+		sectionByBoard.BoardId == ActiveBoard_____.Id).Select<Models.SectionByBoard, Common.Section>(
+		sectionByBoard => new()
+		{
+			Name = sectionByBoard.Name,
+			IsSectionByBoard = true,
+			  SectionByBoard = sectionByBoard,
+		})
+   .OrderBy(section => section.SectionByBoard.CreatedTimeStamp)
+   .ToList();
+	}
+
+	public void CreateSection(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(NewSectionName))
+		{
+			if (Sections.Any(section =>
+			    section .Name == NewSectionName))
+			{
+				Snackbar.Add(Message.Error.CANNOT_CREATE_SECTION(NewSectionName, Message.Error.SECTION_ALREADY_EXISTS(NewSectionName)), Severity.Error);
+				return;
+			}
+			Sections.Add(new()
+			{
+				Name = NewSectionName,
+				IsSectionByBoard = true,
+				  SectionByBoard = new()
+				{
+					BoardId = ActiveBoard_____.Id,
+					Name    =      NewSectionName,
+					Settings = "",
+				},
+			});
+			NewSectionName = string.Empty;
+		}
+	}
+
+	public Action RemoveSection(Common.Section section)
+	{
+		return () =>
+		{
+			Sections. Remove    (section);
+			SectionsToRemove.Add(section);
+		};
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await MapSectionByBoardModelsToSectionRecords();
+		CurrentUserMembership = SupabaseImplementModelStateProviderService.Member_s.First(member =>
+		member.BoardId == ActiveBoard_____.Id && member.ProfileId == CurrentUserId);
+	}
+
+	public async Task SaveOnClick()
+	{
+		try
+		{
+			List<Models.SectionByBoard> sectionsToInsert = Sections.Where(section => section.SectionByBoard.Id == Guid.Empty).Select(section => section.SectionByBoard)
+			.ToList();
+			if (sectionsToInsert.Count > 0)
+			{
+				await SupabaseClient.From<Models.SectionByBoard>()
+				.Insert(sectionsToInsert,
+				                   new Postgrest.QueryOptions()
+				{          Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+				Snackbar.Add(Message.Success.SUCCESSFULLY_CREATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name), Severity.Success);
+			}
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_CREATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Exception exception)
+		{
+			System  .Diagnostics.Debug.WriteLine(exception.Message);
+			Snackbar.Add(Message.Error.CANNOT_CREATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+
+		try
+		{
+			List<Common.Section> sectionsToUpdate = Sections.Where(section => section.Name != section.SectionByBoard.Name)
+			.ToList();
+			if (sectionsToUpdate.Count > 0)
+			{
+				foreach (Common.Section sectionToUpdate in    sectionsToUpdate)
+				{
+				        sectionToUpdate.SectionByBoard.Name = sectionToUpdate.Name;
+				  await sectionToUpdate.SectionByBoard.Update<Models.SectionByBoard>();
+				}
+				Snackbar.Add(Message.Success.SUCCESSFULLY_UPDATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name), Severity.Success);
+			}
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Exception exception)
+		{
+			System  .Diagnostics.Debug.WriteLine(exception.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+
+		try
+		{
+			if (SectionsToRemove.Count > 0)
+			{
+				foreach (Common.Section sectionToRemove in SectionsToRemove)
+				{
+				  await sectionToRemove.SectionByBoard.Delete<Models.SectionByBoard>();
+				}
+				Snackbar.Add(Message.Success.SUCCESSFULLY_REMOVE_SECTIONS_OF_BOARD(ActiveBoard_____.Name), Severity.Success);
+			}
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_REMOVE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Exception exception)
+		{
+			System  .Diagnostics.Debug.WriteLine(exception.Message);
+			Snackbar.Add(Message.Error.CANNOT_REMOVE_SECTIONS_OF_BOARD(ActiveBoard_____.Name, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+
+		await TogglePopupMenuBoardSectionsVisible.InvokeAsync();
+	}
+}
