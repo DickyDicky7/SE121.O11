@@ -448,7 +448,7 @@
 						{
 							ContentType = readyToUploadFile.ContentType,
 							     Upsert = true,
-						}, inferContentType: false, onProgress: (sender, progress) =>
+						}, inferContentType: true, onProgress: ( sender, progress) =>
 						{
 
 						});
@@ -491,6 +491,10 @@
 			System  .Diagnostics.Debug.WriteLine
 			 (supabaseStorageException.Message);
 			Snackbar.Add(Message.Error.CANNOT_UPDATE_TASK(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Exception exception)
+		{
+			System  .Diagnostics.Debug.WriteLine(exception.Message);
 		}
 	}
 }
