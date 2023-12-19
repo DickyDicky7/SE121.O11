@@ -164,6 +164,8 @@
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
 	[CascadingParameter(Name = nameof(CurrentUserId))]
 	public Guid CurrentUserId { get; set; }
 	[Parameter]
@@ -196,7 +198,8 @@
 		if (Task.IsBoardTask())
 		{
 			foreach (Models.TagByBoard tagByBoard in SupabaseImplementModelStateProviderService
-				.Tag____ByBoard__s.OrderBy
+				.Tag____ByBoard__s.Where
+				(tag____ByBoard__ => tag____ByBoard__.BoardId == Task.BoardId).OrderBy
 				(tag____ByBoard__ => tag____ByBoard__.CreatedTimeStamp))
 			{
 				Tags.Add(new()
