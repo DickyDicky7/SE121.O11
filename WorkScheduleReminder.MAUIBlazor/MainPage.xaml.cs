@@ -67,8 +67,11 @@ namespace WorkScheduleReminder.MAUIBlazor
 			if       (webView2 != null)
 			{
 				await webView2.EnsureCoreWebView2Async();
-				      webView2.CoreWebView2.Settings     .IsPasswordAutosaveEnabled = false;
-				      webView2.CoreWebView2.CookieManager.DeleteAllCookies();
+				      webView2.CoreWebView2.Settings.IsPasswordAutosaveEnabled = false;
+					  webView2.CoreWebView2.Settings.
+					  IsGeneralAutofillEnabled = false;
+				      webView2.CoreWebView2.
+					  CookieManager.DeleteAllCookies();
 			}
 #endif
 		}

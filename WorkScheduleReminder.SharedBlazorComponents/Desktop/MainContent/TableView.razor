@@ -432,8 +432,14 @@
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		await base.OnAfterRenderAsync(firstRender);
-		await MapSectionsByBoardsToSections();
+		if (LastActiveBoardId != ActiveBoard_____.Id)
+		{
+			LastActiveBoardId  = ActiveBoard_____.Id;
+			await MapSectionsByBoardsToSections();
+		}
 	}
+
+	public static Guid LastActiveBoardId { get; set; }
 
 	public void Dispose()
 	{
