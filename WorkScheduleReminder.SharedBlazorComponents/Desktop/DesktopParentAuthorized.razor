@@ -4,6 +4,7 @@
 
 @inject Supabase.Client SupabaseClient
 
+<CascadingValue Name=@(nameof(CurrentUserProfile)) Value="CurrentUserProfile" TValue="Models.Profile" IsFixed="true">
 <CascadingValue Name=@(nameof(CurrentUserId )) Value="CurrentUserId " TValue="Guid  " IsFixed="true">
 <CascadingValue Name=@(nameof(ActiveViewName)) Value="ActiveViewName" TValue="string">
 <CascadingValue Name=@(nameof(ActiveViewIcon)) Value="ActiveViewIcon" TValue="string">
@@ -43,6 +44,7 @@
 </CascadingValue>
 </CascadingValue>
 </CascadingValue>
+</CascadingValue>
 
 @code
 {
@@ -58,11 +60,14 @@
 	public Models.CustomView ActiveCustomView { get; set; } = null!;
 	public bool   IsIndividualToWorkspace { get; set; }
 	public string Theme { get; set; } = "mud-theme-info";
+	public Models.Profile  CurrentUserProfile { get; set; } = null!;
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		CurrentUserId = Guid.Parse(SupabaseClient.Auth.CurrentUser?.Id ?? string.Empty);
+		CurrentUserProfile =(await SupabaseClient.From<Models.Profile>().Where(profile => profile.Id == CurrentUserId)
+		.Single())!;
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -76,6 +81,13 @@
 		{
 			Theme = "mud-theme-info";
 		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+		CurrentUserProfile =(await SupabaseClient.From<Models.Profile>().Where(profile => profile.Id == CurrentUserId)
+		.Single())!;
 	}
 
 }
