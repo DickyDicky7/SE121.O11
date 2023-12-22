@@ -1,4 +1,5 @@
 ﻿<MudPaper @attributes=AdditionalAttributes
+
           Class="d-flex flex-column gap-2 pa-2"
           Style="border-radius:20px;overflow:hidden"
           Elevation="0"
@@ -62,10 +63,12 @@
             </MudPaper>
         }
     </MudPaper>
+
 </MudPaper>
 
 @code
 {
+
     [Parameter(CaptureUnmatchedValues = true)]
     public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -100,4 +103,5 @@
         AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 15" });
         AssigneeFilterList.Add(new AssigneeChecked() { Name = "Member 16" });
     }
+
 }
