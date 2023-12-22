@@ -1,2 +1,7 @@
 ﻿@import url('animations/scale-ver-bottom--in.css');
 @import url('animations/scale-ver-bottom-out.css');
+
+@keyframes spin {
+    from { transform: rotate(000deg); }
+    to   { transform: rotate(360deg); }
+}
