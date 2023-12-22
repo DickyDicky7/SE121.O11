@@ -405,8 +405,9 @@
 						ProfileId = CurrentUserId,
 						Attachments = "[]",
 					};
-					await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
-						{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					await SupabaseClient.From<Models.Task>().Insert(
+					newTask,      new Postgrest.QueryOptions()
+					    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
 					section.NewTask = string.Empty;
 				}
 			}
