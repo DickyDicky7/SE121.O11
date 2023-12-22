@@ -48,6 +48,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			public static string CANNOT_SIGN_UP(string reason)
 			=> @$"Cannot sign up: {reason}";
 
+			public static string CANNOT_DOWNLOAD_FILE(string fileName, string reason)
+			=> $@"Cannot download ""{fileName}"": {reason}";
+
 			/// <summary> MSG E MEMBER 01 </summary>
 			public static string CANNOT_INVITE_MEMBER(string reason)
 			=> @$"Cannot invite member: {reason}";
@@ -178,6 +181,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			public const string SUCCESSFULLY_UPDATE_TASK = @"Successfully update task";
 			/// <summary> MSG S TASK 03 </summary>
 			public const string SUCCESSFULLY_REMOVE_TASK = @"Successfully remove task";
+
+			public static string SUCCESSFULLY_DOWNLOAD_FILE(string  fileName, string savePath)
+			=> @$"Successfully download ""{fileName}"", save path: {savePath}";
 
 			/// <summary> MSG S BOARD 01 </summary>
 			public static string SUCCESSFULLY_CREATE_BOARD(string boardName)

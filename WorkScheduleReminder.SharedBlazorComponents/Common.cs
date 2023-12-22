@@ -20,6 +20,29 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			=> new string[7] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 		}
 
+		public record class Task__AndPinOrNot
+		{
+			public Models.Task Task { get; set; } = null!;
+			public bool Pinned { get; set; }
+			public TaskIdAndPinOrNot TaskIdAndPinOrNot => new()
+			{
+				TaskId = Task.Id,
+				Pinned = Pinned
+			};
+		}
+
+		public record class TaskIdAndPinOrNot
+		{
+			public Guid TaskId { get; set; }
+			public bool Pinned { get; set; }
+		}
+
+		public record class MyDayTasks
+		{
+			public List<TaskIdAndPinOrNot> TaskIdsAndPinOrNot { get; set; } = new();
+			public DateOnly Date{ get; set; } = DateOnly.FromDateTime(DateTime.Now);
+		}
+
 		public record class Tag
 		{
 			public Guid Id { get; set; }
