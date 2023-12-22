@@ -1,5 +1,8 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
+@implements IDisposable
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
 <MudPaper Class="d-flex flex-row align-center pa-2 justify-space-between"
 		  Style="background-color:transparent;"
 		  Elevation="0"
@@ -10,7 +13,8 @@
 		@if (ActiveViewType != Helper.ViewType.MyDayView)
 		{
 			<DesktopOtherViewTitle />
-			<DesktopButtonMember   />
+			<DesktopButtonMember IsIndividualToWorkspaceChanged=
+                                "IsIndividualToWorkspaceChanged" />
 			@if (ActiveViewType == Helper.ViewType.WorkspaceView)
 			{
 				<DesktopButtonView   />
@@ -29,17 +33,32 @@
 	@* Toolbar2 *@
 	<MudPaper Class="d-flex flex-row flex-wrap gap-2 py-2"
 			  Elevation="0">
-		<MudIconButton Class="rounded-cycle"
-					   Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Sync" />
-		<MudIconButton Class="rounded-cycle"
-					   Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Notifications"
-					   OnClick="ToggleNotifiVisible" />
-		<MudIconButton Class="rounded-cycle"
-					   Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Search"
-					   OnClick="ToggleSearchVisible" />
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Sync">
+			<MudIconButton Style=@(OnSyncStyle)
+						   OnClick="SyncOnClick"
+						   Class="rounded-cycle"
+						   Size="Size.Small"
+						   Icon="@Icons.Material.Filled.Sync" />
+		</MudTooltip>
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Notifications">
+			<MudIconButton Class="rounded-cycle"
+						   Size="Size.Small"
+						   Icon="@Icons.Material.Filled.Notifications"
+						   OnClick="ToggleNotifiVisible" />
+		</MudTooltip>
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Search">
+			<MudIconButton Class="rounded-cycle"
+						   Style="margin:0 5px 0 0;"
+						   Size="Size.Small"
+						   Icon="@Icons.Material.Filled.Search"
+						   OnClick="ToggleSearchVisible" />
+		</MudTooltip>
 	</MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
@@ -61,8 +80,16 @@
 	[CascadingParameter(Name = nameof(ActiveViewType))]
 	public Helper.ViewType ActiveViewType { get; set; }
 
+	[Parameter]
+	public bool                IsIndividualToWorkspace        { get; set; }
+	[Parameter]
+	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
+
+	public string OnSyncStyle { get; set; } = "margin:0 0 0 5px;";
 	public bool NotifiVisible { get; set; } = false;
 	public bool SearchVisible { get; set; } = false;
+	public System.Timers.Timer Timer { get; set; } = null!;
+	public bool OnSync { get; set; } = false;
 
 	public void ToggleNotifiVisible()
 	{
@@ -72,5 +99,57 @@
 	public void ToggleSearchVisible()
 	{
 		SearchVisible = !SearchVisible;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		Timer = new(TimeSpan.FromMinutes(10));
+		Timer.AutoReset = true;
+		Timer.Enabled   = true;
+		Timer.Elapsed += Timer_OnElapsed;
+		Timer.Start();
+	}
+
+	public void Timer_OnElapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+	{
+		SyncOnClick();
+	}
+
+	public void SyncOnClick()
+	{
+		// if (SupabaseImplementModelStateProviderService
+		// 	.GetType().GetProperties()
+		// 	.Where(property => property.Name.StartsWith("Fetching")).Any(property => property.GetValue
+		// 	(SupabaseImplementModelStateProviderService)!.ToString() == "True" ))
+
+		if (OnSync)
+		{
+			return;
+		}
+
+		OnSync = true;
+		OnSyncStyle = @"
+			margin:0 0 0 5px;
+			animation-name: spin;
+			animation-duration: 1000ms;
+			animation-iteration-count: 2;
+			animation-timing-function: ease-in-out;
+			";
+		Task.Run(async () =>
+		{
+			await Task.Delay(2100);
+			OnSyncStyle = "margin:0 0 0 5px;";
+			OnSync      = false;
+			await InvokeAsync(StateHasChanged);
+		});
+	}
+
+	public void Dispose()
+	{
+		Timer.Stop();
+		Timer.Elapsed -= Timer_OnElapsed;
+		Timer.Close();
+		Timer.Dispose();
 	}
 }

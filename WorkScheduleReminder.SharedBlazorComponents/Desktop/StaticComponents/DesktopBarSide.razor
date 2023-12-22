@@ -1,4 +1,5 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
+@using WorkScheduleReminder.SharedBlazorComponents.Desktop.Setting
 
 @implements IDisposable
 @inject       ISnackbar Snackbar
@@ -8,22 +9,45 @@
 @using  Supabase.Realtime.PostgresChanges
 @inject NavigationManager NavigationManager
 @inject Services.Implementations.SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 
-<MudPaper Class="d-flex flex-column gap-2 pa-2"
-		  Style="overflow-y:scroll"
-		  Elevation="0"
+<MudPaper Class="d-flex flex-column gap-2 pa-2 rounded-0"
+		  Style="overflow-y:auto;margin:auto;"
+		  Elevation="10"
+		  Outlined="true"
 		  Width="300px"
 		  Height="100%">
-	<MudButton Size="Size.Large"
-			   FullWidth="true" ClickPropagation="false" OnClick=@(async () => await SupabaseAuthenticationStateProviderService.LogOut(Snackbar))>
+	<MudButton Style="padding:0 0 0 0;"
+			   Size="Size.Large"
+			   FullWidth="true"
+			   OnClick="ToggleSetting">
 		<MudPaper Class="d-flex flex-row gap-2 align-center"
 				  Elevation="0"
 				  Width="100%">
-			<MudAvatar>
-				<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+			<MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+				@if
+				(CurrentUserProfile !=   null)
+				@if (string.IsNullOrWhiteSpace
+				(CurrentUserProfile.AvatarURL))
+				{
+			   @(CurrentUserProfile.Email[0].ToString()
+				.ToUpper())
+				}
+				else
+				{
+					<MudImage Src=@(CurrentUserProfile.AvatarURL) />
+				}
 			</MudAvatar>
-			<MudText Style="font-family:inherit;font-size:large">
-				-Name-
+			<MudText Style="font-size:large;word-break:break-all;"
+					 Align="Align.Justify">
+				@if (CurrentUserProfile != null)
+				{
+				@(   CurrentUserProfile.Email.Split('@').First())
+				}
+				else
+				{
+					
+				}
 			</MudText>
 		</MudPaper>
 	</MudButton>
@@ -43,29 +67,29 @@
 					   FullWidth="true"
 					   Href="myday"
 					   OnClick="MyDayOnClick">
-				<MudText Style="font-family:inherit">My day</MudText>
+				<MudText Style="">My day</MudText>
 			</MudButton>
 			<MudButton Class="justify-start"
 					   StartIcon="@Icons.Material.Filled.NextWeek"
 					   Size="Size.Medium"
 					   FullWidth="true"
-					   Href="kanban/next7days"
+					   Href="kanban/next-7-days"
 					   OnClick="Next7DaysOnClick">
-				<MudText Style="font-family:inherit">Next 7 days</MudText>
+				<MudText Style="">Next 7 days</MudText>
 			</MudButton>
 			<MudButton Class="justify-start"
 					   StartIcon="@Icons.Material.Filled.Task"
 					   Size="Size.Medium"
 					   FullWidth="true"
-					   Href="kanban/alltasks"
+					   Href="kanban/all-my-tasks"
 					   OnClick="AllMyTasksOnClick">
-				<MudText Style="font-family:inherit">All my tasks</MudText>
+				<MudText Style="">All my tasks</MudText>
 			</MudButton>
 			@*custom views*@
 			<MudListItem Class=""
-						 InitiallyExpanded="true"
+						 Dense="true"
 						 DisableGutters="true"
-						 Dense="true">
+						 InitiallyExpanded="true">
 				<ChildContent>
 					<MudPaper Class="d-flex flex-row align-center justify-space-between"
 							  Elevation="0"
@@ -80,27 +104,28 @@
 						</MudPaper>
 						<MudIconButton Icon="@Icons.Material.Filled.Add"
 									   Size="Size.Small"
-									   OnClick="ToggleCreateCustomView" />
+									   OnClick="TogglePopupMenuCreateCustomViewVisible" />
 					</MudPaper>
 				</ChildContent>
 				<NestedList>
-					@if (FetchingCustomViews)
+					@if (SupabaseImplementModelStateProviderService
+					.FetchingCustomViews)
 					{
 						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
 					}
-					@foreach (Models.CustomView customView in CustomViews)
-					{
-						<MudButton Class="justify-start"
+					<Virtualize Context="customView" Items="SupabaseImplementModelStateProviderService.CustomViews">
+						<MudButton @key="customView.Id"
+								   Class="justify-start"
 								   StartIcon="@Icons.Material.Filled.Today"
 								   Size="Size.Medium"
 								   FullWidth="true"
 								   Href="test"
 								   OnClick="@(CustomViewOnClick(customView))">
-							<MudText Style="overflow:hidden">
+							<MudText Style="overflow:hidden;">
 								@customView.Name
 							</MudText>
 						</MudButton>
-					}
+					</Virtualize>
 				</NestedList>
 			</MudListItem>
 			@*workspace*@
@@ -122,29 +147,30 @@
 						</MudPaper>
 						<MudIconButton Icon="@Icons.Material.Filled.Add"
 									   Size="Size.Small"
-									   OnClick="ToggleCreateBoard_____" />
+									   OnClick="TogglePopupMenuCreateBoard_____Visible" />
 						@* <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
 						Size="Size.Small"
 						OnClick="ToggleInvite" /> *@
 					</MudPaper>
 				</ChildContent>
 				<NestedList>
-					@if (FetchingBoards)
+					@if (SupabaseImplementModelStateProviderService
+					.FetchingBoard__s)
 					{
 						<MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="60px" />
 					}
-					@foreach (Models.Board board in Boards)
-					{
-						<MudButton Class="justify-start"
+					<Virtualize Context="board" Items="SupabaseImplementModelStateProviderService.Board__s">
+						<MudButton @key="board.Id"
+								   Class="justify-start"
 								   Size="Size.Medium"
 								   FullWidth="true"
 								   Href="table"
 								   OnClick="@(BoardOnClick(board))">
-							<MudText Style="overflow:hidden">
+							<MudText Style="overflow:hidden;">
 								@board.Name
 							</MudText>
 						</MudButton>
-					}
+					</Virtualize>
 				</NestedList>
 			</MudListItem>
 		</MudList>
@@ -157,28 +183,36 @@
             OnClick="ToggleInvite">
     <Invite @onclick:stopPropagation />
 </MudOverlay> *@
-<MudOverlay Class="border-2"
-			Visible="CreateBoard_____Visible"
+<MudOverlay Class="border-0"
+			Visible="PopupMenuCreateBoard_____Visible"
 			DarkBackground="true"
 			AutoClose="true"
-			OnClick="ToggleCreateBoard_____">
-	<CreateBoard      @onclick:stopPropagation />
+			OnClick="TogglePopupMenuCreateBoard_____Visible">
+	<PopupMenuCreateBoard      @onclick:stopPropagation />
+</MudOverlay>
+<MudOverlay Class="border-0"
+			Visible="PopupMenuCreateCustomViewVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="TogglePopupMenuCreateCustomViewVisible">
+	<PopupMenuCreateCustomView @onclick:stopPropagation />
 </MudOverlay>
 <MudOverlay Class="border-2"
-			Visible="CreateCustomViewVisible"
-			DarkBackground="true"
-			AutoClose="true"
-			OnClick="ToggleCreateCustomView">
-	<CreateCustomView @onclick:stopPropagation />
+            Visible="SettingVisible"
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="ToggleSetting">
+    <SettingList @onclick:stopPropagation />
 </MudOverlay>
 
 @code
 {
 	[CascadingParameter(Name = nameof(CurrentUserId))]
 	public Guid CurrentUserId { get; set; }
-	public bool           InviteVisible { get; set; } = false;
-	public bool CreateBoard_____Visible { get; set; } = false;
-	public bool CreateCustomViewVisible { get; set; } = false;
+	public bool                    InviteVisible { get; set; } = false;
+	public bool PopupMenuCreateBoard_____Visible { get; set; } = false;
+	public bool PopupMenuCreateCustomViewVisible { get; set; } = false;
+	public bool SettingVisible { get; set; } = false;
 	[Parameter]
 	public string ActiveViewName { get; set; } = null!;
 	[Parameter]
@@ -199,17 +233,12 @@
 	public EventCallback<Models.Board     > ActiveBoard_____Changed { get; set; }
 	[Parameter]
 	public EventCallback<Models.CustomView> ActiveCustomViewChanged { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserProfile))]
+	public Models.Profile CurrentUserProfile { get; set; } = null!;
 
-	public RealtimeChannel RealtimeChannelAllMembers     { get; set; } = null!;
-	public RealtimeChannel RealtimeChannelAllBoards      { get; set; } = null!;
-	public RealtimeChannel RealtimeChannelAllCustomViews { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesMembers     { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesBoards      { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesCustomViews { get; set; } = null!;
-	public List<Models.Board     > Boards      { get; set; } = new();
-	public List<Models.CustomView> CustomViews { get; set; } = new();
-	public bool FetchingBoards      { get; set; } = true;
-	public bool FetchingCustomViews { get; set; } = true;
 
 	public async Task UpdateActiveViewName(string newActiveViewName)
 	{
@@ -241,17 +270,10 @@
 		await ActiveViewTypeChanged.InvokeAsync(ActiveViewType);
 	}
 
-	// public async Task Update(
-	// string newActiveViewName,
-	// string newActiveViewIcon, Helper.ViewType newActiveViewType)
-	// {
-	// 	await UpdateActiveViewName(newActiveViewName);
-	// 	await UpdateActiveViewIcon(newActiveViewIcon);
-	// 	await UpdateActiveViewType(newActiveViewType);
-	// }
-
 	public async Task      MyDayOnClick()
 	{
+		// await UpdateActiveBoard_____(null!);
+		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("My day");
 		await UpdateActiveViewIcon( Icons.Material.Filled.Today);
 		await UpdateActiveViewType(Helper.ViewType.   MyDayView);
@@ -259,6 +281,8 @@
 
 	public async Task  Next7DaysOnClick()
 	{
+		// await UpdateActiveBoard_____(null!);
+		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("Next 7 days");
 		await UpdateActiveViewIcon( Icons.Material.Filled.NextWeek);
 		await UpdateActiveViewType(Helper.ViewType.    DefaultView);
@@ -266,6 +290,8 @@
 
 	public async Task AllMyTasksOnClick()
 	{
+		// await UpdateActiveBoard_____(null!);
+		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("All my tasks");
 		await UpdateActiveViewIcon( Icons.Material.Filled.Task);
 		await UpdateActiveViewType(Helper.ViewType.DefaultView);
@@ -302,16 +328,35 @@
 		InviteVisible;
 	}
 
-	public void ToggleCreateBoard_____()
+	public void TogglePopupMenuCreateBoard_____Visible()
 	{
-		CreateBoard_____Visible = !
-		CreateBoard_____Visible;
+		PopupMenuCreateBoard_____Visible = !
+		PopupMenuCreateBoard_____Visible;
 	}
 
-	public void ToggleCreateCustomView()
+	public void TogglePopupMenuCreateCustomViewVisible()
 	{
-		CreateCustomViewVisible = !
-		CreateCustomViewVisible;
+		PopupMenuCreateCustomViewVisible = !
+		PopupMenuCreateCustomViewVisible;
+	}
+
+	public void ToggleSetting()
+	{
+		SettingVisible = !
+		SettingVisible;
+	}
+
+	public void OnChangedCustomViews()
+	{
+		InvokeAsync(StateHasChanged);
+	}
+	public void OnChangedBoard__s()
+	{
+		InvokeAsync(StateHasChanged);
+	}
+	public void OnChangedMember_s()
+	{
+		InvokeAsync(StateHasChanged);
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -319,39 +364,12 @@
 		try
 		{
 		await base.OnInitializedAsync();
+		// CurrentUserProfile = (await SupabaseClient.From<Models.Profile>().Where(profile => profile.Id == CurrentUserId)
+		// .Single())!;
+		SupabaseImplementModelStateProviderService.ChangedCustomViews += OnChangedCustomViews;
+		SupabaseImplementModelStateProviderService.ChangedBoard__s += OnChangedBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedMember_s += OnChangedMember_s;
 		await SupabaseClient.Realtime.  ConnectAsync();
-		await FetchBoards();
-		await FetchCustomViews();
-		RealtimeChannelAllMembers =
-		await SupabaseClient.From<Models.Member    >().On(PostgresChangesOptions.ListenType.All,
-		async (sender, postgresChangesResponse) =>
-		{
-			await InvokeAsync(async () =>
-			{
-				await FetchBoards();
-				  StateHasChanged();
-			});
-		});
-		RealtimeChannelAllBoards  =
-		await SupabaseClient.From<Models.Board     >().On(PostgresChangesOptions.ListenType.All,
-		async (sender, postgresChangesResponse) =>
-		{
-			await InvokeAsync(async () =>
-			{
-				await FetchBoards();
-				  StateHasChanged();
-			});
-		});
-		RealtimeChannelAllCustomViews =
-		await SupabaseClient.From<Models.CustomView>().On(PostgresChangesOptions.ListenType.All,
-		async (sender, postgresChangesResponse) =>
-		{
-			await InvokeAsync(async () =>
-			{
-				await FetchCustomViews();
-				       StateHasChanged();
-			});
-		});
 		RealtimeChannelDeletesMembers =
 		await SupabaseClient.From<Models.Member    >().On(PostgresChangesOptions.ListenType.Deletes, OnRealtimeDeletesMember____);
 		RealtimeChannelDeletesBoards  =
@@ -367,6 +385,8 @@
 
 	public async void OnRealtimeDeletesMember____(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
 	{
+		if (ActiveBoard_____ == null)
+			return;
 		await InvokeAsync(async () =>
 		{
 			int currentUserInActiveBoard_____Count = await SupabaseClient.From<Models.Member>().Where
@@ -382,6 +402,8 @@
 
 	public async void OnRealtimeDeletesBoard_____(IRealtimeChannel sender, PostgresChangesResponse postgresChangesResponse)
 	{
+		if (ActiveBoard_____ == null)
+			return;
 		await InvokeAsync(async () =>
 		{
 			int activeBoardCount = await SupabaseClient.From<Models.Board>().Where(board => board.Id == ActiveBoard_____.Id)
@@ -409,34 +431,17 @@
 		   StateHasChanged();
 	}
 
-	public async Task FetchBoards()
-	{
-		FetchingBoards      = !false;
-		Boards      = (await SupabaseClient.From<Models.Board     >().Get()).Models;
-		FetchingBoards      =  false;
-	}
-
-	public async Task FetchCustomViews()
-	{
-		FetchingCustomViews = !false;
-		CustomViews = (await SupabaseClient.From<Models.CustomView>().Get()).Models;
-		FetchingCustomViews =  false;
-	}
-
 	public void Dispose()
 	{
-		if (RealtimeChannelAllMembers     != null)
-		    RealtimeChannelAllMembers    .Unsubscribe();
-		if (RealtimeChannelAllBoards      != null)
-		    RealtimeChannelAllBoards     .Unsubscribe();
-		if (RealtimeChannelAllCustomViews != null)
-		    RealtimeChannelAllCustomViews.Unsubscribe();
-
 		if (RealtimeChannelDeletesMembers     != null)
 		    RealtimeChannelDeletesMembers    .Unsubscribe();
 		if (RealtimeChannelDeletesBoards      != null)
 		    RealtimeChannelDeletesBoards     .Unsubscribe();
 		if (RealtimeChannelDeletesCustomViews != null)
 		    RealtimeChannelDeletesCustomViews.Unsubscribe();
+
+		SupabaseImplementModelStateProviderService.ChangedCustomViews -= OnChangedCustomViews;
+		SupabaseImplementModelStateProviderService.ChangedBoard__s -= OnChangedBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedMember_s -= OnChangedMember_s;
 	}
 }

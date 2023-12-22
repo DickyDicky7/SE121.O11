@@ -1,17 +1,17 @@
 ﻿<MudPaper Class="flex-wrap pa-2 align-center"
 		  Style="background-color:transparent;"
 		  Elevation="0">
-	<MudText Style="font-weight:bold;font-size:xx-large"
+	<MudText Style="font-weight:bold;font-size:xx-large;"
 			 Color="Color.Info">
-		@Greeting, @UserName
+		@Greeting @if (CurrentUserProfile != null) @($", {CurrentUserProfile.Email.Split('@').First()}")
 	</MudText>
 </MudPaper>
 
 @code
 {
 
-	[Parameter]
-	public string UserName { get; set; } = "Master";
+	[CascadingParameter(Name = nameof(CurrentUserProfile))]
+	public Models.Profile CurrentUserProfile { get; set; } = null!;
 	public string Greeting { get; set; } = string.Empty;
 
 	protected override async Task OnInitializedAsync()

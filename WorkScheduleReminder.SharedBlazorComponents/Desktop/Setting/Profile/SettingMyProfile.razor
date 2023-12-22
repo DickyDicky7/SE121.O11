@@ -1,0 +1,112 @@
+﻿@inject ISnackbar Snackbar
+@inject Services.Implementations.SupabaseAuthenticationStateProviderService SupabaseAuthenticationStateProviderService
+<MudPaper Class="d-flex flex-column gap-2"
+          Elevation="0"
+          Width="100%">
+
+    @*Infomation*@
+    <MudPaper Class="d-flex flex-column gap-2 align-center"
+              Elevation="0"
+              Width="100%">
+        <MudFileUpload FilesChanged="FileChanged"
+                       T="IBrowserFile"
+                       Accept=".png, .jpg">
+            <ButtonTemplate>
+                <MudButton Class="rounded-circle"
+                           HtmlTag="label"
+                           for="@context">
+                    <MudPaper Class=""
+                              Elevation="0">
+                        <MudImage Src="@Helper.GetResource("/images/catsayhello.png")"
+                                  Class="rounded-circle"
+                                  Width="50"
+                                  Height="50" />
+                    </MudPaper>
+                </MudButton>
+            </ButtonTemplate>
+        </MudFileUpload>
+        <MudText Style="font-size:x-larger;font-weight:bold">
+            @Name
+        </MudText>
+        <MudText Style="font-size:medium;font-weight:100">
+            @Email
+        </MudText>
+    </MudPaper>
+    @*List of content*@
+    <MudPaper Class="d-flex flex-column"
+              Elevation="0"
+              Width="100%">
+        @foreach (ChildContent Content in ChildContentList)
+        {
+            <MudButton FullWidth="true"
+                       OnClick="()=>UpdateParentState(Content.State)">
+                <MudPaper Class="d-flex flex-row align-cneter justify-space-between"
+                          Elevation="0"
+                          Width="100%">
+                    <MudText>
+                        @Content.Name
+                    </MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.ChevronRight"
+                             Size="Size.Small" />
+                </MudPaper>
+            </MudButton>
+        }
+        <MudButton FullWidth="true"
+                   OnClick=@(async () => await SupabaseAuthenticationStateProviderService.LogOut(Snackbar))>
+            <MudPaper Class="d-flex flex-row align-cneter justify-space-between"
+                      Elevation="0"
+                      Width="100%">
+                <MudText>
+                    Sign Out
+                </MudText>
+                <MudIcon Icon="@Icons.Material.Filled.Logout"
+                         Size="Size.Small"
+                         Color="Color.Error" />
+            </MudPaper>
+        </MudButton>
+    </MudPaper>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public double ParentState { get; set; }
+    [Parameter]
+    public EventCallback<double> ParentStateChanged { get; set; }
+
+    public string Name { get; set; } = "Master";
+    public string Email { get; set; } = "ExampleEmail@gmail.com";
+    public IBrowserFile AvatarFile { get; set; } = null!;
+
+    public record ChildContent
+    {
+        public double State { get; set; } = default!;
+        public string Name { get; set; } = default!;
+    }
+    public List<ChildContent> ChildContentList { get; set; } = new();
+
+    public async Task UpdateParentState(double _NewParentState)
+    {
+        ParentState = _NewParentState;
+        await ParentStateChanged.InvokeAsync(ParentState);
+    }
+    public void FileChanged(IBrowserFile _File)
+    {
+        AvatarFile = _File;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ChildContentList.Add(new ChildContent()
+            {
+                State = 1.1,
+                Name = "Reset Password",
+            }
+        );
+        ChildContentList.Add(new ChildContent()
+            {
+                State = 1.2,
+                Name = "Delete Account",
+            }
+        );
+    }
+}

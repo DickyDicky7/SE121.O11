@@ -1,75 +1,88 @@
 ﻿<MudPaper @attributes="AdditionalAttributes"
-		  Class="d-flex flex-column gap-2 pa-2 justify-center"
-		  Style="border-radius:20px;overflow:hidden;"
-		  Elevation="0"
-		  Width="400px"
-		  MaxHeight="400px">
-	<MudPaper Class="d-flex flex-row gap-2 align-center justify-center"
-			  Elevation="0"
-			  Width="100%">
-		<MudTextField @bind-Value=Name
-					  AutoFocus="true"
-					  Clearable="true"
-					  DisableUnderLine="true"
-					  FullWidth="true"
-					  Immediate="true"
-					  Margin="Margin.Dense"
-					  Variant="Variant.Outlined"
-					  Placeholder="Search task's name"
-					  TextUpdateSuppression="false" />
-		<MudIconButton Size="Size.Small"
-					   Icon="@Icons.Material.Filled.Search"
-					   Color="Color.Info"
-					   OnClick="Search" />
-	</MudPaper>
-	<MudPaper Class="d-flex flex-column gap-2"
-			  Style="overflow-y:scroll"
-			  Elevation="0"
-			  Width="100%"
-			  Height="100%">
-		@foreach (Task Task in TaskList)
-		{
-			<MudButton FullWidth="true"
-					   Size="Size.Medium"
-					   Color="Color.Dark"
-					   OnClick="(()=>OnTaskClick(Task.Name))">
-				<MudPaper Class="d-flex flex-column gap-1 align-start"
-						  Elevation="0"
-						  Width="100%">
-					<MudText>@Task.Name</MudText>
-				</MudPaper>
-			</MudButton>
-		}
-	</MudPaper>
+
+          Class="d-flex flex-column gap-2 pa-2 justify-center"
+          Style="border-radius:20px;overflow:hidden;"
+          Elevation="0"
+          Width="400px"
+          MaxHeight="400px">
+    <MudPaper Class="d-flex flex-row gap-2 align-center justify-center"
+              Elevation="0"
+              Width="100%">
+        <MudTextField @bind-Value=Name
+                      AutoFocus="true"
+                      Clearable="true"
+                      DisableUnderLine="true"
+                      FullWidth="true"
+                      Immediate="true"
+                      Margin="Margin.Dense"
+                      Variant="Variant.Outlined"
+                      Placeholder="Search task's name"
+                      TextUpdateSuppression="false" />
+        <MudIconButton Size="Size.Small"
+                       Icon="@Icons.Material.Filled.Search"
+                       Color="Color.Info"
+                       OnClick="Search" />
+    </MudPaper>
+    <MudPaper Class="d-flex flex-column gap-2 px-2"
+              Style="overflow-y:scroll"
+              Elevation="0"
+              Width="100%"
+              Height="100%">
+        @foreach (Task Task in TaskList)
+        {
+            <MudPaper Class="d-flex flex-row"
+                      Elevation="0"
+                      Width="100%">
+                <MudButton Class="rounded-pill"
+                           FullWidth="true"
+                           OnClick="(()=>OnTaskClick(Task.Name))">
+                    <MudPaper Class="d-flex flex-row align-center justify-content-start"
+                              Elevation="0"
+                              Width="100%">
+                        <MudText>@Task.Name</MudText>
+                    </MudPaper>
+                </MudButton>
+            </MudPaper>
+        }
+    </MudPaper>
 </MudPaper>
 <MudOverlay Visible="@TaskDetailVisible"
-			DarkBackground="true"
-			AutoClose="true"
-			OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-	<TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+            DarkBackground="true"
+            AutoClose="true"
+            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
+    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
 </MudOverlay>
 @code {
-	[Parameter(CaptureUnmatchedValues = true)]
-	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public bool TaskDetailVisible { get; set; } = false;
-	public string CurrentTitle { get; set; } = string.Empty;
+    public bool TaskDetailVisible { get; set; } = false;
+    public string CurrentTitle { get; set; } = string.Empty;
 
-	public string Name { get; set; } = string.Empty;
-	public record Task
-	{
-		public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public record Task
+    {
+        public string Name { get; set; } = string.Empty;
 
-	}
-	public List<Task> TaskList = new List<Task>();
+    }
+    public List<Task> TaskList = new List<Task>();
 
-	public void Search()
-	{
+    public void Search()
+    {
 
-	}
-	public void OnTaskClick(string _Name)
-	{
-		TaskDetailVisible = !TaskDetailVisible;
-		CurrentTitle = _Name;
-	}
+    }
+    public void OnTaskClick(string _Name)
+    {
+        TaskDetailVisible = !TaskDetailVisible;
+        CurrentTitle = _Name;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        @foreach (int i in Enumerable.Range(1, 20))
+        {
+            TaskList.Add(new Task() { Name = $"Task {i}" });
+        }
+    }
+
 }

@@ -1,15 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:WorkScheduleReminder.MAUIBlazor" xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui" x:Class="WorkScheduleReminder.MAUIBlazor.MainPage"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:tb="https://notifyicon.com/" xmlns:local="clr-namespace:WorkScheduleReminder.MAUIBlazor" xmlns:toolkit="clr-namespace:CommunityToolkit.Maui.Behaviors;assembly=CommunityToolkit.Maui" x:Class="WorkScheduleReminder.MAUIBlazor.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
     <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior StatusBarColor="White" StatusBarStyle="DarkContent"/>
+        <toolkit:StatusBarBehavior StatusBarColor="{DynamicResource TitleBarAppColor}"
+                                   StatusBarStyle="DarkContent" />
     </ContentPage.Behaviors>
+    
+    <Grid>
+        
+        <BlazorWebView   x:Name="blazorWebView"
+                       HostPage="wwwroot/index.html">
+            <BlazorWebView.RootComponents>
+                <RootComponent      Selector="#app"
+                               ComponentType="{x:Type local:Main}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
 
-    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
-        <BlazorWebView.RootComponents>
-            <RootComponent Selector="#app" ComponentType="{x:Type local:Main}" />
-        </BlazorWebView.RootComponents>
-    </BlazorWebView>
-
+        <tb:TaskbarIcon
+            IconSource="my_app.ico"
+                x:Name="TrayIcon"
+            LeftClickCommand="{Binding ShowOHideWindowCommand}"
+            NoLeftClickDelay="True">
+            <FlyoutBase.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem Command="{Binding ShowOHideWindowCommand}" Text="Show/Hide Window" />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem Command="{Binding ExitApplicationCommand}" Text="Exit" />
+                </MenuFlyout>
+            </FlyoutBase.ContextFlyout>
+        </tb:TaskbarIcon>
+        
+    </Grid>
+    
 </ContentPage>

@@ -1,0 +1,205 @@
+﻿@using Centvrio.Emoji
+
+@inject ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column pa-2 gap-2"
+			  Style="overflow:hidden;border-radius:20px;"
+			  Elevation="10"
+			  Width="500px">
+		<MudPaper Class="d-flex flex-row align-center justify-space-between"
+				  Elevation="0"
+				  Width="100%">
+			<MudText Style="font-weight:bold;font-size:larger;">
+				Name your board
+			</MudText>
+		</MudPaper>
+		<MudTextField @bind-Value=@BoardName
+					  Placeholder="Board's name'"
+					  Immediate="true"
+					  DisableUnderLine="true"
+					  FullWidth="true"
+					  Variant="Variant.Outlined"
+					  Margin="Margin.Dense"
+					  Clearable="true" />
+		<MudText Style="font-weight:bold;font-size:larger;">
+			Add your custom sections
+		</MudText>
+		<MudPaper Class="d-flex flex-column gap-1"
+				  Style="overflow:auto;"
+				  Elevation="0"
+				  MaxHeight="100px">
+			<Virtualize Context="sectionName" Items="SectionNames.Reverse().ToList()">
+				<Animate @key="sectionName"
+						 style="width:100%;height:100%;"
+						 Animation="Animations.FadeIn"
+						 Duration="TimeSpan.FromSeconds(1)">
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudText>
+							@sectionName
+						</MudText>
+						<MudIconButton Size="Size.Medium"
+									   Icon="@Icons.Material.Filled.Delete"
+									   OnClick="RemoveSectionName(sectionName)" />
+					</MudPaper>
+				</Animate>
+			</Virtualize>
+		</MudPaper>
+		<MudTextField @bind-Value=@NewSectionName
+					  Placeholder="New Section"
+					  Immediate="true"
+					  DisableUnderLine="true"
+					  FullWidth="true"
+					  Variant="Variant.Outlined"
+					  Margin="Margin.Dense"
+					  Clearable="true"
+					  TextUpdateSuppression="false"
+					  OnKeyDown="InsertSectionName" />
+		<MudText Style="font-weight:bold;font-size:larger;">
+			Choose your display icon
+		</MudText>
+		<MudPaper Class="d-flex flex-column gap-2"
+				  Style="overflow:auto;"
+				  Elevation="0">
+			<MudChipSet @bind-SelectedChip=SelectedChip
+						Style="margin:auto;">
+				<MudChip Default="true"
+						 Text="None"
+						 Size="Size.Large"
+						 Style="width:100px;"
+						 Variant="Variant.Text"
+						 SelectedColor="Color.Info" />
+				<Virtualize Context="icon" Items="AvailableIcons">
+					<MudTooltip @key="@icon.iconDescription"
+								Text="@icon.iconDescription"
+								Arrow=true
+								Color="Color.Dark">
+						<MudChip Text="@icon.iconImage.ToString()"
+								 Size="Size.Large"
+								 Style="width:100px;"
+								 Variant="Variant.Text"
+								 SelectedColor="Color.Info" />
+					</MudTooltip>
+				</Virtualize>
+			</MudChipSet>
+		</MudPaper>
+		<MudButton Class="rounded-pill justify-self-center"
+				   Size="Size.Small"
+				   Color="Color.Info"
+				   IconSize="Size.Small"
+				   OnClick="CreateNewBoard"
+				   Disabled="string.IsNullOrWhiteSpace(BoardName)">
+			<MudText>Create</MudText>
+		</MudButton>
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+
+	public string      BoardName { get; set; } = string.Empty;
+	public string NewSectionName { get; set; } = string.Empty;
+	public HashSet<string> SectionNames { get; set; } = new();
+	public MudChip         SelectedChip { get; set; } = null!;
+	public List<(UnicodeString iconImage, string iconDescription)> AvailableIcons = new();
+
+	public void InsertSectionName(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(NewSectionName))
+		{
+			if (!SectionNames.Add(NewSectionName))
+				Snackbar.Add(Message.Error.CANNOT_CREATE_SECTION (
+			NewSectionName , Message.Error.SECTION_ALREADY_EXISTS(NewSectionName)), Severity.Error);
+			NewSectionName = string.Empty;
+		}
+	}
+
+	public Action RemoveSectionName(string sectionName)
+	{
+		return () =>
+		{
+			SectionNames.Remove(sectionName);
+		};
+	}
+
+	public string SelectedChipText()
+	{
+		if    (SelectedChip.Text == "None")
+		return string.Empty;
+		return SelectedChip.Text;
+	}
+
+	public async Task CreateNewBoard()
+	{
+		try
+		{
+			Models.Board newBoard = new()
+			{
+				Name = $"{SelectedChipText()} {BoardName}",
+				OwnerId = CurrentUserId,
+			};
+			newBoard = (await SupabaseClient.From<Models.Board>().Insert(newBoard,
+			          new Postgrest.QueryOptions()
+			{ Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+			Snackbar.Add(Message.Success.SUCCESSFULLY_CREATE_BOARD(newBoard.Name), Severity.Success);
+			if (SectionNames.Count > 0)
+			{
+				try
+				{
+					await SupabaseClient.From<   Models.SectionByBoard>().Insert
+					(SectionNames.Select<string, Models.SectionByBoard>(sectionName => new()
+					{
+						  BoardId = newBoard.Id,
+						  Name    = sectionName,
+						  Settings = string.Empty,
+					}).ToList(), new Postgrest.QueryOptions()
+					{    Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					Snackbar.Add(Message.Success.SUCCESSFULLY_CREATE_SECTIONS_OF_BOARD(newBoard.Name), Severity.Success);
+				}
+				catch (Postgrest.Exceptions.PostgrestException postgrestException)
+				{
+					System.Diagnostics  .Debug.WriteLine(postgrestException.Message);
+					Snackbar.Add(Message.Error.CANNOT_CREATE_SECTIONS_OF_BOARD(
+					newBoard.Name,
+					             Message.Error.SOMETHING_WENT_WRONG),Severity.Error);
+				}
+			}
+			     BoardName = string.Empty;
+			SectionNames.Clear();
+			NewSectionName = string.Empty;
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System.Diagnostics  .Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_CREATE_BOARD(BoardName, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		AvailableIcons.Add((iconImage: Office.Briefcase, iconDescription: "Business"));
+		AvailableIcons.Add((iconImage: BookPaper.Books, iconDescription: "Education"));
+		AvailableIcons.Add((iconImage: Tool.Wrench, iconDescription: "Engineering"));
+		AvailableIcons.Add((iconImage: Sound.Loudspeaker, iconDescription: "Marketing"));
+		AvailableIcons.Add((iconImage: OtherSymbols.Question, iconDescription: "Support"));
+		AvailableIcons.Add((iconImage: LightVideo.LightBulb, iconDescription: "Creativity"));
+		AvailableIcons.Add((iconImage: Person.Man, iconDescription: "Human resource"));
+		AvailableIcons.Add((iconImage: Tool.Link, iconDescription: "Operations"));
+		AvailableIcons.Add((iconImage: Sport.DirectHit, iconDescription: "Sales"));
+		AvailableIcons.Add((iconImage: Money.Dollar, iconDescription: "Finance"));
+		AvailableIcons.Add((iconImage: Lock.Locked, iconDescription: "Personal"));
+		AvailableIcons.Add((iconImage: PersonActivity.BustsInSilhouette, iconDescription: "Team management"));
+		AvailableIcons.Add((iconImage: Office.Pushpin, iconDescription: "Project management"));
+	}
+}

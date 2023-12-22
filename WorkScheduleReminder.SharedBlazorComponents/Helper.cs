@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using WorkScheduleReminder.SharedBusinessLogic.Models.Abstractions___;
+using WorkScheduleReminder.SharedBusinessLogic.Models.Implementations;
 
 namespace WorkScheduleReminder.SharedBlazorComponents
 {
@@ -143,5 +145,88 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			new() { { "_raw_content_", rawContent } }))?.Content ?? string.Empty;
 			return JsonConvert.DeserializeObject<string>(result) ?? string.Empty;
 		}
+
+		public static bool IsInTheNext7DaysFromToday(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			int    daysDifference    = dateOnly.Day - currentDateOnly.Day ;
+			return daysDifference is >= 0 and <= 7;
+		}
+
+		public static bool IsToday(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			return  dateOnly == currentDateOnly.AddDays(+0);
+		}
+
+		public static bool IsSomeday(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			return  dateOnly >= currentDateOnly.AddDays(+7);
+		}
+
+		public static bool IsTomorrow(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			return  dateOnly == currentDateOnly.AddDays(+1);
+		}
+
+
+		public static bool IsUpcoming(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			return  dateOnly >= currentDateOnly.AddDays(+2)
+				&&  dateOnly <= currentDateOnly.AddDays(+6);
+		}
+
+		public static bool IsOnceUponATime(this DateOnly dateOnly)
+		{
+			DateOnly currentDateOnly = DateOnly.FromDateTime(DateTime.Now);
+			return  dateOnly <= currentDateOnly.AddDays(-1);
+		}
+
+		public static bool IsOnceUponATime(this TimeOnly timeOnly)
+		{
+			TimeOnly currentTimeOnly = TimeOnly.FromDateTime(DateTime.Now);
+			return  timeOnly <= currentTimeOnly;
+		}
+
+		public static IEnumerable<(DateOnly dateOnly, int daysOffset)> CalculateTheNext7DaysFromToday()
+		{
+			DateOnly currentDateOnly =   DateOnly.FromDateTime(DateTime.Now);
+			foreach (int daysOffset in Enumerable.Range(0, 7))
+			{
+				yield return (currentDateOnly.AddDays(daysOffset), daysOffset);
+			}
+		}
+
+		public static bool IsInTheNext7DaysFromToday
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsInTheNext7DaysFromToday();
+
+		public static bool IsToday
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsToday();
+
+		public static bool IsSomeday
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsSomeday();
+
+		public static bool IsTomorrow
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsTomorrow();
+
+		public static bool IsUpcoming
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsUpcoming();
+
+		public static bool IsOnceUponATime
+		(this DateOnly? dateOnly) => dateOnly != null && dateOnly.Value.IsOnceUponATime();
+
+		public static bool IsOnceUponATime
+		(this TimeOnly? timeOnly) => timeOnly != null && timeOnly.Value.IsOnceUponATime();
+
+		public static Color ParseColor(this ITag tag)
+		=> Enum.Parse<Color>(JObject.Parse(tag.Settings)["Color"]?.Value<string>() ?? nameof(Color.Default));
+
+		public static DateOnly DefaultDueDate(int daysOffset) => DateOnly.FromDateTime(DateTime.Now).AddDays(daysOffset);
+		public static TimeOnly DefaultDueTime(              ) => TimeOnly.MaxValue.AddHours(+0).AddMinutes(-1);
+
+
 	}
 }

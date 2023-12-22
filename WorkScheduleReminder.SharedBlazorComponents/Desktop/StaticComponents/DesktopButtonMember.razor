@@ -4,11 +4,12 @@
 		  Elevation="0">
 	@if (ActiveViewType == Helper.ViewType.DefaultView)
 	{
-		<MudSwitch Checked="SwitchChecked"
-				   Label="@Text"
+		<MudSwitch T="bool"
+				   Checked="IsIndividualToWorkspace"
+				   Label="@(IsIndividualToWorkspaceLabel)"
 				   Color="Color.Tertiary"
 				   ThumbIcon="@Icons.Material.Filled.Workspaces"
-				   CheckedChanged="((bool _) => OnSwitchCheckedChanged(_))" />
+				   CheckedChanged="IsIndividualToWorkspaceSwitchOnCheckedChanged" />
 	}
 	else if (ActiveViewType == Helper.ViewType.CustomView)
 	{
@@ -21,17 +22,17 @@
 		<MudButton Class=""
 				   StartIcon="@Icons.Material.Filled.People"
 				   Size="Size.Small"
-				   OnClick="ToggleMemberVisible">
+				   OnClick="ToggleIsPopupMenuMemberVisible">
 			<MudText>
 				Member
 			</MudText>
 		</MudButton>
 	}
 </MudPaper>
-<MudOverlay Visible="MemberVisible"
+<MudOverlay Visible="IsPopupMenuMemberVisible"
 			DarkBackground="true"
 			AutoClose="true"
-			OnClick="ToggleMemberVisible">
+			OnClick="ToggleIsPopupMenuMemberVisible">
 	<PopupMenuMember @onclick:stopPropagation />
 </MudOverlay>
 
@@ -40,28 +41,28 @@
 	[CascadingParameter(Name = nameof(ActiveViewType))]
 	public Helper.ViewType ActiveViewType { get; set; }
 	[Parameter]
-	public bool             SwitchChecked { get; set; } = false;
+	public bool                IsIndividualToWorkspace        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
 
-	public string Text { get; set; } = "Individual";
-	public bool MemberVisible { get; set; } = false;
+	public string IsIndividualToWorkspaceLabel { get; set; } = "Individual";
+	public bool   IsPopupMenuMemberVisible     { get; set; } = false;
 
-	public void OnSwitchCheckedChanged(bool _)
+	public async Task IsIndividualToWorkspaceSwitchOnCheckedChanged
+	(            bool isIndividualToWorkspace)
 	{
-		SwitchChecked = !
-		SwitchChecked;
-		if (SwitchChecked)
-		{
-			Text =  "Workspace";
-		}
-		else
-		{
-			Text = "Individual";
-		}
+		IsIndividualToWorkspace =
+		isIndividualToWorkspace ;
+		IsIndividualToWorkspaceLabel =
+		isIndividualToWorkspace switch { true => "Workspace", false => "Individual", };
+		await
+		IsIndividualToWorkspaceChanged.InvokeAsync(
+		isIndividualToWorkspace);
 	}
 
-	public void ToggleMemberVisible()
+	public void ToggleIsPopupMenuMemberVisible()
 	{
-		MemberVisible = !
-		MemberVisible;
+		IsPopupMenuMemberVisible = !
+		IsPopupMenuMemberVisible ;
 	}
 }

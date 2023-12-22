@@ -3,49 +3,72 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using WorkScheduleReminder.SharedBlazorComponents.Mobile_
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop
-
 @implements IDisposable
 @inject     ISnackbar Snackbar_
 @inject     Supabase.Client SupabaseClient
+@inject     Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 
 <MudThemeProvider Theme="Helper.CustomThemes[1]" /><MudDialogProvider /><MudSnackbarProvider />
 
 <CascadingAuthenticationState>
-	<AuthorizeView>
-		<Authorized>
-			@switch (DeviceType)
-			{
-				case Helper.DeviceType.Mobile:
-					<MobileParentAuthorized  MainChildContent="@ChildContent" />
-					 break;
+	<Connection OnConnectionStatusBeingOn_line="OnConnectionStatusBeingOn_line"
+				OnConnectionStatusBeingOffline="OnConnectionStatusBeingOffline">
+		<Online>
+			<AuthorizeView>
+				<Authorized>
+					@switch (DeviceType)
+					{
+						case Helper.DeviceType.Mobile:
+							<MobileParentAuthorized  MainChildContent="@ChildContent" />
+							 break;
 
-				case Helper.DeviceType.Desktop:
-					<DesktopParentAuthorized MainChildContent="@ChildContent" />
-					 break;
+						case Helper.DeviceType.Desktop:
+							<DesktopParentAuthorized MainChildContent="@ChildContent" />
+							 break;
 
-				case Helper.DeviceType.Unknown:
-					 break;
-			}
-		</Authorized>
-		<Authorizing>
-			<MudText>Authorizing</MudText>
-		</Authorizing>
-		<NotAuthorized>
-			@switch (DeviceType)
-			{
-				case Helper.DeviceType.Mobile:
-					<MobileParentNotAuthorized  />
-					 break;
+						case Helper.DeviceType.Unknown:
+							 break;
+					}
+				</Authorized>
+				<Authorizing>
+					<MudText>Authorizing</MudText>
+				</Authorizing>
+				<NotAuthorized>
+					@switch (DeviceType)
+					{
+						case Helper.DeviceType.Mobile:
+							<MobileParentNotAuthorized  />
+							 break;
 
-				case Helper.DeviceType.Desktop:
-					<DesktopParentNotAuthorized />
-					 break;
+						case Helper.DeviceType.Desktop:
+							<DesktopParentNotAuthorized />
+							 break;
 
-				case Helper.DeviceType.Unknown:
-					 break;
-			}
-		</NotAuthorized>
-	</AuthorizeView>
+						case Helper.DeviceType.Unknown:
+							 break;
+					}
+				</NotAuthorized>
+			</AuthorizeView>
+		</Online>
+		<Offline>
+			<MudPaper Width="100vw" Height="100vh">
+				<MudAlert Severity="Severity.Warning"
+						  Square="true"
+						  Dense="false"
+						  Style="font-size:larger;"
+						  Elevation="10" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center">
+					You are currently offline
+				</MudAlert>
+				<MudAlert Severity="Severity.Info"
+						  Square="true"
+						  Dense="false"
+						  Style="font-size:larger;"
+						  Elevation="10" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center">
+					Please wait until your connection is stable enough to continue your works
+				</MudAlert>
+			</MudPaper>
+		</Offline>
+	</Connection>
 </CascadingAuthenticationState>
 
 @code
@@ -84,16 +107,22 @@
 				case Constants.AuthState.SignedIn:
 				     Snackbar_.Add
 				    (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
-					        .Success);
+				            .Success);
+				     SupabaseImplementModelStateProviderService.BeginFetching();
 				     break;
 
 				case Constants.AuthState.SignedOut:
 				     Snackbar_.Add
 				    (Message.Success.SUCCESSFULLY_LOGGING_OUT, Severity
-			            .Success);
+				            .Success);
+				     SupabaseImplementModelStateProviderService.CeaseFetching();
 				     break;
 
 				case Constants.AuthState.UserUpdated:
+				     Snackbar_.Add
+				    (Message.Success.SUCCESSFULLY_LOGGING_IN_, Severity
+				            .Success);
+				     SupabaseImplementModelStateProviderService.BeginFetching();
 				     break;
 
 				case Constants.AuthState.  TokenRefreshed:
@@ -120,6 +149,16 @@
 		{
 			System.Diagnostics.Debug.WriteLine(exception.Message);
 		}
+	}
+
+	public async Task OnConnectionStatusBeingOn_line()
+	{
+		await SupabaseImplementModelStateProviderService.BeginFetching();
+	}
+
+	public async Task OnConnectionStatusBeingOffline()
+	{
+		await SupabaseImplementModelStateProviderService.CeaseFetching();
 	}
 
 }

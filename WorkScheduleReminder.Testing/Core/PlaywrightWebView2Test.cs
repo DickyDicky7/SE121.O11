@@ -22,8 +22,8 @@ namespace WorkScheduleReminder.Testing.Core
 		public async Task BrowserSetUp()
 		{
 			int cdpPort = 10000 + WorkerIndex;
-			Assert.IsTrue(File.Exists(executablePath
-			), "Make sure that the executable exists, try to build the project which creates the executable again");
+			Assert.That(File.Exists(executablePath
+			),  Is.True, "Make sure that the executable exists, try to build the project which creates the executable again");
 			userDataDirectory =  Path.Join(Path.GetTempPath
 			(), $"PlaywrightWebView2Tests/UserDataDirectory-{NUnit.Framework.TestContext.CurrentContext.WorkerId}");
 			if (Directory.Exists(userDataDirectory))

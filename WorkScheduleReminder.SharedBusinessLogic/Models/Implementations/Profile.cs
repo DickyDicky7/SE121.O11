@@ -29,5 +29,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
 		public string AvatarURL { get; set; } = default!;
+
+		[Column(columnName: "my_day_tasks",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+		public string MyDayTasks{ get; set; } = default!;
 	}
 }

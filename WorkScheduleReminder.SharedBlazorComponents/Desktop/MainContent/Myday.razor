@@ -1,184 +1,383 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
-@page "/"
+
 @page "/myday"
 
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using Anchor = MudBlazor.Anchor
+
 <MudPaper Class="d-flex flex-row"
-          Style="background-color:transparent;overflow:hidden;position:relative;"
-          Elevation="0"
-          Width="100%"
-          Height="100%">
-    <MudDrawerContainer Class="mud-height-full mud-width-full"
-                        Style="background-color:transparent;overflow:hidden;">
-        <MudDrawer @bind-Open="@DrawerOpen"
-                   Class="gap-2 pa-2"
-                   Style="background-color:transparent;overflow:hidden;"
-                   Elevation="0"
-                   Width="350px"
-                   Height="100%"
-                   Anchor="Anchor.Right"
-                   Variant="@DrawerVariant.Persistent">
-            <MudDrawerHeader>
-                <MudTextField @bind-Value=@FilterValue
-                              Placeholder="Filter"
-                              Immediate="true"
-                              DisableUnderLine="true"
-                              FullWidth="true"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                              OnKeyDown="((KeyboardEventArgs e)=>EnterFilter(e))" />
-            </MudDrawerHeader>
-            <MudPaper Class="d-flex flex-column gap-2 pa-2"
-                      Style="overflow:scroll"
-                      Elevation="0"
-                      Width="100%"
-                      Height="100%">
-                @foreach (string Task in SuggestedTasks)
-                {
-                    <MudPaper Class="d-flex flex-row"
-                              Elevation="0"
-                              Width="100%">
-                        <MudButton Class="justify-start align-center"
-                                   Size="Size.Medium"
-                                   FullWidth="true"
-                                   StartIcon="@Icons.Material.Filled.Add"
-                                   OnClick="()=>AddSuggestedTask(Task)">
-                            <MudText>@Task</MudText>
-                        </MudButton>
-                    </MudPaper>
-                }
-            </MudPaper>
-        </MudDrawer>
-        <MudPaper Class="d-flex flex-column gap-2 pa-2"
-                  Elevation="0"
-                  Height="100%">
-            @*Day*@
-            <MudPaper Class="d-flex flex-row align-center justify-space-between"
-                      Elevation="0"
-                      Width="100%">
-                <MudText Style="font-weight:bold;font-size:large;">
-                    @($"{DateTime.Now.DayOfWeek} {DateTime.Now.Day} {DateTime.Now.ToString("MMM")}")
-                </MudText>
-                <MudToggleIconButton Icon="@Icons.Material.Filled.Lightbulb"
-                                     ToggledIcon="@Icons.Material.Filled.Lightbulb"
-                                     Size="Size.Small"
-                                     ToggledSize="Size.Small"
-                                     Color="Color.Default"
-                                     ToggledColor="Color.Info"
-                                     ToggledChanged="ToggleDrawer" />
-            </MudPaper>
-            @*List*@
-            <MudPaper Class="d-flex flex-column flex-grow-1 gap-2 pa-2"
-                      Style="overflow-y:scroll;"
-                      Elevation="0"
-                      Width="100%">
-                @foreach (string Name in Tasks)
-                {
-                    <MudPaper Class="d-flex flex-row justify-space-between"
-                              Elevation="0"
-                              Width="100%">
-                        <MudButton Class="justify-start"
-                                   Size="Size.Small"
-                                   FullWidth="true"
-                                   OnClick="()=>OnTaskClick(Name)">
-                            <MudText>@Name</MudText>
-                        </MudButton>
-                        <MudPaper Class="d-flex flex-row gap-2"
-                                  Elevation="0">
-                            <MudIconButton Size="Size.Small"
-                                           Icon="@Icons.Material.Filled.PushPin" />
-                            <MudIconButton Size="Size.Small"
-                                           Icon="@Icons.Material.Filled.Close"
-                                           OnClick="()=>RemoveSuggestedTask(Name)" />
-                        </MudPaper>
-                    </MudPaper>
-                }
-            </MudPaper>
-            @*AddTask*@
-            <MudPaper Class="d-flex flex-row align-center"
-                      Elevation="0"
-                      Width="100%">
-                <MudTextField @bind-Value=@NewTask
-                              Placeholder="+ Add task"
-                              Immediate="true"
-                              DisableUnderLine="true"
-                              FullWidth="true"
-                              Variant="Variant.Outlined"
-                              Margin="Margin.Dense"
-                              Clearable="true"
-                              TextUpdateSuppression="false"
-                              OnKeyDown="((KeyboardEventArgs e)=>EnterNewTask(e))" />
-            </MudPaper>
-        </MudPaper>
-    </MudDrawerContainer>
+		  Style="background-color:transparent;overflow:hidden;position:relative;"
+		  Elevation="0"
+		  Width="100%" Height="100%">
+	<MudDrawerContainer Class="mud-height-full mud-width-full"
+						Style="background-color:transparent;overflow:hidden;">
+		<MudDrawer @bind-Open="@DrawerOpen"
+				   Class="gap-2 pa-2"
+				   Style="background-color:transparent;overflow:hidden;"
+				   Elevation="0"
+				   Width="350px"
+				   Height="100%"
+				   Anchor="Anchor.Right"
+				   Variant="@DrawerVariant.Persistent">
+			<MudDrawerHeader>
+				<MudTextField T="string"
+							  Placeholder="Filter"
+							  Immediate="true"
+							  DisableUnderLine="true"
+							  FullWidth="true"
+							  Variant="Variant.Outlined" Margin="Margin.Dense"
+							  TextChanged="FilterSuggestedTasks" />
+			</MudDrawerHeader>
+			<MudPaper Class="d-flex flex-column gap-2 pa-2"
+					  Style="overflow:auto;"
+					  Elevation="0"
+					  Width="100%"
+					  Height="100%">
+				<Virtualize Context="task" Items="SuggestedTasks">
+					<MudPaper @key=@(task.Id)
+							  Class="d-flex flex-row"
+							  Elevation="0"
+							  Width="100%">
+						<MudButton Class="justify-start align-center"
+								   Size="Size.Medium"
+								   FullWidth="true"
+								   StartIcon="@Icons.Material.Filled.Add"
+								   OnClick=@(MoveSuggestedTaskToMyDayTask(task))>
+							<MudText>
+								@(task.Name)
+							</MudText>
+						</MudButton>
+						<MudPaper Class="d-flex flex-row gap-2"
+								  Elevation="0">
+							@if (task.IsBoardTask())
+							{
+								<MudTooltip Arrow="true"
+											Color="Color.Dark"
+											Placement="Placement.Left"
+											Text=@($"Board {task.Board! .Name}'s task")>
+									<MudIconButton Size="Size.Small"
+												   Icon="@Icons.Material.Filled.Workspaces"
+												   Color="Color.Dark" />
+								</MudTooltip>
+							}
+							else
+							{
+								<MudTooltip Arrow="true"
+											Color="Color.Dark"
+											Placement="Placement.Left"
+											Text="Your personal task">
+									<MudIconButton Size="Size.Small"
+												   Icon="@Icons.Material.Filled.Person"
+												   Color="Color.Dark" />
+								</MudTooltip>
+							}
+						</MudPaper>
+					</MudPaper>
+				</Virtualize>
+			</MudPaper>
+		</MudDrawer>
+		<MudPaper Class="d-flex flex-column gap-2 pa-2"
+				  Elevation="0"
+				  Height="100%">
+			@*Day*@
+			<MudPaper Class="d-flex flex-row align-center justify-space-between"
+					  Elevation="0"
+					  Width="100%">
+				<MudText Style="font-weight:bold;font-size:large;">
+					@($"{DateTime.Now.DayOfWeek} {DateTime.Now.Day} {DateTime.Now.ToString("MMM")}")
+				</MudText>
+				<MudToggleIconButton Icon="@Icons.Material.Filled.Lightbulb"
+									 ToggledIcon="@Icons.Material.Filled.Lightbulb"
+									 Size="Size.Small"
+									 ToggledSize="Size.Small"
+									 Color="Color.Default"
+									 ToggledColor="Color.Info"
+									 ToggledChanged="ToggleDrawer" />
+			</MudPaper>
+			@*List*@
+			<MudPaper Class="d-flex flex-column flex-grow-1 gap-2 pa-2"
+					  Style="overflow-y:auto;"
+					  Elevation="0"
+					  Width="100%">
+				<Virtualize Context="task__AndPinOrNot" Items="MyDayTasks">
+					<MudPaper @key=@(task__AndPinOrNot.Task.Id)
+							  Class="d-flex flex-row justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudButton Class="justify-start"
+								   Size="Size.Small"
+								   FullWidth="true"
+								   OnClick=@(MyDayTaskOnClick(task__AndPinOrNot.Task))>
+							<MudText>
+								@(task__AndPinOrNot.Task.Name)
+							</MudText>
+						</MudButton>
+						<MudPaper Class="d-flex flex-row gap-2"
+								  Elevation="0">
+							<MudTooltip Arrow="true"
+										Color="Color.Dark"
+										Placement="Placement.Bottom"
+										Text="Unpinned task will be remove from My Day View at the end of today">
+								<MudCheckBox T="bool"
+											 Size="Size.Small"
+											 Checked="task__AndPinOrNot.Pinned"
+											   CheckedIcon="@Icons.Material.Filled.PushPin"
+											 UncheckedIcon="@Icons.Material.Filled.PushPin"
+											          Color="Color.Error"
+											 UnCheckedColor="Color.Dark"
+											 CheckedChanged=@(PushPinOnClick(task__AndPinOrNot)) />
+							</MudTooltip>
+							<MudTooltip Arrow="true"
+										Color="Color.Dark"
+										Placement="Placement.Bottom"
+										Text="Remove task from My Day View">
+								<MudIconButton Size="Size.Small"
+											   Icon="@Icons.Material.Filled.Close"
+											   Color="Color.Dark"
+											   OnClick=@(UndoMoveSuggestedTaskToMyDayTask(task__AndPinOrNot)) />
+							</MudTooltip>
+						</MudPaper>
+					</MudPaper>
+				</Virtualize>
+			</MudPaper>
+			@*AddTask*@
+			<MudPaper Class="d-flex flex-row align-center"
+					  Elevation="0"
+					  Width="100%">
+				<MudTextField @bind-Value=@(NewTaskName)
+							  Placeholder="+ Add task"
+							  Immediate="true"
+							  DisableUnderLine="true"
+							  FullWidth="true"
+							  Variant="Variant.Outlined"
+							  Margin="Margin.Dense"
+							  Clearable="true"
+							  TextUpdateSuppression="false"
+							  OnKeyDown=@(InsertNewTaskToday()) />
+			</MudPaper>
+		</MudPaper>
+	</MudDrawerContainer>
 </MudPaper>
-<MudOverlay Visible="@TaskDetailVisible" VisibleChanged="SaveTask"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation Title="@CurrentTitle" />
+<MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="TogglePopupMenuTaskDetailVisible">
+	<PopupMenuTaskDetail @onclick:stopPropagation
+						 Task="ChosenTask"
+						 TogglePopupMenuTaskDetailVisible="TogglePopupMenuTaskDetailVisible" />
 </MudOverlay>
+
 @code
 {
-    public string CurrentTitle { get; set; } = string.Empty;
-    public bool TaskDetailVisible { get; set; } = false;
-    public bool DrawerOpen { get; set; } = false;
-    public string NewTask { get; set; } = string.Empty;
-    public string FilterValue { get; set; } = string.Empty;
-    public List<string> SuggestedTasks { get; set; } = new List<string>();
-    public List<string> Tasks = new List<string>();
-    public void AddSuggestedTask(string Name)
-    {
-        SuggestedTasks.Remove(Name);
-        Tasks.Add(Name);
-    }
-    public void RemoveSuggestedTask(string Name)
-    {
-        Tasks.Remove(Name);
-        SuggestedTasks.Add(Name);
-    }
-    public void EnterNewTask(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" && NewTask != string.Empty)
-        {
-            Tasks.Add(NewTask);
-            NewTask = string.Empty;
-            StateHasChanged();
-        }
-    }
-    public void EnterFilter(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" && NewTask != string.Empty)
-        {
+	public bool PopupMenuTaskDetailVisible { get; set; } = false;
+	public bool DrawerOpen { get; set; } = false;
 
-            StateHasChanged();
-        }
-    }
-    public void OnTaskClick(string TaskTitle)
-    {
-        TaskDetailVisible = !TaskDetailVisible;
-        CurrentTitle = TaskTitle;
-    }
-    public void ToggleDrawer()
-    {
-        DrawerOpen = !DrawerOpen;
-    }
-    public void SaveTask()
-    {
-        
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        SuggestedTasks.Add("a");
-        SuggestedTasks.Add("s");
-        SuggestedTasks.Add("d");
-        SuggestedTasks.Add("f");
-        SuggestedTasks.Add("q");
-        SuggestedTasks.Add("w");
-        SuggestedTasks.Add("e");
-        SuggestedTasks.Add("r");
-        SuggestedTasks.Add("t");
-        SuggestedTasks.Add("y");
-        SuggestedTasks.Add("u");
-    }
+	public string NewTaskName { get; set; } = string.Empty;
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserProfile))]
+	public Models.Profile CurrentUserProfile { get; set; } = null!;
+
+	public Models.Task ChosenTask { get; set; } = null!;
+	public List<Models.Task> SuggestedTasks { get; set; } = null!;
+	public List<Common.Task__AndPinOrNot> MyDayTasks { get; set; } = null!;
+	public Common.MyDayTasks MyDayTasksCurrentUserProfile { get; set; } = null!;
+
+	public async Task FetchMyDayView()
+	{
+		    MyDayTasksCurrentUserProfile = JsonConvert.DeserializeObject<Common.MyDayTasks>(CurrentUserProfile.MyDayTasks)!;
+
+		if (MyDayTasksCurrentUserProfile.Date.IsToday())
+		{
+			MyDayTasks = SupabaseImplementModelStateProviderService.Task___s.Where(task =>
+			MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot
+			.Any(taskIdAndPinOrNot =>taskIdAndPinOrNot.TaskId==task.Id))
+			.Select<Models.Task, Common.Task__AndPinOrNot>(task => new()
+			{
+				  Task =   task,
+				Pinned = MyDayTasksCurrentUserProfile
+				. TaskIdsAndPinOrNot.First(taskIdAndPinOrNot
+ => taskIdAndPinOrNot.TaskId == task.Id).Pinned,
+			})
+			.ToList();
+		}
+		else
+		{
+			MyDayTasksCurrentUserProfile.Date =    DateOnly.FromDateTime(DateTime.Now);
+			MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.RemoveAll(taskIdAndPinOrNot => !taskIdAndPinOrNot.Pinned);
+			MyDayTasks = new();
+		}
+
+		SuggestedTasks = SupabaseImplementModelStateProviderService.Task___s.Where(task =>
+		{
+			List<Guid> assignees = JsonConvert.DeserializeObject<List<Guid>>(task.Assignees)!;
+			return (!
+				task.IsBoardTask()
+			||  task.ProfileId == CurrentUserId
+			|| assignees.Contains(CurrentUserId)
+			)
+			&& !MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Any(taskIdAndPinOrNot => taskIdAndPinOrNot.TaskId == task.Id);
+		})
+		.OrderBy(task => task.DueDate).ToList();
+	}
+
+	public Func<bool, Task> PushPinOnClick(Common.Task__AndPinOrNot task__AndPinOrNot)
+	{
+		return async (pinned) =>
+		{
+			Common.TaskIdAndPinOrNot chosenTaskIdAndPinOrNot =  task__AndPinOrNot.TaskIdAndPinOrNot;
+			MyDayTasksCurrentUserProfile
+			.TaskIdsAndPinOrNot.First(     taskIdAndPinOrNot => taskIdAndPinOrNot 
+			                      == chosenTaskIdAndPinOrNot).Pinned = pinned;
+                                                                task__AndPinOrNot.Pinned  =  pinned;
+			
+			await SaveMyDayTasks();
+		};
+	}
+
+	public Func<Task> MoveSuggestedTaskToMyDayTask(Models.Task task)
+	{
+		return async () =>
+		{
+			SuggestedTasks.Remove(task);
+			MyDayTasks.Add(new()
+			{
+				  Task =  task,
+				Pinned = false,
+			});
+			MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Add(new()
+			{ 
+				TaskId = task.Id,
+				Pinned = false  ,
+			});
+
+			await SaveMyDayTasks();
+		};
+	}
+
+	public Func<Task> UndoMoveSuggestedTaskToMyDayTask(Common.Task__AndPinOrNot task__AndPinOrNot)
+	{
+		return async () =>
+		{
+			SuggestedTasks.Add(task__AndPinOrNot.Task);
+			SuggestedTasks.Sort((task1, task2) => task1.DueDate.CompareTo(task2.DueDate));
+			MyDayTasks .Remove(task__AndPinOrNot);
+			MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Remove(task__AndPinOrNot.TaskIdAndPinOrNot);
+
+			await SaveMyDayTasks();
+		};
+	}
+
+	public Func<KeyboardEventArgs, Task> InsertNewTaskToday()
+	{
+		return async (keyboardEventArgs) =>
+		{
+			if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(NewTaskName))
+			{
+				try
+				{
+					Models.Task newTask = new()
+						{
+						Name = NewTaskName,
+						Done = false,
+						Note =      string.Empty,
+						Settings  = string.Empty,
+						ReminderRecurringMode = Models.Task
+						.PossibleReminderRecurringMode.Empty.ToString(),
+						ReminderRecurringSettings = JsonConvert
+						.SerializeObject(new Common.ReminderRecurringSettings()),
+						Checklist = "[]",
+						Assignees = "[]",
+						DueDate = Helper.DefaultDueDate(0),
+						DueTime = Helper.DefaultDueTime( ),
+						ReminderBeginDate = null,
+						ReminderBeginTime = null,
+						ReminderCeaseDate = null,
+						ReminderCeaseTime = null,
+						  BoardId = null,
+						ProfileId = CurrentUserId,
+						Attachments = "[]",
+					};
+					newTask = (await SupabaseClient.From<Models.Task>().Insert(
+					newTask , new Postgrest.QueryOptions()
+					{ Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+					NewTaskName = string.Empty;
+					await MoveSuggestedTaskToMyDayTask(newTask)();
+				}
+				catch (Postgrest.Exceptions.PostgrestException postgrestException)
+				{
+					System
+					.Diagnostics.Debug.WriteLine(postgrestException.Message);
+				}
+			}
+		};
+	}
+
+	public void FilterSuggestedTasks(string newFilterText)
+	{
+		SuggestedTasks = SupabaseImplementModelStateProviderService.Task___s.Where(task =>
+		{
+			List<Guid> assignees = JsonConvert.DeserializeObject<List<Guid>>(task.Assignees)!;
+			return (!
+				task.IsBoardTask()
+			||  task.ProfileId == CurrentUserId
+			|| assignees.Contains(CurrentUserId)
+			)
+			&& !MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Any(taskIdAndPinOrNot => taskIdAndPinOrNot.TaskId == task.Id)
+			&&  task.Name
+			.Contains(newFilterText, StringComparison
+			.OrdinalIgnoreCase);
+		})
+		.OrderBy(task => task.DueDate).ToList();
+	}
+
+	public void TogglePopupMenuTaskDetailVisible()
+	{
+		PopupMenuTaskDetailVisible = !
+		PopupMenuTaskDetailVisible;
+	}
+
+	public Action MyDayTaskOnClick(Models.Task task)
+	{
+		return () =>
+		{
+			ChosenTask = task;
+			TogglePopupMenuTaskDetailVisible();
+		};
+	}
+
+	public void ToggleDrawer()
+	{
+		DrawerOpen = !
+		DrawerOpen;
+	}
+
+	public async Task SaveMyDayTasks()
+	{
+		try
+		{
+			string myDayTasks = JsonConvert.SerializeObject(MyDayTasksCurrentUserProfile);
+			if (CurrentUserProfile.MyDayTasks != myDayTasks)
+			{
+				CurrentUserProfile.MyDayTasks  = myDayTasks;
+				await 
+				CurrentUserProfile.Update<Models.Profile>();
+			}
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System
+			.Diagnostics.Debug
+			.WriteLine(postgrestException.Message);
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await FetchMyDayView();
+	}
 }

@@ -1,0 +1,539 @@
+﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+@implements IAsyncDisposable
+@inject       ISnackbar Snackbar
+@inject Supabase.Client SupabaseClient
+@using  Supabase.Realtime
+@using  Supabase.Realtime.PostgresChanges
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper Class="d-flex flex-column gap-2 justify-start pa-2"
+			  Style="border-radius:20px;"
+			  Elevation="10"
+			  Width="500px"
+			  MaxHeight="90vh" @attributes="AdditionalAttributes">
+		@*link and buttons*@
+		<MudPaper Class="d-flex flex-row pa-2"
+				  Elevation="0"
+				  Width="100%">
+			<MudText>@Link</MudText>
+			<MudPaper Class="d-flex flex-grow-1" Elevation="0" />
+			<MudPaper Class="d-flex flex-row gap-2"
+					  Elevation="0">
+				<MudToggleIconButton @bind-Toggled=@IsInMyDay_
+									 Class="rounded-cycle"
+									 Size="Size.Small"
+									 ToggledSize="Size.Small"
+									 Title="Add to My day"
+									 ToggledTitle="Remove form My day"
+									 Icon="@Icons.Material.Filled.AddCircle"
+									 ToggledIcon="@Icons.Material.Filled.AddCircle"
+									 Color="Color.Default"
+									 ToggledColor="Color.Tertiary" />
+				<MudToggleIconButton @bind-Toggled=@IsComplete
+									 Class="rounded-cycle"
+									 Size="Size.Small"
+									 ToggledSize="Size.Small"
+									 Title="Mark as done"
+									 ToggledTitle="Mark as undone"
+									 Icon="@Icons.Material.Filled.Done"
+									 ToggledIcon="@Icons.Material.Filled.Done"
+									 Color="Color.Default"
+									 ToggledColor="Color.Tertiary" />
+				<MudIconButton Class="rounded-cycle"
+							   Size="Size.Small"
+							   Title="Delete task"
+							   Icon="@Icons.Material.Filled.Delete"
+							   Disabled=@(!IsComplete)
+							   Color="Color.Default"
+							   OnClick="RemoveTask" />
+			</MudPaper>
+		</MudPaper>
+		@*title*@
+		<MudText Class="mx-2"
+				 Style="font-size:xx-large;font-weight:bold;">
+			@Task.Name
+		</MudText>
+		@*remind me and tag*@
+		<MudPaper Class="d-flex flex-row gap-2 px-2"
+				  Elevation="0">
+			<MudButton Class="rounded-pill"
+					   Size=Size.Small
+					   StartIcon="@Icons.Material.Filled.Alarm"
+					   Color="Color.Default"
+					   OnClick="TogglePopupMenuReminderVisible">
+				Deadline/Remind me
+			</MudButton>
+			<MudButton Class="rounded-pill align-content-start"
+					   Size=Size.Small
+					   StartIcon="@Icons.Material.Filled.Tag"
+					   Color="Color.Default"
+					   OnClick="TogglePopupMenuTagAndTagging_Visible">
+				Tag
+			</MudButton>
+			@if (Task.BoardId != null)
+			{
+				<MudButton Class="rounded-pill"
+						   Size=Size.Small
+						   StartIcon="@Icons.Material.Filled.People"
+						   Color="Color.Default"
+						   OnClick="TogglePopupMenuSelectAssigneeVisible">
+					Assign
+				</MudButton>
+				<MudButton Class="rounded-pill align-content-start"
+						   Size=Size.Small
+						   StartIcon="@Icons.Material.Filled.ArrowRight"
+						   Color="Color.Default"
+						   OnClick="TogglePopupMenuSelectSection_Visible">
+					Section
+				</MudButton>
+			}
+		</MudPaper>
+		@*note*@
+		<MudPaper Class="d-flex flex-column gap-1 px-2"
+				  Elevation="0">
+			<MudText Style="font-size:large;font-weight:500;">
+				Note
+			</MudText>
+			<MudTextField @bind-Value="Note"
+						  Class=""
+						  Placeholder="Name your subtask"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Lines="3" />
+		</MudPaper>
+		@*subtasks*@
+		<MudPaper Class="d-flex flex-column gap-1 px-2"
+				  Style="overflow:hidden;"
+				  Elevation="0">
+			<MudText Style="font-size:large;font-weight:500;">
+				Subtask
+			</MudText>
+			<MudPaper Class="d-flex flex-column"
+					  Style="overflow:auto;"
+					  Elevation="0"
+					  Width="100%"
+					  MaxHeight="150px">
+				<Virtualize Context="subtask" Items="Subtasks">
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudCheckBox @bind-Checked=subtask.Checked
+									 Size="Size.Small"
+									 Label="@subtask.Name"
+									 Dense="true" />
+						<MudIconButton Icon="@Icons.Material.Filled.Delete"
+									   Disabled="@(!subtask.Checked)"
+									   Size="Size.Small"
+									   OnClick=@(RemoveSubtask(subtask)) />
+					</MudPaper>
+				</Virtualize>
+			</MudPaper>
+			<MudTextField @bind-Value="NewSubtaskName"
+						  Class=""
+						  Placeholder="Name your subtask"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="true"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  TextUpdateSuppression="false"
+						  OnKeyDown="InsertSubtask" />
+		</MudPaper>
+		@*attachments*@
+		<MudPaper Class="d-flex flex-column gap-1 px-2"
+				  Style="overflow:hidden;"
+				  Elevation="0">
+			<MudText Style="font-size:large;font-weight:500;">
+				Attachments
+			</MudText>
+			<MudFileUpload T="IReadOnlyList<IBrowserFile>"
+						   FilesChanged="FilesChanged"
+						   AppendMultipleFiles="false">
+				<ButtonTemplate>
+					<MudButton HtmlTag="label"
+							   Variant="Variant.Filled"
+							   Color="Color.Primary"
+							   StartIcon="@Icons.Material.Filled.CloudUpload"
+							   FullWidth="true"
+							   for="@context">
+						<MudText>
+							Upload Files
+						</MudText>
+					</MudButton>
+				</ButtonTemplate>
+			</MudFileUpload>
+			<MudPaper Class="d-flex flex-column"
+					  Style="overflow:auto;"
+					  Elevation="0"
+					  Width="100%"
+					  MaxHeight="150px">
+				<Virtualize Context="attachment" Items="Attachments">
+					<MudPaper @key=@(attachment)
+							  Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class="d-flex flex-row align-center"
+								  Elevation="0">
+							<MudTooltip Arrow="true" Color="Color.Success" Text="Download this attachment">
+								<MudIconButton Size="Size.Small"
+											   Color="Color.Success"
+											   Icon="@Icons.Material.Filled.CloudDownload"
+											   OnClick=@(DownloadAttachmentOnClick(attachment)) />
+							</MudTooltip>
+							<MudTooltip Arrow="true" Color="Color.Info" Text="Attachment available">
+								<MudText Color="Color.Info">
+									@attachment.Split('/').Last()
+								</MudText>
+							</MudTooltip>
+						</MudPaper>
+						<MudTooltip Arrow="true" Color="Color.Error" Text="Remove this attachment">
+							<MudIconButton Size="Size.Small"
+										   Icon="@Icons.Material.Filled.Delete"
+										   Color="Color.Error"
+										   OnClick=@(RemoveAttachment(attachment)) />
+						</MudTooltip>
+					</MudPaper>
+				</Virtualize>
+				<Virtualize Context="readyToUploadFile" Items="ReadyToUploadFiles">
+					<MudPaper @key=@(readyToUploadFile.Name)
+							  Class="d-flex flex-row align-center justify-space-between"
+							  Elevation="0"
+							  Width="100%">
+						<MudPaper Class="d-flex flex-row align-center"
+								  Elevation="0">
+							<MudIconButton Size="Size.Small"
+										   Color="Color.Dark"
+										   Icon="@Icons.Material.Filled.CloudUpload" />
+
+							<MudTooltip Arrow="true" Color="Color.Dark" Text="This file is ready to upload">
+								<MudText Color="Color.Dark">
+									@readyToUploadFile.Name
+								</MudText>
+							</MudTooltip>
+						</MudPaper>
+						<MudTooltip Arrow="true" Color="Color.Dark" Text="Remove this ready to upload file">
+							<MudIconButton Size="Size.Small" Color="Color.Dark"
+										   Icon="@Icons.Material.Filled.Delete"
+										   OnClick=@(RemoveReadyToUploadFile(readyToUploadFile)) />
+						</MudTooltip>
+					</MudPaper>
+				</Virtualize>
+			</MudPaper>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Color="Color.Error"
+					   Disabled="@(!ReadyToUploadFiles.Any())"
+					   OnClick="ClearReadyToUploadFiles">
+				Clear Ready To Upload Files
+			</MudButton>
+		</MudPaper>
+	</MudPaper>
+</Animate>
+<MudOverlay Class="border-2"
+			Visible="PopupMenuReminderVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			ZIndex="30"
+			OnClick="TogglePopupMenuReminderVisible">
+	<PopupMenuReminder @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
+					   Task="Task"
+					   TogglePopupMenuReminderVisible="TogglePopupMenuReminderVisible" />
+</MudOverlay>
+<MudOverlay Class="border-2"
+			Visible="PopupMenuTagAndTagging_Visible"
+			DarkBackground="true"
+			AutoClose="true"
+			ZIndex="30"
+			OnClick="TogglePopupMenuTagAndTagging_Visible">
+	<PopupMenuTagAndTagging @onclick:stopPropagation
+							Task="Task"
+							TogglePopupMenuTagAndTaggingVisible="TogglePopupMenuTagAndTagging_Visible" />
+</MudOverlay>
+<MudOverlay Class="border-2"
+			Visible="PopupMenuSelectSection_Visible"
+			DarkBackground="true"
+			AutoClose="true"
+			ZIndex="30"
+			OnClick="TogglePopupMenuSelectSection_Visible">
+	<PopupMenuSelectSection  @onclick:stopPropagation
+							 Task="Task" />
+</MudOverlay>
+<MudOverlay Class="border-2"
+			Visible="PopupMenuSelectAssigneeVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			ZIndex="30"
+			OnClick="TogglePopupMenuSelectAssigneeVisible">
+	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
+							 Task="Task" />
+</MudOverlay>
+
+@code
+{
+	public bool PopupMenuTagAndTagging_Visible { get; set; } = false;
+	public bool PopupMenuReminderVisible { get; set; } = false;
+	public bool PopupMenuSelectAssigneeVisible { get; set; } = false;
+	public bool PopupMenuSelectSection_Visible { get; set; } = false;
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	[Parameter]
+	public string Link { get; set; } = "Example/Link";
+	[Parameter]
+	public string Page { get; set; } = null!;
+
+	[Parameter]
+	public  Models.Task Task  { get; set; } = null!;
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
+	[Parameter]
+	public EventCallback TogglePopupMenuTaskDetailVisible { get; set; }
+
+	public bool IsInMyDay_ { get; set; } = false;
+	public bool IsComplete { get; set; }
+	public string           Note { get; set; } = string.Empty;
+	public string NewSubtaskName { get; set; } = string.Empty;
+
+	public record Subtask
+	{
+		public string  Name { get; set; } = null!;
+		public bool Checked { get; set; } = false;
+	}
+
+	public bool ShouldUpdateTask { get; set; } = false;
+	public bool ShouldRemoveTask { get; set; } = false;
+
+	public List<Subtask>    Subtasks { get; set; } = null!;
+	public List<string > Attachments { get; set; } = null!;
+	public List<IBrowserFile> ReadyToUploadFiles { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		IsComplete = Task.Done;
+		      Note = Task.Note;
+		   Subtasks = JsonConvert.DeserializeObject<List<Subtask>>(Task.Checklist  ) ?? new();
+		Attachments = JsonConvert.DeserializeObject<List<string >>(Task.Attachments) ?? new();
+	}
+
+	public void FilesChanged(IReadOnlyList<IBrowserFile> readyTouploadFiles)
+	{
+
+		ReadyToUploadFiles.Clear();
+		ReadyToUploadFiles.AddRange(readyTouploadFiles);
+	}
+
+	public void ClearReadyToUploadFiles()
+	{
+		ReadyToUploadFiles.Clear();
+	}
+
+	public Action RemoveReadyToUploadFile(IBrowserFile readyToUploadFile)
+	{
+		return () =>
+		{
+			ReadyToUploadFiles.Remove(readyToUploadFile);
+		};
+	}
+
+	public void TogglePopupMenuTagAndTagging_Visible()
+	{
+		PopupMenuTagAndTagging_Visible = !
+		PopupMenuTagAndTagging_Visible;
+	}
+
+	public void TogglePopupMenuReminderVisible()
+	{
+		PopupMenuReminderVisible = !
+		PopupMenuReminderVisible;
+	}
+
+	public void TogglePopupMenuSelectAssigneeVisible()
+	{
+		PopupMenuSelectAssigneeVisible = !
+		PopupMenuSelectAssigneeVisible;
+	}
+
+	public void TogglePopupMenuSelectSection_Visible()
+	{
+		PopupMenuSelectSection_Visible = !
+		PopupMenuSelectSection_Visible;
+	}
+
+	public Action RemoveSubtask(Subtask subtask)
+	{
+		return () =>
+		{
+			Subtasks.Remove(subtask);
+		};
+	}
+
+	public void InsertSubtask(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(NewSubtaskName))
+		{
+			Subtasks.Add(new() { Name = NewSubtaskName });
+			NewSubtaskName = string.Empty;
+		}
+	}
+
+	public async Task RemoveTask()
+	{
+		try
+		{
+			await Task.Delete<Models.Task>();
+			Snackbar.Add(Message.Success.SUCCESSFULLY_REMOVE_TASK, Severity.Success);
+			ShouldRemoveTask = true;
+			await TogglePopupMenuTaskDetailVisible.InvokeAsync();
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_REMOVE_TASK(postgrestException.ExtractMessage()), Severity.Error);
+		}
+	}
+
+	public Func<Task> RemoveAttachment(string attachment)
+	{
+		return async () =>
+		{
+			try
+			{
+				Attachments.Remove(attachment);
+				await SupabaseClient.Storage.From("generals").Remove(attachment.Remove(0, "generals".Length + 1));
+			}
+			catch (Supabase.Storage
+				.Exceptions.SupabaseStorageException supabaseStorageException)
+			{
+				  System.Diagnostics.Debug.WriteLine(supabaseStorageException.Message);
+			}
+		};
+	}
+
+	public Func<Task> DownloadAttachmentOnClick(string attachment)
+	{
+		return async () =>
+		{
+			string folderPath = Path.Combine
+			(Environment.GetFolderPath(Environment.SpecialFolder . UserProfile), "Downloads", "Work Schedule Reminder",
+$"{DateTimeOffset.Now.ToString().Replace('/', '.').Replace(':', '.')}");
+			string fileName =attachment.Split('/').Last();
+			string savePath =
+Path.Combine(folderPath, fileName);
+			try
+			{
+				Directory.CreateDirectory(folderPath);
+				await SupabaseClient.Storage.From("generals").Download(attachment.Remove(0, "generals".Length + 1), savePath,
+				(sender, progress) =>
+				{
+
+				});
+				Snackbar.Add(Message.Success.SUCCESSFULLY_DOWNLOAD_FILE(fileName, savePath), Severity.Success);
+			}
+			catch (Supabase.Storage
+				.Exceptions.SupabaseStorageException supabaseStorageException)
+			{
+				System  .Diagnostics.Debug.WriteLine(supabaseStorageException.Message);
+				Snackbar.Add(Message.Error.CANNOT_DOWNLOAD_FILE(fileName, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+			}
+			catch (Exception exception)
+			{
+				System  .Diagnostics.Debug.WriteLine(exception.Message);
+				Snackbar.Add(Message.Error.CANNOT_DOWNLOAD_FILE(fileName, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+			}
+		};
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		try
+		{
+			if (ShouldRemoveTask)
+			{
+				return;
+			}
+			string   checklist  = JsonConvert.SerializeObject(Subtasks);
+			if (Task.Checklist != checklist)
+			{
+				Task.Checklist  = checklist;
+				ShouldUpdateTask = true;
+			}
+			if (ReadyToUploadFiles.Count > 0)
+			{
+				foreach (IBrowserFile readyToUploadFile in ReadyToUploadFiles)
+				{
+					using (Stream readStream = 
+					readyToUploadFile.OpenReadStream())
+					{
+						byte[] buffers = new byte[readyToUploadFile.Size];
+						await readStream.ReadAsync(buffers);
+						string filePath;
+						if (Task.IsBoardTask())
+filePath = @$"{Task.Board!.OwnerId}/Boards/{Task.Board.Id}/{CurrentUserId}/{DateTimeOffset.Now.ToString().Replace('/', '-').Replace(' ', '_')}/{readyToUploadFile.Name}";
+						else
+filePath = @$"{CurrentUserId}/Personal/{DateTimeOffset.Now.ToString().Replace('/', '-').Replace(' ', '_')}/{readyToUploadFile.Name}";
+						string  path =    await  SupabaseClient.Storage.From("generals")
+						.Upload(buffers, filePath, new Supabase.Storage.FileOptions()
+						{
+							ContentType = readyToUploadFile.ContentType, /* IMPORTANT & CRITICAL */
+							     Upsert = false,                         /* IMPORTANT & CRITICAL */
+						}, inferContentType: true, onProgress: ( sender, progress) =>
+						{
+
+						});
+						Attachments.Add(path);
+					}
+				}
+			}
+			string attachments = JsonConvert.SerializeObject(Attachments);
+			if (Task.Attachments != attachments)
+			{
+				Task.Attachments  = attachments;
+				ShouldUpdateTask  = true;
+			}
+			if (Task.Done != IsComplete)
+			{
+				Task.Done  = IsComplete;
+				ShouldUpdateTask = true;
+			}
+			if (Task.Note != Note)
+			{
+				Task.Note  = Note;
+				ShouldUpdateTask = true;
+			}
+			if (ShouldUpdateTask)
+			{
+				if   (Task.BaseUrl != null)
+				await Task.Update        <Models.Task>();
+				else
+				await SupabaseClient.From<Models.Task>().Update(Task, new Postgrest.QueryOptions() { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+				Snackbar  .Add(  Message.Success.SUCCESSFULLY_UPDATE_TASK, Severity.Success);
+			}
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System  .Diagnostics.Debug.WriteLine(    postgrestException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_TASK(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Supabase.Storage.Exceptions.SupabaseStorageException supabaseStorageException)
+		{
+			System  .Diagnostics.Debug.WriteLine
+			 (supabaseStorageException.Message);
+			Snackbar.Add(Message.Error.CANNOT_UPDATE_TASK(Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+		}
+		catch (Exception exception)
+		{
+			System  .Diagnostics.Debug.WriteLine(exception.Message);
+		}
+	}
+}
