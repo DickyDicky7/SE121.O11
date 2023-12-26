@@ -233,7 +233,8 @@ namespace WorkScheduleReminder.MAUIBlazor.WinUI
 			{
 				return $@"Task ""{task.Name}"" is due at {task.DueTime:HH:mm} today {Time.AlarmClock}.";
 			}
-		} 
+		}
+
 		private void ShowNotification(string notificationId, string notificationHeader, string notificationContent)
 		{
 			try

@@ -226,5 +226,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 
 		public static DateOnly DefaultDueDate(int daysOffset) => DateOnly.FromDateTime(DateTime.Now).AddDays(daysOffset);
 		public static TimeOnly DefaultDueTime(              ) => TimeOnly.MaxValue.AddHours(+0).AddMinutes(-1);
+
+
 	}
 }

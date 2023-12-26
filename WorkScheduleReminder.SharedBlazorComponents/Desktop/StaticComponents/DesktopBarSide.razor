@@ -17,17 +17,37 @@
 		  Outlined="true"
 		  Width="300px"
 		  Height="100%">
-	<MudButton Size="Size.Large"
-			   FullWidth="true" 
+	<MudButton Style="padding:0 0 0 0;"
+			   Size="Size.Large"
+			   FullWidth="true"
 			   OnClick="ToggleSetting">
 		<MudPaper Class="d-flex flex-row gap-2 align-center"
 				  Elevation="0"
 				  Width="100%">
-			<MudAvatar>
-				<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
+			<MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+				@if
+				(CurrentUserProfile !=   null)
+				@if (string.IsNullOrWhiteSpace
+				(CurrentUserProfile.AvatarURL))
+				{
+			   @(CurrentUserProfile.Email[0].ToString()
+				.ToUpper())
+				}
+				else
+				{
+					<MudImage Src=@(CurrentUserProfile.AvatarURL) />
+				}
 			</MudAvatar>
-			<MudText Style="font-size:large;">
-				-Name-
+			<MudText Style="font-size:large;word-break:break-all;"
+					 Align="Align.Justify">
+				@if (CurrentUserProfile != null)
+				{
+				@(   CurrentUserProfile.Email.Split('@').First())
+				}
+				else
+				{
+					
+				}
 			</MudText>
 		</MudPaper>
 	</MudButton>
@@ -213,6 +233,8 @@
 	public EventCallback<Models.Board     > ActiveBoard_____Changed { get; set; }
 	[Parameter]
 	public EventCallback<Models.CustomView> ActiveCustomViewChanged { get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserProfile))]
+	public Models.Profile CurrentUserProfile { get; set; } = null!;
 
 	public RealtimeChannel RealtimeChannelDeletesMembers     { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesBoards      { get; set; } = null!;
@@ -342,6 +364,8 @@
 		try
 		{
 		await base.OnInitializedAsync();
+		// CurrentUserProfile = (await SupabaseClient.From<Models.Profile>().Where(profile => profile.Id == CurrentUserId)
+		// .Single())!;
 		SupabaseImplementModelStateProviderService.ChangedCustomViews += OnChangedCustomViews;
 		SupabaseImplementModelStateProviderService.ChangedBoard__s += OnChangedBoard__s;
 		SupabaseImplementModelStateProviderService.ChangedMember_s += OnChangedMember_s;

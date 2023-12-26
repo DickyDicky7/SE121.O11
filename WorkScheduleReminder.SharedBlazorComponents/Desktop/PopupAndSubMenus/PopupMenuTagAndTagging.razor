@@ -113,11 +113,13 @@
 			<MudPaper Class="d-flex flex-row justify-space-between"
 					  Elevation="0">
 				<MudText Style="font-size:larger;font-weight:bold;">
-					@(EnableTaggings ? "Select tag(s)" : "View tag")
+				@if (EnableTaggings) @("Select tag(s)") else @("View tag(s)")
 				</MudText>
-				<MudIconButton Icon="@Icons.Material.Filled.Add"
-							   Size="Size.Small"
-							   OnClick="ChangeMode(Mode.Add, null!)" />
+				@if (EnableTaggings)
+				{
+					<MudIconButton Icon="@Icons.Material.Filled.Add" Size="Size.Small"
+								OnClick="ChangeMode(Mode.Add,null!)" />
+				}
 			</MudPaper>
 			@*list of tags*@
 			<MudPaper Style="overflow:auto;"
@@ -131,7 +133,7 @@
 							  Width="100%">
 						<MudPaper Class="d-flex flex-row pa-1 align-center"
 								  Elevation="0">
-							@if (EnableTaggings)
+							@if (SeeThroughTask)
 							{
 								<MudCheckBox @bind-Checked=@tag.NewChecked
 											 Size="Size.Small"
@@ -140,14 +142,16 @@
 							}
 							<MudText Color="tag.Color">@tag.Name</MudText>
 						</MudPaper>
-						<MudIconButton Icon="@Icons.Material.Filled.Edit"
-									   Size="Size.Small"
-									   OnClick="ChangeMode(Mode.Edit, tag)" />
+						@if (EnableTaggings)
+						{
+							<MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small"
+										OnClick="ChangeMode(Mode.Edit,  tag)" />
+						}
 					</MudPaper>
 				</Virtualize>
 			</MudPaper>
 			@*Action button*@
-			if (EnableTaggings)
+			if (SeeThroughTask)
 			{
 				<MudButton Class="rounded-pill"
 						   Size="Size.Small"
@@ -164,6 +168,8 @@
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
 	[CascadingParameter(Name = nameof(CurrentUserId))]
 	public Guid CurrentUserId { get; set; }
 	[Parameter]
@@ -171,10 +177,15 @@
 	[Parameter]
 	public EventCallback TogglePopupMenuTagAndTaggingVisible { get; set; }
 
-	public bool EnableTaggings => !Task.IsBoardTask() || SupabaseImplementModelStateProviderService.Member_s.Any(member
-	=> member.  BoardId ==  Task.BoardId
-	&& member.ProfileId == CurrentUserId
-	&& member.Role == Models.Member.PossibleRole.Editor);
+	public bool EnableTaggings
+	=> (Task != null && (!Task.IsBoardTask() || CurrentUserMembership.Role == Models.Member.PossibleRole.Editor)) 
+	|| (Task == null && (                       CurrentUserMembership.Role == Models.Member.PossibleRole.Editor));
+
+	public bool SeeThroughTask
+	=>  Task != null &&
+	            EnableTaggings;
+
+	public Models.Member CurrentUserMembership { get; set; } = null!;
 
 	public      Tag ChosenTag  { get; set; } = null!;
 	public List<Tag>      Tags { get; set; } = new();
@@ -193,42 +204,61 @@
 	public async Task MapTagAndTaggingModelsToTagRecords()
 	{
 		Tags.Clear();
-		if (Task.IsBoardTask())
+		if (Task != null)
+		{
+			if (Task.IsBoardTask())
+			{
+				foreach (Models.TagByBoard tagByBoard in SupabaseImplementModelStateProviderService
+					.Tag____ByBoard__s.Where
+					(tag____ByBoard__ => tag____ByBoard__.BoardId == Task.BoardId).OrderBy
+					(tag____ByBoard__ => tag____ByBoard__.CreatedTimeStamp))
+				{
+					Tags.Add(new()
+					{
+						Id = tagByBoard.Id,
+						NewChecked = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Any(taggingByBoard__ =>
+						taggingByBoard__.TagByBoardId == tagByBoard.Id &&
+						taggingByBoard__.TaskId == Task.Id),
+						Name  = tagByBoard.Name,
+						Color = tagByBoard.ParseColor(),
+					});
+					Tag lastTag = Tags.Last();
+					lastTag.OldChecked = lastTag.NewChecked;
+				}
+			}
+			else
+			{
+				foreach (Models.TagByProfile tagByProfile in SupabaseImplementModelStateProviderService
+					.Tag____ByProfiles.OrderBy
+					(tag____ByProfile => tag____ByProfile.CreatedTimeStamp))
+				{
+					Tags.Add(new()
+					{
+						Id = tagByProfile.Id,
+						NewChecked = SupabaseImplementModelStateProviderService.TaggingByProfiles.Any(taggingByProfile =>
+						taggingByProfile.TagByProfileId == tagByProfile.Id &&
+						taggingByProfile.TaskId == Task.Id),
+						Name  = tagByProfile.Name,
+						Color = tagByProfile.ParseColor(),
+					});
+					Tag lastTag = Tags.Last();
+					lastTag.OldChecked = lastTag.NewChecked;
+				}
+			}
+		}
+		else
 		{
 			foreach (Models.TagByBoard tagByBoard in SupabaseImplementModelStateProviderService
-				.Tag____ByBoard__s.OrderBy
+				.Tag____ByBoard__s.Where
+				(tag____ByBoard__ => tag____ByBoard__.BoardId == ActiveBoard_____.Id).OrderBy
 				(tag____ByBoard__ => tag____ByBoard__.CreatedTimeStamp))
 			{
 				Tags.Add(new()
 				{
 					Id = tagByBoard.Id,
-					NewChecked = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Any(taggingByBoard__ =>
-					taggingByBoard__.TagByBoardId == tagByBoard.Id &&
-					taggingByBoard__.TaskId == Task.Id),
 					Name  = tagByBoard.Name,
 					Color = tagByBoard.ParseColor(),
 				});
-				Tag lastTag = Tags.Last();
-				lastTag.OldChecked = lastTag.NewChecked;
-			}
-		}
-		else
-		{
-			foreach (Models.TagByProfile tagByProfile in SupabaseImplementModelStateProviderService
-				.Tag____ByProfiles.OrderBy
-				(tag____ByProfile => tag____ByProfile.CreatedTimeStamp))
-			{
-				Tags.Add(new()
-				{
-					Id = tagByProfile.Id,
-					NewChecked = SupabaseImplementModelStateProviderService.TaggingByProfiles.Any(taggingByProfile =>
-					taggingByProfile.TagByProfileId == tagByProfile.Id &&
-					taggingByProfile.TaskId == Task.Id),
-					Name  = tagByProfile.Name,
-					Color = tagByProfile.ParseColor(),
-				});
-				Tag lastTag = Tags.Last();
-				lastTag.OldChecked = lastTag.NewChecked;
 			}
 		}
 	}
@@ -276,12 +306,15 @@
 
 			JObject settings = new();
 			settings[nameof(ChosenTag.Color)] = ChosenTag.Color.ToString();
-			if (Task.IsBoardTask())
+			if (Task == null
+			||  Task.IsBoardTask())
 			{
+				Guid boardId;
+				if (Task == null) boardId = ActiveBoard_____.Id; else boardId = Task.BoardId!.Value;
 				Models.TagByBoard newTagByBoard = new()
 				{
 					   Name = ChosenTag.Name,
-					BoardId = Task.BoardId! .Value,
+					BoardId = boardId       ,
 					Settings = settings.ToString(),
 				};
 				await SupabaseClient.From<Models.TagByBoard>().Insert(newTagByBoard,
@@ -327,7 +360,8 @@
 
 			JObject settings = new();
 			settings[nameof(ChosenTag.Color)] = ChosenTag.Color.ToString();
-			if (Task.IsBoardTask())
+			if (Task == null
+			||	Task.IsBoardTask())
 			{
 				await SupabaseClient.From<Models.TagByBoard>().Where(tagByBoard => tagByBoard.Id == ChosenTag.Id)
 				.Set(tagByBoard => tagByBoard.    Name, ChosenTag.Name      )
@@ -354,7 +388,8 @@
 	{
 		try
 		{
-			if (Task.IsBoardTask())
+			if (Task == null
+			||	Task.IsBoardTask())
 			{
 				await SupabaseClient.From<Models.TagByBoard>().Delete(new Models.TagByBoard()
 				{
@@ -489,7 +524,16 @@
 		Colors.Add(Color.Dark);
 		Colors.Add(Color.Warning);
 		await MapTagAndTaggingModelsToTagRecords();
-		if (Task.IsBoardTask())
+		if (Task != null
+		&&  Task.IsBoardTask())
+		CurrentUserMembership = SupabaseImplementModelStateProviderService.Member_s
+		.First(member => member.BoardId ==        Task.BoardId && member.ProfileId == CurrentUserId);
+		else
+		if (Task == null)
+		CurrentUserMembership = SupabaseImplementModelStateProviderService.Member_s
+		.First(member => member.BoardId == ActiveBoard_____.Id && member.ProfileId == CurrentUserId);
+		if (Task == null
+		||  Task.IsBoardTask())
 		SupabaseImplementModelStateProviderService.ChangedTag____ByBoard__s += OnChangedTag____ByBoard__s;
 		else
 		SupabaseImplementModelStateProviderService.ChangedTag____ByProfiles += OnChangedTag____ByProfiles;
@@ -497,7 +541,8 @@
 
 	public void Dispose()
 	{
-		if (Task.IsBoardTask())
+		if (Task == null
+		||  Task.IsBoardTask())
 		SupabaseImplementModelStateProviderService.ChangedTag____ByBoard__s -= OnChangedTag____ByBoard__s;
 		else
 		SupabaseImplementModelStateProviderService.ChangedTag____ByProfiles -= OnChangedTag____ByProfiles;

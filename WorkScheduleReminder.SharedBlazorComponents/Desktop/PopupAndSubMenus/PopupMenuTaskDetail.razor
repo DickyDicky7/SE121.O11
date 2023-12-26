@@ -186,7 +186,8 @@
 							<MudTooltip Arrow="true" Color="Color.Success" Text="Download this attachment">
 								<MudIconButton Size="Size.Small"
 											   Color="Color.Success"
-											   Icon="@Icons.Material.Filled.CloudDownload" />
+											   Icon="@Icons.Material.Filled.CloudDownload"
+											   OnClick=@(DownloadAttachmentOnClick(attachment)) />
 							</MudTooltip>
 							<MudTooltip Arrow="true" Color="Color.Info" Text="Attachment available">
 								<MudText Color="Color.Info">
@@ -415,6 +416,40 @@
 				.Exceptions.SupabaseStorageException supabaseStorageException)
 			{
 				  System.Diagnostics.Debug.WriteLine(supabaseStorageException.Message);
+			}
+		};
+	}
+
+	public Func<Task> DownloadAttachmentOnClick(string attachment)
+	{
+		return async () =>
+		{
+			string folderPath = Path.Combine
+			(Environment.GetFolderPath(Environment.SpecialFolder . UserProfile), "Downloads", "Work Schedule Reminder",
+$"{DateTimeOffset.Now.ToString().Replace('/', '.').Replace(':', '.')}");
+			string fileName =attachment.Split('/').Last();
+			string savePath =
+Path.Combine(folderPath, fileName);
+			try
+			{
+				Directory.CreateDirectory(folderPath);
+				await SupabaseClient.Storage.From("generals").Download(attachment.Remove(0, "generals".Length + 1), savePath,
+				(sender, progress) =>
+				{
+
+				});
+				Snackbar.Add(Message.Success.SUCCESSFULLY_DOWNLOAD_FILE(fileName, savePath), Severity.Success);
+			}
+			catch (Supabase.Storage
+				.Exceptions.SupabaseStorageException supabaseStorageException)
+			{
+				System  .Diagnostics.Debug.WriteLine(supabaseStorageException.Message);
+				Snackbar.Add(Message.Error.CANNOT_DOWNLOAD_FILE(fileName, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
+			}
+			catch (Exception exception)
+			{
+				System  .Diagnostics.Debug.WriteLine(exception.Message);
+				Snackbar.Add(Message.Error.CANNOT_DOWNLOAD_FILE(fileName, Message.Error.SOMETHING_WENT_WRONG), Severity.Error);
 			}
 		};
 	}
