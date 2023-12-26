@@ -391,7 +391,10 @@
 	{
 		try
 		{
-			await Task.Delete<Models.Task>();
+			if   (Task.BaseUrl != null)
+			await Task.Delete        <Models.Task>();
+			else
+			await SupabaseClient.From<Models.Task>().Delete( Task, new Postgrest   .QueryOptions() { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
 			Snackbar.Add(Message.Success.SUCCESSFULLY_REMOVE_TASK, Severity.Success);
 			ShouldRemoveTask = true;
 			await TogglePopupMenuTaskDetailVisible.InvokeAsync();

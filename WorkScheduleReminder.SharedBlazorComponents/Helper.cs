@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using MudBlazor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,9 +30,43 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			DefaultView, CustomView, WorkspaceView
 		}
 
+		public enum ViewTypeBoard
+		{
+			Kanban,
+			 Table,
+			Calendar,
+		}
+
 		public enum DeviceType
 		{
 			Desktop, Mobile, Unknown
+		}
+
+		public class CustomMudTheme_1
+		                 : MudTheme
+		{
+		public       CustomMudTheme_1() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+			}
+		}
+
+		public class CustomMudTheme_2
+		                 : MudTheme
+		{
+		public       CustomMudTheme_2() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+			}
+		}
+
+		public class CustomMudTheme_3
+		                 : MudTheme
+		{
+		public       CustomMudTheme_3() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+			}
 		}
 
 		public static Dictionary<byte, MudTheme> CustomThemes { get; } = new()
@@ -39,52 +74,18 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				1
 				,
-				new()
-				{
-					Typography = new()
-					{
-						 Default = new()
-						 {
-							 FontFamily = new string[1] { "Montserrat-Regular" },
-						 },
-					},
-					ZIndex = new()
-					{
-					},
-					Shadows = new()
-					{
-					},
-					Palette = new()
-					{
-					},
-					PaletteDark = new()
-					{
-
-					},
-					PseudoCss = new()
-					{
-					},
-					LayoutProperties = new()
-					{
-					},
-				}
+				new CustomMudTheme_1()
 			}
 			,
 			{
 				2
 				,
-				new()
-				{
-
-				}
+				new CustomMudTheme_2()
 			}
 			,
 			{
 				3,
-				new()
-				{
-
-				}
+				new CustomMudTheme_3()
 			}
 			,
 		};
@@ -115,26 +116,35 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			    return (ok: true , reason: string.Empty);
 		}
 
-		public static string ExtractSupabaseGotrueException(this JObject message)
-		=> message["msg"]              ?.Value<string>()
-		?? message["error_description"]?.Value<string>()
-		?? string.Empty;
-
 		public static string ExtractMessage
 		( this Supabase.Gotrue.Exceptions.     GotrueException    gotrueException)
 		{
-			JObject message = JObject.Parse(   gotrueException.Message);
-			return message["msg"]              ?.Value<string>()
-				?? message["error_description"]?.Value<string>()
-				?? string.Empty;
+			try
+			{
+				JObject message = JObject.Parse(gotrueException.Message);
+				return  message["msg"]              ?.Value<string>()
+				    ??  message["error_description"]?.Value<string>()
+				    ??  string.Empty;
+			}
+			catch (   Exception exception)
+			{
+				Debug.WriteLine(exception.Message); return Message.Error.SOMETHING_WENT_WRONG;
+			}
 		}
 
 		public static string ExtractMessage
 		( this Postgrest      .Exceptions.  PostgrestException postgrestException)
 		{
-			JObject message = JObject.Parse(postgrestException.Message);
-			return  message["message"]         ?.Value<string>()
-				?? string.Empty;
+			try
+			{
+				JObject message = JObject.Parse(postgrestException.Message);
+				return  message["message"]          ?.Value<string>()
+				    ??  string.Empty;
+			}
+			catch (   Exception exception)
+			{
+				Debug.WriteLine(exception.Message); return Message.Error.SOMETHING_WENT_WRONG;
+			}
 		}
 
 		public static async Task<string> GetUserFriendlyContentFromRawContentInDatabaseMessages

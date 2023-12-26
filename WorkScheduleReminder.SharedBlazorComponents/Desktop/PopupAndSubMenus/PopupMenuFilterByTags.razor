@@ -1,0 +1,150 @@
+﻿@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown" Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column gap-2 pa-2"
+			  Style="border-radius:20px;overflow:auto;"
+			  Elevation="10"
+			  MinWidth="250px"
+			  Width="auto" Height="300px">
+		<MudText Style="font-size:larger;font-weight:bold;">
+			Filter by tags
+		</MudText>
+		<MudPaper Class="d-flex flex-column"
+				  Style="overflow-y:auto;"
+				  Elevation="0"
+				  Width ="100%"
+				  Height="100%">
+			<MudPaper Class="d-flex flex-row"
+					  Elevation="0"
+					  Width="100%">
+				<MudButton Class="rounded pill"
+						   FullWidth="true"
+						   OnClick=@(RemoveFilterOnClick())>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Style="background-color:transparent;"
+							  Elevation="0"
+							  Width="100%">
+						<MudText Color="Color.Error">
+							Remove filter
+						</MudText>
+					</MudPaper>
+				</MudButton>
+			</MudPaper>
+			<Virtualize Context="tag" Items="Tags">
+				<MudPaper @key=@(tag.Id)
+						  Class="d-flex  flex-row"
+						  Elevation="0"
+						  Width="100%">
+					<MudButton Class="rounded pill"
+							   FullWidth="true"
+							   OnClick=@(TagToggleChecked(tag))>
+						<MudPaper Class="d-flex flex-row align-center justify-space-between"
+								  Style="background-color:transparent;"
+								  Elevation="0"
+								  Width="100%">
+							<MudText Color="tag.Color">
+								@tag.Name
+							</MudText>
+							<MudCheckBox @bind-Checked=@(  tag.Checked)
+										 ReadOnly="true"
+										   CheckedIcon=@(Icons.Material.Filled.Check)
+										 UncheckedIcon="null"
+										 Color="tag.Color"
+										 Dense="true"
+										 DisableRipple="true"Size="Size.Small">
+							</MudCheckBox>
+						</MudPaper>
+					</MudButton>
+				</MudPaper>
+			</Virtualize>
+		</MudPaper>
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	[Parameter]
+	public static        List<Guid>  TagByBoard__IdsToFilter        { get; set; } = new();
+	[Parameter]
+	public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
+	[Parameter]
+	public static        List<Guid>  TagByProfileIdsToFilter        { get; set; } = new();
+	[Parameter]
+	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
+
+	public record class Tag : Common.Tag
+	{
+		public bool Checked { get; set; } = false;
+		public void CheckedToggleOff()
+		=>          Checked = false;
+		public void CheckedToggle()
+		=>          Checked = !
+		            Checked ;
+	}
+
+	public static List<Tag> Tags { get; set; } = new();
+	public static Guid LastActiveBoardId { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+
+	public Func<Task> TagToggleChecked(Tag tag)
+	{
+		return async () =>
+		{
+			tag.CheckedToggle();
+		if (tag.Checked)
+			TagByBoard__IdsToFilter.Add   (tag.Id);
+		else
+			TagByBoard__IdsToFilter.Remove(tag.Id);
+			await TagByBoard__IdsToFilterChanged.InvokeAsync(TagByBoard__IdsToFilter);
+		};
+	}
+
+	public Func<Task> RemoveFilterOnClick()
+	{
+		return async () =>
+		{
+			foreach (Tag tag in Tags)
+			{
+				tag.CheckedToggleOff();
+			}
+			TagByBoard__IdsToFilter.Clear();
+			await TagByBoard__IdsToFilterChanged.InvokeAsync(TagByBoard__IdsToFilter);
+		};
+	}
+
+	public async Task MapTagByBoard__ModelsToTagRecords()
+	{
+		if (TagByBoard__IdsToFilter.Count == 0)
+		{
+			Tags.Clear();
+			foreach (Models.TagByBoard tagByBoard in SupabaseImplementModelStateProviderService.Tag____ByBoard__s.Where
+			(tagByBoard =>  tagByBoard.BoardId == ActiveBoard_____.Id))
+			{
+				Tags.Add(new()
+				{
+					Checked = false,
+					Id    = tagByBoard.  Id,
+					 Name = tagByBoard.Name,
+					Color = tagByBoard.ParseColor(),
+				});
+			}
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		if (LastActiveBoardId != ActiveBoard_____.Id)
+		{
+			LastActiveBoardId  = ActiveBoard_____.Id;
+			TagByBoard__IdsToFilter.Clear();
+		}
+		await MapTagByBoard__ModelsToTagRecords();
+	}
+}

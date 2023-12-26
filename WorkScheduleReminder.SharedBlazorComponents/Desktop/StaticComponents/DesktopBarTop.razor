@@ -17,11 +17,19 @@
                                 "IsIndividualToWorkspaceChanged" />
 			@if (ActiveViewType == Helper.ViewType.WorkspaceView)
 			{
-				<DesktopButtonView   />
+				<DesktopButtonView ActiveViewTypeBoardChanged=
+                                  "ActiveViewTypeBoardChanged"   />
 			}
 			@if (ActiveViewType == Helper.ViewType.WorkspaceView || ActiveViewType == Helper.ViewType.CustomView)
 			{
-				<DesktopButtonFilter />
+				<DesktopButtonFilter TagByBoard__IdsToFilterChanged=
+                                    "TagByBoard__IdsToFilterChanged"
+                                     TagByProfileIdsToFilterChanged=
+                                    "TagByProfileIdsToFilterChanged"
+                                     AssigneeIdsToFilterChanged=
+                                    "AssigneeIdsToFilterChanged"
+                                     DueDateRangeToFilterChanged=
+                                    "DueDateRangeToFilterChanged" />
 			}
 			<DesktopButtonMore />
 		}
@@ -59,6 +67,13 @@
 						   Icon="@Icons.Material.Filled.Search"
 						   OnClick="ToggleSearchVisible" />
 		</MudTooltip>
+@* 		<MudSwitch T="bool"
+				   Checked="IsIndividualToWorkspace"
+				   Label="@(IsIndividualToWorkspaceLabel)"
+				   Color="Color.Tertiary"
+				   ThumbIcon="@Icons.Material.Filled.Workspaces"
+				   CheckedChanged="IsIndividualToWorkspaceSwitchOnCheckedChanged" />
+ *@
 	</MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
@@ -80,10 +95,37 @@
 	[CascadingParameter(Name = nameof(ActiveViewType))]
 	public Helper.ViewType ActiveViewType { get; set; }
 
+	// [Parameter]
+	// public bool IsDarkMode = 
+
 	[Parameter]
 	public bool                IsIndividualToWorkspace        { get; set; }
 	[Parameter]
 	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
+
+	[Parameter]
+	public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
+
+	[Parameter]
+	public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
+	[Parameter]
+	public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
+
+	[Parameter]
+	public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
+
+	[Parameter]
+	public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
 
 	public string OnSyncStyle { get; set; } = "margin:0 0 0 5px;";
 	public bool NotifiVisible { get; set; } = false;

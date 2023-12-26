@@ -54,8 +54,9 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		{
 			public Models.Task Task { get; init; } = null!;
 			public List<Tag>   Tags { get; init; } = null!;
-			public bool    SubtasksAvailable { get; init; } = false;
-			public bool AttachmentsAvailable { get; init; } = false;
+			public bool   AssigneesAvailable => Task.Assignees != "[]";
+			public bool    SubtasksAvailable => Task.Checklist != "[]";
+			public bool AttachmentsAvailable => Task.Attachments != "[]";
 			public List<Models.Profile> Assignees { get; set; } = null!;
 		}
 

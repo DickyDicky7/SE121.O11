@@ -1,5 +1,6 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
+@* @page "/" *@
 @page "/myday"
 
 @inject Supabase.Client SupabaseClient
@@ -16,7 +17,7 @@
 						Style="background-color:transparent;overflow:hidden;">
 		<MudDrawer @bind-Open="@DrawerOpen"
 				   Class="gap-2 pa-2"
-				   Style="background-color:transparent;overflow:hidden;"
+				   Style="background-color:transparent;overflow:hidden;z-index:10;"
 				   Elevation="0"
 				   Width="350px"
 				   Height="100%"
@@ -162,6 +163,7 @@
 	</MudDrawerContainer>
 </MudPaper>
 <MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			ZIndex="30"
 			DarkBackground="true"
 			AutoClose="true"
 			OnClick="TogglePopupMenuTaskDetailVisible">
@@ -221,7 +223,7 @@
 			)
 			&& !MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Any(taskIdAndPinOrNot => taskIdAndPinOrNot.TaskId == task.Id);
 		})
-		.OrderBy(task => task.DueDate).ToList();
+		.OrderBy(task => task.DueDate).ThenBy(task => task.DueTime).ToList();
 	}
 
 	public Func<bool, Task> PushPinOnClick(Common.Task__AndPinOrNot task__AndPinOrNot)
@@ -331,7 +333,7 @@
 			.Contains(newFilterText, StringComparison
 			.OrdinalIgnoreCase);
 		})
-		.OrderBy(task => task.DueDate).ToList();
+		.OrderBy(task => task.DueDate).ThenBy(task => task.DueTime).ToList();
 	}
 
 	public void TogglePopupMenuTaskDetailVisible()

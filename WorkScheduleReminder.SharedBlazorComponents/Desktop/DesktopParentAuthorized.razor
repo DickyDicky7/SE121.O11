@@ -8,14 +8,21 @@
 <CascadingValue Name=@(nameof(CurrentUserId )) Value="CurrentUserId " TValue="Guid  " IsFixed="true">
 <CascadingValue Name=@(nameof(ActiveViewName)) Value="ActiveViewName" TValue="string">
 <CascadingValue Name=@(nameof(ActiveViewIcon)) Value="ActiveViewIcon" TValue="string">
-<CascadingValue Name=@(nameof(ActiveViewType)) Value="ActiveViewType" TValue="Helper.ViewType">
+<CascadingValue Name=@(nameof(ActiveViewType))      Value="ActiveViewType     " TValue="Helper.ViewType     ">
+<CascadingValue Name=@(nameof(ActiveViewTypeBoard)) Value="ActiveViewTypeBoard" TValue="Helper.ViewTypeBoard">
 <CascadingValue Name=@(nameof(ActiveBoard_____)) Value="ActiveBoard_____" TValue="Models.Board     ">
 <CascadingValue Name=@(nameof(ActiveCustomView)) Value="ActiveCustomView" TValue="Models.CustomView">
+<CascadingValue Name=@(nameof(TagByBoard__IdsToFilter)) Value="TagByBoard__IdsToFilter" TValue="List<Guid>">
+<CascadingValue Name=@(nameof(TagByProfileIdsToFilter)) Value="TagByProfileIdsToFilter" TValue="List<Guid>">
 <CascadingValue Name=@(nameof(IsIndividualToWorkspace)) Value="IsIndividualToWorkspace" TValue="bool">
+<CascadingValue Name=@(nameof( AssigneeIdsToFilter)) Value=" AssigneeIdsToFilter" TValue="List<Guid>">
+<CascadingValue Name=@(nameof(DueDateRangeToFilter)) Value="DueDateRangeToFilter" TValue="DateRange ">
 <MudLayout>
 	<MudPaper Class="@($"d-flex flex-row {Theme}")"
 			  Elevation="0"
 			  Width="100vw" Height="100vh">
+														<p>@(AssigneeIdsToFilter != null ? AssigneeIdsToFilter.Count : "Nothing")</p>
+
 		@* Sidebar *@
 		<DesktopBarSide @bind-ActiveViewName="ActiveViewName"
 		                @bind-ActiveViewIcon="ActiveViewIcon"
@@ -29,7 +36,17 @@
 				  Width="100%" Height="100%">
 			@* Topbar *@
 			<DesktopBarTop @bind-IsIndividualToWorkspace=
-                                "IsIndividualToWorkspace" />
+                                "IsIndividualToWorkspace"
+                           @bind-ActiveViewTypeBoard=
+                                "ActiveViewTypeBoard"
+                           @bind-TagByBoard__IdsToFilter=
+                                "TagByBoard__IdsToFilter"
+                           @bind-TagByProfileIdsToFilter=
+                                "TagByProfileIdsToFilter"
+                           @bind-AssigneeIdsToFilter=
+                                "AssigneeIdsToFilter"
+                           @bind-DueDateRangeToFilter=
+                                "DueDateRangeToFilter" />
 			@* < MudMainContent> *@
 				@*MainScreen*@
 				@MainChildContent
@@ -37,6 +54,11 @@
 		</MudPaper>
 	</MudPaper>
 </MudLayout>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
+</CascadingValue>
 </CascadingValue>
 </CascadingValue>
 </CascadingValue>
@@ -55,12 +77,19 @@
 	public Guid   CurrentUserId  { get; set; }
 	public string ActiveViewName { get; set; } = string.Empty;
 	public string ActiveViewIcon { get; set; } = string.Empty;
-	public Helper.ViewType ActiveViewType { get; set; }
+	public Helper.ViewType       ActiveViewType             { get; set; }
+	public Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
 	public Models.Board      ActiveBoard_____ { get; set; } = null!;
 	public Models.CustomView ActiveCustomView { get; set; } = null!;
 	public bool   IsIndividualToWorkspace { get; set; }
 	public string Theme { get; set; } = "mud-theme-info";
 	public Models.Profile  CurrentUserProfile { get; set; } = null!;
+	public List<Guid> TagByBoard__IdsToFilter { get; set; } = null!;
+	public List<Guid> TagByProfileIdsToFilter { get; set; } = null!;
+	public List<Guid>     AssigneeIdsToFilter { get; set; } = null!;
+	public DateRange     DueDateRangeToFilter { get; set; } = null!;
+
+	public static Guid LastActiveBoardId { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -80,6 +109,23 @@
 		else
 		{
 			Theme = "mud-theme-info";
+		}
+		if (ActiveBoard_____    != null
+		&&  ActiveBoard_____.Id != LastActiveBoardId)
+		{
+			if (TagByBoard__IdsToFilter != null)
+			{
+				TagByBoard__IdsToFilter.Clear();
+			}
+			if (    AssigneeIdsToFilter != null)
+			{
+			        AssigneeIdsToFilter.Clear();
+			}
+			if (   DueDateRangeToFilter != null)
+			{
+			       DueDateRangeToFilter  = new();
+			}
+			LastActiveBoardId =  ActiveBoard_____.Id;
 		}
 	}
 

@@ -1,244 +1,486 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
-@page "/"
-@page "/calendar"
-<MudPaper Class="d-flex flex-column pa-2 gap-1"
-          Style="background-color:transparent;overflow:hidden"
-          Elevation="0"
-          Width="100%"
-          Height="100%">
-    <MudPaper Class="d-flex flex-row align-center justify-space-between"
-              Elevation="0"
-              Width="100%">
-        <MudPaper Class="d-flex flex-row align-center gap-2"
-                  Elevation="0">
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
-                           OnClick="()=>ChangeMonth(-1)" />
-            <MudText Style="font-weight:bold">
-                @($"{ViewingMonth.ToString("MMM")} {ViewingMonth.ToString("yyyy")}")
-            </MudText>
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
-                           OnClick="()=>ChangeMonth(1)" />
-        </MudPaper>
-        <MudPaper Class="d-flex flex-row align-center gap-2"
-                  Elevation="0">
-            <MudIconButton Size="Size.Small"
-                           Icon="@Icons.Material.Filled.Add"
-                           OnClick="AddTask" />
-            <MudTextField @bind-Value=@NewTask
-                          Placeholder="Enter task's name"
-                          Immediate="true"
-                          DisableUnderLine="true"
-                          FullWidth="false"
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          Clearable="true"
-                          TextUpdateSuppression="false"
-                          OnKeyDown="(KeyboardEventArgs e)=>OnKeyDown(e)" />
-            <MudSelect @bind-Value=ChoosingSection
-                       T="string"
-                       Label="Click to select section"
-                       Variant="Variant.Outlined"
-                       Margin="Margin.Dense"
-                       Dense="true"
-                       AnchorOrigin="Origin.BottomCenter"
-                       TransformOrigin="Origin.TopCenter">
-                @foreach (Section Section in SectionList)
-                {
-                    <MudSelectItem Value="Section.Name" />
-                }
-            </MudSelect>
-        </MudPaper>
-    </MudPaper>
-    <MudPaper Class=""
-              Style="display:grid;grid-template-columns:repeat(7,1fr);"
-              Elevation="0"
-              Width="100%">
-        @foreach (string Day in DayOfWeek)
-        {
-            <MudPaper Class="d-flex flex-row align-center justify-content-center"
-                      Elevation="0"
-                      Width="100%">
-                <MudText Style="font-size:larger;font-weight:bold">
-                    @Day
-                </MudText>
-            </MudPaper>
-        }
-    </MudPaper>
-    <MudPaper Class=""
-              Style="@($"display:grid;grid-template:repeat({WeekCountInMonth},1fr)/repeat(7,1fr);grid-gap:1px;background-color:transparent;overflow:hidden")"
-              Elevation="3"
-              Width="100%"
-              Height="100%">
-        @foreach (int i in Enumerable.Range(1, DaysOfPreviousMonthInFirstWeek))
-        {
-            <MudPaper Class="d-flex flex-row align-center justify-content-center"
-                      Elevation="3"
-                      Width="100%"
-                      Height="100%">
-                <MudText>
-                    @PreviousMonth
-                </MudText>
-            </MudPaper>
-        }
-        @foreach (int i in Enumerable.Range(1, MonthEnd.Day))
-        {
-            <MudPaper Class="d-flex flex-column"
-                      Style="overflow:hidden"
-                      Elevation="3"
-                      Width="100%"
-                      Height="100%">
-                <MudText Class="@((DateComparer(DateTime.Now, i))?"mud-theme-info":"")"
-                         Style="border-radius:10px"
-                         Align="Align.Center">
-                    @i
-                </MudText>
-                <MudPaper Class="d-flex flex-column"
-                          Style="overflow:scroll"
-                          Elevation="0"
-                          Width="100%"
-                          Height="100%">
-                    @foreach (Task Task in TaskList)
-                    {
-                        if (DateComparer(Task.DueDay, i))
-                        {
-                            <MudPaper Class="d-flex flex-row"
-                                      Elevation="0"
-                                      Width="100%">
-                                <MudTooltip Text="@Task.Section">
-                                    <MudButton Class="d-flex flex-row align-center justify-content-start"
-                                               Size="Size.Small"
-                                               FullWidth="true"
-                                               OnClick="()=>{}">
-                                        <MudText>
-                                            @Task.Title
-                                        </MudText>
-                                    </MudButton>
-                                </MudTooltip>
-                            </MudPaper>
 
-                        }
-                    }
-                </MudPaper>
-            </MudPaper>
-        }
-        @foreach (int i in Enumerable.Range(1, DaysOfNextMonthInLastWeek))
-        {
-            <MudPaper Class="d-flex flex-row align-center justify-content-center"
-                      Elevation="3"
-                      Width="100%"
-                      Height="100%">
-                <MudText>
-                    @NextMonth
-                </MudText>
-            </MudPaper>
-        }
-    </MudPaper>
+@page "/calendar"
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<MudPaper Class="d-flex flex-column pa-2 gap-1"
+		  Style="background-color:transparent;overflow:hidden;"
+		  Elevation="0"
+		  Width="100%" Height="100%">
+	<MudPaper Class="d-flex flex-row align-center justify-space-between"
+			  Elevation="0"
+			  Width="100%">
+		<MudPaper Class="d-flex flex-row align-center gap-2"
+				  Elevation="0">
+			<MudTooltip Arrow="true"
+						Color="Color.Dark"
+						Text="To last month">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowLeft"
+							   OnClick="ToLastMonth" />
+			</MudTooltip>
+			<MudText Style="font-weight:bold;">
+				@($"{CurrentViewingDateTime:MMM yyyy}")
+			</MudText>
+			<MudTooltip Arrow="true"
+						Color="Color.Dark"
+						Text="To next month">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowRight"
+							   OnClick="ToNextMonth" />
+			</MudTooltip>
+		</MudPaper>
+		<MudPaper Class="d-flex flex-row align-center gap-2"
+				  Elevation="0">
+			<MudTooltip Arrow="true"
+						Color="Color.Dark"
+						Text="Add new task">
+				<MudIconButton Size="Size.Small"
+							   Icon="@Icons.Material.Filled.Add"
+							   OnClick="InsertNewTaskOnClick" />
+
+			</MudTooltip>
+			<MudTextField @bind-Value=@(NewTaskName)
+						  Placeholder="Enter task's name"
+						  Immediate="true"
+						  DisableUnderLine="true"
+						  FullWidth="false"
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  Clearable="true"
+						  TextUpdateSuppression="false"
+						  OnKeyDown="InsertNewTaskOn_KeyDown" />
+			<MudSelect @bind-Value=@(ChosenSectionName)
+					   T="string"
+					   Label="Click to select section"
+					   Variant="Variant.Outlined"
+					   Margin="Margin.Dense"
+					   Dense="true"
+					   AnchorOrigin="Origin.BottomCenter"
+					   TransformOrigin="Origin.TopCenter">
+				<Virtualize Context="section" Items="Sections">
+					<MudSelectItem @key=@(section.SectionByBoard.Id)
+								   Value="section.Name" />
+				</Virtualize>
+			</MudSelect>
+		</MudPaper>
+	</MudPaper>
+	<MudPaper Class=""
+			  Style="display:grid;grid-template-columns:repeat(7,1fr);"
+			  Elevation="0"
+			  Width="100%">
+		@foreach (string dayOfWeek in DaysOfWeek)
+		{
+			<MudPaper @key=@(dayOfWeek)
+					  Class="d-flex flex-row align-center justify-content-center"
+					  Elevation="0"
+					  Width="100%">
+				<MudText Style="font-size:larger;font-weight:bold;">
+					@dayOfWeek
+				</MudText>
+			</MudPaper>
+		}
+	</MudPaper>
+	<MudPaper Class=""
+			  Style="@($"display:grid;grid-template:repeat({WeekCountInMonth},1fr)/repeat(7,1fr);grid-gap:1px;background-color:transparent;overflow:hidden;")"
+			  Elevation="10"
+			  Width="100%" Height="100%">
+		@foreach (int _ in Enumerable.Range(1, DaysOfLastMonthInFstWeek))
+		{
+			<MudPaper Class="d-flex flex-row align-center justify-content-center mud-theme-dark"
+					  Elevation="10"
+					  Width="100%" Height="100%">
+				<MudText>
+					@LastMonthText
+				</MudText>
+			</MudPaper>
+		}
+		@foreach (int dayOfMonth in Enumerable.Range(1, CeaseDateTime.Day))
+		{
+			<MudPaper Class="d-flex flex-column"
+					  Style="overflow:hidden;"
+					  Elevation="10"
+					  Width="100%" Height="100%">
+				<MudText Class="@(DecideStyle(dayOfMonth))"
+						 Style="border-radius:10px;"
+						 Align="Align.Center">
+					@dayOfMonth
+				</MudText>
+				<MudPaper Class="d-flex flex-column"
+						  Style="overflow:auto;"
+						  Elevation="0"
+						  Width="100%" Height="100%">
+					@foreach (SectionTask sectionTask in SectionTasks)
+					{
+						if (DateComparer( sectionTask.Task.DueDate.ToDateTime(TimeOnly.MinValue), dayOfMonth))
+						{
+							<MudPaper Class="d-flex flex-row"
+									  Elevation="0"
+									  Width="100%">
+								<MudTooltip Text=@($"From section: {sectionTask.SectionByBoard.Name}")
+											Style=""
+											Arrow="true"
+											Color="@sectionTask.Color">
+									<MudButton Class="d-flex flex-row align-center justify-content-start"
+											   Size="Size.Small"
+											   FullWidth="true"
+											   OnClick=@(SectionTaskOnClick(sectionTask))>
+										<MudText Align="Align.Justify"
+												 Color="@sectionTask.Color"
+												 Style="word-break:break-all;width:100%;">
+											Do: @sectionTask.Task.Name
+										</MudText>
+									</MudButton>
+								</MudTooltip>
+							</MudPaper>
+						}
+					}
+				</MudPaper>
+			</MudPaper>
+		}
+		@foreach (int _ in Enumerable.Range(1, DaysOfNextMonthInLstWeek))
+		{
+			<MudPaper Class="d-flex flex-row align-center justify-content-center mud-theme-dark"
+					  Elevation="10"
+					  Width="100%" Height="100%">
+				<MudText>
+					@NextMonthText
+				</MudText>
+			</MudPaper>
+		}
+	</MudPaper>
 </MudPaper>
-<MudOverlay Visible="@TaskDetailVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation WorkspaceTask="@WorkspaceTask" />
+<MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			OnClick="TogglePopupMenuTaskDetailVisible">
+	<PopupMenuTaskDetail @onclick:stopPropagation
+						 Task="ChosenTask"
+						 TogglePopupMenuTaskDetailVisible="TogglePopupMenuTaskDetailVisible" />
 </MudOverlay>
+
 @code
 {
-    public bool TaskDetailVisible { get; set; } = false;
-    public bool WorkspaceTask { get; set; } = false;
 
-    public DateTime ViewingMonth { get; set; } = DateTime.Now;
-    public int DaysOfPreviousMonthInFirstWeek { get; set; }
-    public int DaysOfNextMonthInLastWeek { get; set; }
-    public DateTime MonthStart { get; set; }
-    public DateTime MonthEnd { get; set; }
-    public string PreviousMonth { get; set; } = string.Empty;
-    public string NextMonth { get; set; } = string.Empty;
-    public int WeekCountInMonth { get; set; }
-    public List<string> DayOfWeek { get; set; } = new List<string>()
-    { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+	public bool PopupMenuTaskDetailVisible { get; set; } = false;
 
-    public string NewTask { get; set; } = string.Empty;
-    public string ChoosingSection { get; set; } = string.Empty;
-    public record Task
-    {
-        public string Title { get; set; } = default!;
-        public DateTime DueDay { get; set; } = default;
-        public TimeSpan DueTime { get; set; } = default;
-        public string Section { get; set; } = default!;
-    }
-    public List<Task> TaskList { get; set; } = new();
-    public record Section
-    {
-        public string Name { get; set; } = default!;
-    }
-    public List<Section> SectionList { get; set; } = new();
-    public bool DateComparer(DateTime _DateToCompare, int DayOfMonth)
-    {
-        return _DateToCompare.Day == DayOfMonth
-        && _DateToCompare.Month == ViewingMonth.Month
-        && _DateToCompare.Year == ViewingMonth.Year;
-    }
-    public void OnKeyDown(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter")
-        {
-            AddTask();
-        }
-    }
-    public void AddTask()
-    {
-        if (!string.IsNullOrWhiteSpace(NewTask) && !string.IsNullOrWhiteSpace(ChoosingSection))
-        {
-            TaskList.Add(
-            new Task()
-                {
-                    Title = NewTask,
-                    DueTime = new(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
-                    DueDay = DateTime.Now,
-                    Section = ChoosingSection
-                }
-        );
-            NewTask = string.Empty;
-        }
-    }
-    public void ChangeMonth(int _Value)
-    {
-        ViewingMonth = ViewingMonth.AddMonths(_Value);
-        MonthStart = new DateTime(ViewingMonth.Year, ViewingMonth.Month, 1);
-        MonthEnd = MonthStart.AddMonths(1).AddDays(-1);
-        DaysOfPreviousMonthInFirstWeek = (int)MonthStart.DayOfWeek;
-        DaysOfNextMonthInLastWeek = 6 - (int)MonthEnd.DayOfWeek;
-        PreviousMonth = $"{ViewingMonth.AddMonths(-1).ToString("MMM")} {ViewingMonth.AddMonths(-1).ToString("yyyy")}";
-        NextMonth = $"{ViewingMonth.AddMonths(1).ToString("MMM")} {ViewingMonth.AddMonths(1).ToString("yyyy")}";
-        WeekCountInMonth =
-            (MonthEnd.Day
-            + DaysOfNextMonthInLastWeek
-            + DaysOfPreviousMonthInFirstWeek) / 7;
-    }
+	public DateTime CurrentViewingDateTime { get; set; } = DateTime.Now;
+	public DateTime BeginDateTime { get; set; }
+	public DateTime CeaseDateTime { get; set; }
+	public int DaysOfLastMonthInFstWeek { get; set; }
+	public int DaysOfNextMonthInLstWeek { get; set; }
+	public string LastMonthText { get; set; } = string.Empty;
+	public string NextMonthText { get; set; } = string.Empty;
+	public int WeekCountInMonth { get; set; }
+	public List<string> DaysOfWeek { get; set; } = new List<string>()
+	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", };
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        ChangeMonth(0);
-        foreach (int i in Enumerable.Range(1, MonthEnd.Day))
-        {
-            if (i % 2 == 0)
-                continue;
-            foreach (int j in Enumerable.Range(1, 4))
-            {
-                Random rand = new Random();
-                TaskList.Add(
-                    new Task()
-                        {
-                            Title = $"Task {i}.{j}",
-                            DueDay = new DateTime(ViewingMonth.Year, ViewingMonth.Month, i),
-                            Section = $"Section{rand.Next(1, 10)}"
-                        }
-                );
-            }
-        }
-        foreach (int i in Enumerable.Range(1, 10))
-        {
-            SectionList.Add(new Section() { Name = $"Section{i}" });
-        }
-    }
+	public string       NewTaskName { get; set; } = string.Empty;
+	public string ChosenSectionName { get; set; } = string.Empty;
+
+	public Models. Task ChosenTask       { get; set; } = null!;
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	[CascadingParameter(Name = nameof(TagByBoard__IdsToFilter))]
+	public List<Guid> TagByBoard__IdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(    AssigneeIdsToFilter))]
+	public List<Guid>     AssigneeIdsToFilter { get; set; } = null!;
+
+	public void TogglePopupMenuTaskDetailVisible()
+	{
+		PopupMenuTaskDetailVisible = !PopupMenuTaskDetailVisible;
+	}
+
+	public string DecideStyle(int dayOfMonth)
+	{
+		if (DateComparer(DateTime.Now,dayOfMonth)) return "mud-theme-info"; else return string.Empty;
+	}
+
+	public void ToNextMonth()
+	{
+		ChangeMonth(+1);
+	}
+
+	public void ToLastMonth()
+	{
+		ChangeMonth(-1);
+	}
+
+	public Action SectionTaskOnClick(SectionTask sectionTask)
+	{
+		return () =>
+		{
+			ChosenTask = sectionTask.Task;
+			TogglePopupMenuTaskDetailVisible();
+		};
+	}
+
+	public async Task MapSectionsByBoardsToSections()
+	{
+		Sections    .Clear();
+		SectionTasks.Clear();
+
+		foreach(Models.SectionByBoard sectionByBoard in
+		SupabaseImplementModelStateProviderService.Section___ByBoards.Where(
+		sectionByBoard => 
+		sectionByBoard.BoardId == ActiveBoard_____.Id)
+			.OrderBy(sectionByBoard => sectionByBoard.CreatedTimeStamp)
+			. ThenBy(sectionByBoard => sectionByBoard.Name))
+		{
+			Sections.Add(new()
+			{
+				Name = sectionByBoard.Name,
+				IsSectionByBoard =    true,
+				  SectionByBoard = sectionByBoard,
+			});
+		}
+
+		IEnumerable<Models.Member> members =  SupabaseImplementModelStateProviderService.Member_s
+		.  Where(member => member. BoardId == ActiveBoard_____.Id);
+
+		int     colorIndex   = 0;
+		int[] allowedIndexes = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8 };
+		Color[] colors = Enum.GetValues<Color>();
+
+		foreach (Models.SectioningByBoard    sectioningByBoard in SupabaseImplementModelStateProviderService.SectioningByBoards
+		.Where(         sectioningByBoard => sectioningByBoard .  SectionByBoard.BoardId == ActiveBoard_____.Id))
+		{
+			List<Guid> assigneeIds =   JsonConvert.DeserializeObject <List<Guid>>(sectioningByBoard.Task.Assignees)!;
+			IEnumerable<Models.Profile> assignees = members.Where(
+			member =>  assigneeIds.Contains(member.ProfileId)).Select<Models.Member,
+						Models.Profile>(member =>   member .Profile);
+
+			IEnumerable<Models.TaggingByBoard> taggingByBoards = SupabaseImplementModelStateProviderService.TaggingByBoard__s
+			.Where(
+			    taggingByBoard =>
+			    taggingByBoard.TaskId ==
+			 sectioningByBoard.TaskId);
+
+			if (TagByBoard__IdsToFilter       == null
+			||  TagByBoard__IdsToFilter.Count == 0
+			||  taggingByBoards.Any
+			(   taggingByBoard => TagByBoard__IdsToFilter.Contains(taggingByBoard.TagByBoardId)))
+			if (    AssigneeIdsToFilter       == null
+			||      AssigneeIdsToFilter.Count == 0
+			||      assigneeIds.Any
+			(       assigneeId =>     AssigneeIdsToFilter.Contains(assigneeId)))
+			SectionTasks.Add(new()
+			{
+				Task = sectioningByBoard.Task,
+				Tags =    taggingByBoards
+				.Select
+				<Models.TaggingByBoard, Common.Tag>(taggingByBoard => new()
+				{
+					   Id = taggingByBoard.TagByBoard.  Id,
+					Name  = taggingByBoard.TagByBoard.Name,
+					Color = taggingByBoard.TagByBoard.ParseColor(),
+				}).ToList(),
+				Assignees = assignees.ToList(),
+
+				Color = colors[allowedIndexes[colorIndex++ % 8]]  ,
+				   SectionByBoard = sectioningByBoard.
+				   SectionByBoard ,
+				SectioningByBoard = sectioningByBoard,
+
+			});
+		}
+	}
+
+	public record class SectionTask : Common.SectionTask
+	{
+		public Color Color { get; set; }
+		public Models.   SectionByBoard    SectionByBoard { get; set; } = null!;
+		public Models.SectioningByBoard SectioningByBoard { get; set; } = null!;
+	}
+
+	public List<SectionTask   > SectionTasks { get; set; } = new();
+	public List<Common.Section> Sections     { get; set; } = new();
+
+	public bool DateComparer(DateTime dateTimeToCompare, int dayOfMonth)
+	{
+		return
+		DateOnly.FromDateTime(dateTimeToCompare) ==
+		DateOnly.FromDateTime(new(CurrentViewingDateTime.Year, CurrentViewingDateTime.Month, dayOfMonth));
+	}
+
+	public async Task InsertNewTaskOn_KeyDown(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter")
+		{
+			await      InsertNewTaskOnClick();
+		}
+	}
+
+	public async Task InsertNewTaskOnClick()
+	{
+		try
+		{
+			if (!string.IsNullOrWhiteSpace(NewTaskName)
+			&&  !string.IsNullOrWhiteSpace(ChosenSectionName))
+			{
+				Common
+				.Section 
+					section = Sections.First(section => section.Name == ChosenSectionName);
+
+				if (section
+					.IsSectionByBoard)
+				{
+					Models.Task newTask = new()
+					{
+						Name = NewTaskName,
+						Done = false,
+						Note =      string.Empty,
+						Settings  = string.Empty,
+						ReminderRecurringMode = Models.Task
+						.PossibleReminderRecurringMode.Empty.ToString(),
+						ReminderRecurringSettings = JsonConvert
+						.SerializeObject(new Common.ReminderRecurringSettings()),
+						Checklist = "[]",
+						Assignees = "[]",
+						DueDate = Helper.DefaultDueDate(section.DaysOffset),
+						DueTime = Helper.DefaultDueTime(                  ),
+						ReminderBeginDate = null,
+						ReminderBeginTime = null,
+						ReminderCeaseDate = null,
+						ReminderCeaseTime = null,
+						  BoardId = ActiveBoard_____.Id,
+						ProfileId = null,
+						Attachments = "[]",
+					};
+					newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask,
+										new Postgrest.QueryOptions()
+					    { Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+					// // section.NewTask = string.Empty;
+
+					Models
+					.SectioningByBoard newSectioningByBoard = new()
+					{
+						SectionByBoardId =section.SectionByBoard.Id,
+						TaskId = newTask.Id,
+					};
+					await SupabaseClient.From<Models.SectioningByBoard>()
+					.Insert(newSectioningByBoard,
+										new Postgrest.QueryOptions()
+					    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+				}
+				else
+				{
+					// Models.Task newTask = new()
+					// {
+					// 	Name = NewTaskName,
+					// 	Done = false,
+					// 	Note =      string.Empty,
+					// 	Settings  = string.Empty,
+					// 	ReminderRecurringMode = Models.Task
+					// 	.PossibleReminderRecurringMode.Empty.ToString(),
+					// 	ReminderRecurringSettings = JsonConvert
+					// 	.SerializeObject(new Common.ReminderRecurringSettings()),
+					// 	Checklist = "[]",
+					//  Assignees = "[]",
+					// 	DueDate = Helper.DefaultDueDate(section.DaysOffset),
+					// 	DueTime = Helper.DefaultDueTime(                  ),
+					// 	ReminderBeginDate = null,
+					// 	ReminderBeginTime = null,
+					// 	ReminderCeaseDate = null,
+					// 	ReminderCeaseTime = null,
+					// 	  BoardId = null,
+					// 	ProfileId = CurrentUserId,
+					// 	Attachments = "[]",
+					// };
+					// await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
+					// 	{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					// // section.NewTask = string.Empty;
+				}
+				NewTaskName = string.Empty;
+			}
+		}
+		catch (Postgrest.Exceptions
+			.PostgrestException
+				postgrestException)
+		{
+			System
+			.Diagnostics.Debug.WriteLine(postgrestException.Message);
+		}
+	}
+
+	public void ChangeMonth(int monthsOffset)
+	{
+		CurrentViewingDateTime = CurrentViewingDateTime.AddMonths(monthsOffset);
+		BeginDateTime = new DateTime(CurrentViewingDateTime.Year, CurrentViewingDateTime.Month, 1);
+		CeaseDateTime = BeginDateTime.AddMonths(+1).AddDays(-1);
+		DaysOfLastMonthInFstWeek = 0 + (int)BeginDateTime.DayOfWeek;
+		DaysOfNextMonthInLstWeek = 6 - (int)CeaseDateTime.DayOfWeek;
+		LastMonthText = CurrentViewingDateTime.AddMonths(-1).ToString("MMM yyyy");
+		NextMonthText = CurrentViewingDateTime.AddMonths(+1).ToString("MMM yyyy");
+		WeekCountInMonth =
+			(CeaseDateTime.Day
+			+ DaysOfNextMonthInLstWeek
+			+ DaysOfLastMonthInFstWeek) / 7;
+	}
+
+	public void OnChangedTask___s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTaggingByBoard__s()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSection___ByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSectioningByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionsByBoardsToSections();
+			StateHasChanged();
+		});
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		ChangeMonth(0);
+		await MapSectionsByBoardsToSections();
+		SupabaseImplementModelStateProviderService.ChangedTask___s += OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s += OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards += OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards += OnChangedSectioningByBoards;
+
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+		ChangeMonth(0);
+		await MapSectionsByBoardsToSections();
+	}
+
+	public void Dispose()
+	{
+		SupabaseImplementModelStateProviderService.ChangedTask___s -= OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s -= OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards -= OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards -= OnChangedSectioningByBoards;
+
+	}
+
 }
