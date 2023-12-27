@@ -6,7 +6,7 @@
 			  Elevation="10"
 			  Width="500px">
 		<MudText Style="font-size:larger;font-weight:bold;">
-			Filter by due day
+			Filter by due date & time
 		</MudText>
 		<MudDateRangePicker @bind-DateRange=@(DueDateRangeToFilter)
 							PickerVariant="PickerVariant.Dialog"
@@ -75,7 +75,7 @@
 				   Color="Color.Error"
 				   OnClick="SetDueDateRange(null, null)">
 			<MudText>
-				Clear
+				Remove filter
 			</MudText>
 		</MudButton>
 	</MudPaper>
@@ -91,6 +91,11 @@
 	[Parameter]
 	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
 
+	[Parameter]
+	public static        bool  HasFilter        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> HasFilterChanged { get; set; }
+
 	public static Guid LastActiveBoardId { get; set; }
 	[CascadingParameter(Name = nameof(ActiveBoard_____))]
 	public Models.Board ActiveBoard_____ { get; set; } = null!;
@@ -101,6 +106,11 @@
 		{
 			DueDateRangeToFilter = new(beginDueDateTime, ceaseDueDateTime);
 			await DueDateRangeToFilterChanged.InvokeAsync(DueDateRangeToFilter);
+
+			HasFilter =
+			beginDueDateTime != null &&
+			ceaseDueDateTime != null ;
+			await HasFilterChanged.InvokeAsync(HasFilter);
 		};
 	}
 

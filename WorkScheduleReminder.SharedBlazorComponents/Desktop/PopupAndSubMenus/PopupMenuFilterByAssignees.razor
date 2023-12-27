@@ -75,6 +75,11 @@
 	[Parameter]
 	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
 
+	[Parameter]
+	public static        bool  HasFilter        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> HasFilterChanged { get; set; }
+
 	public record class Assignee
 	{
 		public Guid Id { get; set; }
@@ -102,6 +107,11 @@
 		else
 			AssigneeIdsToFilter.Remove(assignee.Id);
 			await AssigneeIdsToFilterChanged.InvokeAsync(AssigneeIdsToFilter);
+
+			HasFilter =
+			AssigneeIdsToFilter.Count > 0;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
 		};
 	}
 
@@ -116,6 +126,10 @@
 			AssigneeIdsToFilter
 			.Clear();
 			await AssigneeIdsToFilterChanged.InvokeAsync(AssigneeIdsToFilter);
+
+			HasFilter = false;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
 		};
 	}
 
@@ -129,7 +143,7 @@
 			{
 				Assignees.Add(new()
 				{
-					 Id = member.Profile.Id,
+					 Id   = member.Profile.Id   ,
 					 Name = member.Profile.Email,
 					 Checked = false,
 				});

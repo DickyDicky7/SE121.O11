@@ -77,6 +77,11 @@
 	[Parameter]
 	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
 
+	[Parameter]
+	public static        bool  HasFilter        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> HasFilterChanged { get; set; }
+
 	public record class Tag : Common.Tag
 	{
 		public bool Checked { get; set; } = false;
@@ -102,6 +107,12 @@
 		else
 			TagByBoard__IdsToFilter.Remove(tag.Id);
 			await TagByBoard__IdsToFilterChanged.InvokeAsync(TagByBoard__IdsToFilter);
+
+			HasFilter =
+			TagByBoard__IdsToFilter.Count > 0 ||
+			TagByProfileIdsToFilter.Count > 0 ;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
 		};
 	}
 
@@ -115,6 +126,10 @@
 			}
 			TagByBoard__IdsToFilter.Clear();
 			await TagByBoard__IdsToFilterChanged.InvokeAsync(TagByBoard__IdsToFilter);
+
+			HasFilter = false;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
 		};
 	}
 

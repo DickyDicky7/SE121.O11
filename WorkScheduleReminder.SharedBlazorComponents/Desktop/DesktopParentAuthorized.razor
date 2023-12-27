@@ -117,11 +117,12 @@
 			}
 			if (    AssigneeIdsToFilter != null)
 			{
-			        AssigneeIdsToFilter.Clear();
+				AssigneeIdsToFilter.Clear();
 			}
 			if (   DueDateRangeToFilter != null)
 			{
-			       DueDateRangeToFilter  = new();
+			       DueDateRangeToFilter.Start = null;
+			       DueDateRangeToFilter.End   = null;
 			}
 			LastActiveBoardId =  ActiveBoard_____.Id;
 		}

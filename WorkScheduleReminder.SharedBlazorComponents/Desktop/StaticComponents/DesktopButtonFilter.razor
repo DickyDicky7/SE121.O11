@@ -1,5 +1,7 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
+@using Centvrio.Emoji
+
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
 		  Style="padding:8px;"
 		  Elevation="0">
@@ -28,6 +30,10 @@
 						<MudIcon Size="Size.Small"
 								 Icon=@menuItem.Icon />
 						<MudText>@menuItem.Name</MudText>
+						@if (menuItem.HasFilter)
+						{
+							<MudText>@OtherSymbols.Exclamation</MudText>
+						}
 					</MudPaper>
 				</MudMenuItem>
 			}
@@ -73,9 +79,13 @@
 		public bool Visible { get; set; } = false;
 		public RenderFragment Child { get; set; } = null!;
 		public void ToggleVisible() => Visible = !Visible;
+		public bool HasFilter { get; set; } = false;
 	}
 
 	public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
+	public static Guid LastActiveBoardId { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -91,6 +101,8 @@
 			Name = "Due date & time",
 			Icon = Icons.Material.Filled.CalendarToday,
 			Child = @<PopupMenuFilterByDueDateDueTime    @onclick:stopPropagation
+			HasFilterChanged=
+           "HasFilterChanged_PopupMenuFilterByDueDateDueTime"
 			DueDateRangeToFilterChanged="DueDateRangeToFilterChanged"             />
 		});
 		MenuItems .Add(new MenuItem()
@@ -98,6 +110,8 @@
 			Name = "Assignees",
 			Icon = Icons.Material.Filled.People,
 			Child = @<PopupMenuFilterByAssignees         @onclick:stopPropagation
+			HasFilterChanged=
+           "HasFilterChanged_PopupMenuFilterByAssignees"
 			AssigneeIdsToFilterChanged="AssigneeIdsToFilterChanged"               />
 		});
 		MenuItems .Add(new MenuItem()
@@ -105,6 +119,8 @@
 			Name = "Tags",
 			Icon = Icons.Material.Filled.Tag,
 			Child = @<PopupMenuFilterByTags              @onclick:stopPropagation
+			HasFilterChanged=
+           "HasFilterChanged_PopupMenuFilterByTags"
 			TagByBoard__IdsToFilterChanged="TagByBoard__IdsToFilterChanged"
 			TagByProfileIdsToFilterChanged="TagByProfileIdsToFilterChanged"       />
 		});
@@ -114,5 +130,32 @@
 			Icon = Icons.Material.Filled.Message,
 			Child = @<PopupMenuFilterByMessages          @onclick:stopPropagation />
 		});
+	}
+
+	public void HasFilterChanged_PopupMenuFilterByDueDateDueTime(bool hasFilter)
+	{
+		MenuItems[1].HasFilter = hasFilter;
+	}
+
+	public void HasFilterChanged_PopupMenuFilterByAssignees(bool hasFilter)
+	{
+		MenuItems[2].HasFilter = hasFilter;
+	}
+
+	public void HasFilterChanged_PopupMenuFilterByTags     (bool hasFilter)
+	{
+		MenuItems[3].HasFilter = hasFilter;
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await base.OnParametersSetAsync();
+		if (LastActiveBoardId != ActiveBoard_____.Id)
+		{
+			LastActiveBoardId  = ActiveBoard_____.Id;
+			HasFilterChanged_PopupMenuFilterByDueDateDueTime(hasFilter: false);
+			HasFilterChanged_PopupMenuFilterByAssignees(hasFilter: false);
+			HasFilterChanged_PopupMenuFilterByTags     (hasFilter: false);
+		}
 	}
 }

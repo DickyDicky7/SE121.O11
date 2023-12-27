@@ -211,6 +211,8 @@
 	public List<Guid> TagByBoard__IdsToFilter { get; set; } = null!;
 	[CascadingParameter(Name = nameof(    AssigneeIdsToFilter))]
 	public List<Guid>     AssigneeIdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(   DueDateRangeToFilter))]
+	public DateRange     DueDateRangeToFilter { get; set; } = null!;
 
 	public record class ColumnProperties
 	{
@@ -281,6 +283,13 @@
 			||      AssigneeIdsToFilter.Count == 0
 			||      assigneeIds.Any
 			(       assigneeId =>     AssigneeIdsToFilter.Contains(assigneeId)))
+			if (   DueDateRangeToFilter       == null
+			||     DueDateRangeToFilter.Start == null
+			||     DueDateRangeToFilter.End   == null
+			|| (   DueDateRangeToFilter.Start != null
+			&&     DueDateRangeToFilter.End   != null
+			&& sectioningByBoard.Task.DueDate >= DateOnly.FromDateTime(DueDateRangeToFilter.Start.Value)
+			&& sectioningByBoard.Task.DueDate <= DateOnly.FromDateTime(DueDateRangeToFilter.End  .Value)))
 			section.SectionTasks.Add(new()
 			{
 				Task = sectioningByBoard.Task,
