@@ -1,0 +1,165 @@
+﻿@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
+
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown" Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column gap-2 pa-2"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  MinWidth="250px"
+			  Width="auto" Height="300px">
+		<MudText Style="font-size:larger;font-weight:bold;">
+			Filter by assignees
+		</MudText>
+		<MudPaper Class="d-flex flex-column"
+				  Style="overflow-y:auto;"
+				  Elevation="0"
+				  Width="100%"
+				  Height="100%">
+			<MudPaper Class="d-flex flex-row"
+					  Elevation="0"
+					  Width="100%">
+				<MudButton Class="rounded pill"
+						   FullWidth="true"
+						   OnClick=@(RemoveFilterOnClick())>
+					<MudPaper Class="d-flex flex-row align-center justify-space-between"
+							  Style="background-color:transparent;"
+							  Elevation="0"
+							  Width="100%">
+						<MudText Color="Color.Error">
+							Remove filter
+						</MudText>
+					</MudPaper>
+				</MudButton>
+			</MudPaper>
+			<Virtualize Context="assignee" Items="Assignees">
+				<MudPaper @key=@(assignee.Id)
+						  Class="d-flex flex-row"
+						  Elevation="0"
+						  Width="100%">
+					<MudButton Class="rounded pill"
+							   FullWidth="true"
+							   OnClick=@(AssigneeToggleChecked(assignee))>
+						<MudPaper Class="d-flex flex-row align-center justify-space-between"
+								  Style="background-color:transparent;"
+								  Elevation="0"
+								  Width="100%">
+							<MudText>
+								@assignee.Name
+							</MudText>
+							<MudCheckBox @bind-Checked=@(      assignee.Checked)
+										 ReadOnly="true"
+										   CheckedIcon=@(Icons.Material.Filled.Check)
+										 UncheckedIcon="null"
+										 Color="Color.Info"
+										 Dense="true"
+										 DisableRipple="true"Size="Size.Small"
+										 StopClickPropagation="false">
+							</MudCheckBox>
+						</MudPaper>
+					</MudButton>
+				</MudPaper>
+			</Virtualize>
+		</MudPaper>
+	</MudPaper>
+</Animate>
+
+@code
+{
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	[Parameter]
+	public static        List<Guid>  AssigneeIdsToFilter        { get; set; } = new();
+	[Parameter]
+	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
+
+	[Parameter]
+	public static        bool  HasFilter        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> HasFilterChanged { get; set; }
+
+	public record class Assignee
+	{
+		public Guid Id { get; set; }
+		public string  Name { get; set; } = null!;
+		public bool Checked { get; set; } = false;
+		public void CheckedToggleOff()
+		=>          Checked = false;
+		public void CheckedToggle()
+		=>          Checked = !
+		            Checked ;
+	}
+
+	public static List<Assignee> Assignees = new();
+	public static Guid LastActiveBoardId { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+
+	public Func<Task> AssigneeToggleChecked(Assignee assignee)
+	{
+		return async () =>
+		{
+			assignee.CheckedToggle();
+		if (assignee.Checked)
+			AssigneeIdsToFilter.Add   (assignee.Id);
+		else
+			AssigneeIdsToFilter.Remove(assignee.Id);
+			await AssigneeIdsToFilterChanged.InvokeAsync(AssigneeIdsToFilter);
+
+			HasFilter =
+			AssigneeIdsToFilter.Count > 0;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
+		};
+	}
+
+	public Func<Task> RemoveFilterOnClick()
+	{
+		return async () =>
+		{
+			foreach (Assignee assignee in Assignees)
+			{
+					 assignee.CheckedToggleOff();
+			}
+			AssigneeIdsToFilter
+			.Clear();
+			await AssigneeIdsToFilterChanged.InvokeAsync(AssigneeIdsToFilter);
+
+			HasFilter = false;
+			await HasFilterChanged
+			.InvokeAsync(HasFilter);
+		};
+	}
+
+	public async Task MapMemberModelsToAssigneeRecords()
+	{
+		if (AssigneeIdsToFilter.Count == 0)
+		{
+			Assignees.Clear();
+			foreach (Models.Member member in SupabaseImplementModelStateProviderService.Member_s.Where
+			(member=>member.BoardId==ActiveBoard_____.Id))
+			{
+				Assignees.Add(new()
+				{
+					 Id   = member.Profile.Id   ,
+					 Name = member.Profile.Email,
+					 Checked = false,
+				});
+			}
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		if (LastActiveBoardId != ActiveBoard_____.Id)
+		{
+			LastActiveBoardId  = ActiveBoard_____.Id;
+			AssigneeIdsToFilter.Clear();
+		}
+		await MapMemberModelsToAssigneeRecords();
+	}
+
+}

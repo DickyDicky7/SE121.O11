@@ -61,25 +61,28 @@
 				 DisableGutters="true"
 				 DisablePadding="true">
 			@*default views*@
-			<MudButton Class="justify-start"
-					   StartIcon="@Icons.Material.Filled.Today"
-					   Size="Size.Medium"
+			<MudButton Class=" justify-start"
+					   IconColor="Color.Dark"
+					   StartIcon="@Icons.Material.Filled.ViewAgenda"
+					   Size="Size.Large"
 					   FullWidth="true"
 					   Href="myday"
 					   OnClick="MyDayOnClick">
 				<MudText Style="">My day</MudText>
 			</MudButton>
-			<MudButton Class="justify-start"
-					   StartIcon="@Icons.Material.Filled.NextWeek"
-					   Size="Size.Medium"
+			<MudButton Class=" justify-start"
+					   IconColor="Color.Dark"
+					   StartIcon="@Icons.Material.Filled.ViewDay"
+					   Size="Size.Large"
 					   FullWidth="true"
 					   Href="kanban/next-7-days"
 					   OnClick="Next7DaysOnClick">
 				<MudText Style="">Next 7 days</MudText>
 			</MudButton>
-			<MudButton Class="justify-start"
-					   StartIcon="@Icons.Material.Filled.Task"
-					   Size="Size.Medium"
+			<MudButton Class=" justify-start"
+					   IconColor="Color.Dark"
+					   StartIcon="@Icons.Material.Filled.ViewTimeline"
+					   Size="Size.Large"
 					   FullWidth="true"
 					   Href="kanban/all-my-tasks"
 					   OnClick="AllMyTasksOnClick">
@@ -164,7 +167,6 @@
 								   Class="justify-start"
 								   Size="Size.Medium"
 								   FullWidth="true"
-								   Href="table"
 								   OnClick="@(BoardOnClick(board))">
 							<MudText Style="overflow:hidden;">
 								@board.Name
@@ -213,12 +215,21 @@
 	public bool PopupMenuCreateBoard_____Visible { get; set; } = false;
 	public bool PopupMenuCreateCustomViewVisible { get; set; } = false;
 	public bool SettingVisible { get; set; } = false;
+	public string BoardHref => ActiveViewTypeBoard switch
+	{
+		Helper.ViewTypeBoard.Kanban => "/kanban/board",
+		Helper.ViewTypeBoard. Table =>        "/table",
+		Helper.ViewTypeBoard.Calendar => "/calendar",
+		_ => "/",
+	};
 	[Parameter]
 	public string ActiveViewName { get; set; } = null!;
 	[Parameter]
 	public string ActiveViewIcon { get; set; } = null!;
 	[Parameter]
 	public Helper.ViewType ActiveViewType { get; set; }
+	[CascadingParameter(Name = nameof(ActiveViewTypeBoard))]
+	public Helper.ViewTypeBoard       ActiveViewTypeBoard { get; set; }
 	[Parameter]
 	public Models.Board      ActiveBoard_____ { get; set; } = null!;
 	[Parameter]
@@ -275,8 +286,8 @@
 		// await UpdateActiveBoard_____(null!);
 		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("My day");
-		await UpdateActiveViewIcon( Icons.Material.Filled.Today);
-		await UpdateActiveViewType(Helper.ViewType.   MyDayView);
+		await UpdateActiveViewIcon( Icons.Material.Filled.ViewAgenda);
+		await UpdateActiveViewType(Helper.ViewType.MyDayView);
 	}
 
 	public async Task  Next7DaysOnClick()
@@ -284,8 +295,8 @@
 		// await UpdateActiveBoard_____(null!);
 		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("Next 7 days");
-		await UpdateActiveViewIcon( Icons.Material.Filled.NextWeek);
-		await UpdateActiveViewType(Helper.ViewType.    DefaultView);
+		await UpdateActiveViewIcon( Icons.Material.Filled.ViewDay);
+		await UpdateActiveViewType(Helper.ViewType.   DefaultView);
 	}
 
 	public async Task AllMyTasksOnClick()
@@ -293,7 +304,7 @@
 		// await UpdateActiveBoard_____(null!);
 		// await UpdateActiveCustomView(null!);
 		await UpdateActiveViewName("All my tasks");
-		await UpdateActiveViewIcon( Icons.Material.Filled.Task);
+		await UpdateActiveViewIcon( Icons.Material.Filled.ViewTimeline);
 		await UpdateActiveViewType(Helper.ViewType.DefaultView);
 	}
 
@@ -307,6 +318,8 @@
 			await UpdateActiveViewIcon(Icons.Material.Filled.Circle);
 			await UpdateActiveViewType
 			(Helper.ViewType.WorkspaceView);
+			NavigationManager
+			.NavigateTo(BoardHref, forceLoad: false, replace: false);
 		};
 	}
 

@@ -111,15 +111,27 @@
 											</MudTooltip>
 										}
 									}
-									@if (sectionTask.SubtasksAvailable)
+									@if (sectionTask.   SubtasksAvailable)
 									{
-										<MudTooltip Text="Subtasks available" Arrow="true" Color="Color.Dark">
+										<MudTooltip Text="Subtasks available"
+													Arrow="true"
+													Color="Color.Dark">
 											@(Office.Folder)
+										</MudTooltip>
+									}
+									@if (sectionTask.  AssigneesAvailable)
+									{
+										<MudTooltip Text="Assignees available"
+													Arrow="true"
+													Color="Color.Dark">
+											@(PersonActivity.BustsInSilhouette)
 										</MudTooltip>
 									}
 									@if (sectionTask.AttachmentsAvailable)
 									{
-										<MudTooltip Text="Attachments available" Arrow="true" Color="Color.Dark">
+										<MudTooltip Text="Attachments available"
+													Arrow="true"
+													Color="Color.Dark">
 											<MudIcon Size="Size.Small"
 													 Icon="@Icons.Material.Filled.Attachment" />
 										</MudTooltip>
@@ -156,9 +168,17 @@
 	[Parameter]
 	public string? Page { get; set; }
 	[CascadingParameter(Name = nameof(IsIndividualToWorkspace))]
-	public bool IsIndividualToWorkspace { get; set; }
+	public bool       IsIndividualToWorkspace { get; set; }
 	[CascadingParameter(Name = nameof(CurrentUserId))]
-	public Guid           CurrentUserId { get; set; }
+	public Guid         CurrentUserId    { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	[CascadingParameter(Name = nameof(TagByBoard__IdsToFilter))]
+	public List<Guid> TagByBoard__IdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(    AssigneeIdsToFilter))]
+	public List<Guid>     AssigneeIdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(   DueDateRangeToFilter))]
+	public DateRange     DueDateRangeToFilter { get; set; } = null!;
 
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public Models.Task  SelectedTask { get; set; } = null!;
@@ -188,8 +208,8 @@
 						Name  = taggingByBoard.TagByBoard.Name,
 						Color = taggingByBoard.TagByBoard.ParseColor(),
 					}).ToList(),
-					   SubtasksAvailable = task.  Checklist != "[]",
-					AttachmentsAvailable = task.Attachments != "[]",
+					//    SubtasksAvailable = task.  Checklist != "[]",
+					// AttachmentsAvailable = task.Attachments != "[]",
 				});
 			}
 		}
@@ -212,8 +232,8 @@
 						Name  = taggingByProfile.TagByProfile.Name,
 						Color = taggingByProfile.TagByProfile.ParseColor(), 
 					}).ToList(),
-					   SubtasksAvailable = task.  Checklist != "[]",
-					AttachmentsAvailable = task.Attachments != "[]",
+					//    SubtasksAvailable = task.  Checklist != "[]",
+					// AttachmentsAvailable = task.Attachments != "[]",
 				});
 			}
 		}
@@ -254,8 +274,8 @@
 						Name  = taggingByBoard.TagByBoard.Name,
 						Color = taggingByBoard.TagByBoard.ParseColor(),
 					}).ToList(),
-					   SubtasksAvailable = task.  Checklist != "[]",
-					AttachmentsAvailable = task.Attachments != "[]",
+					//    SubtasksAvailable = task.  Checklist != "[]",
+					// AttachmentsAvailable = task.Attachments != "[]",
 				});
 			}
 		}
@@ -276,8 +296,8 @@
 						Name  = taggingByProfile.TagByProfile.Name,
 						Color = taggingByProfile.TagByProfile.ParseColor(),
 					}).ToList(),
-					   SubtasksAvailable = task.  Checklist != "[]",
-					AttachmentsAvailable = task.Attachments != "[]",
+					//    SubtasksAvailable = task.  Checklist != "[]",
+					// AttachmentsAvailable = task.Attachments != "[]",
 				});
 			}
 		}
@@ -344,6 +364,77 @@
 		}
 	}
 
+	public async Task MapSectionTasksToSectionsOfActiveBoard_____()
+	{
+		Sections.Clear();
+		foreach(Models.SectionByBoard sectionByBoard in
+		SupabaseImplementModelStateProviderService.Section___ByBoards.Where(
+		sectionByBoard => 
+		sectionByBoard.BoardId == ActiveBoard_____.Id)
+		 .OrderBy(sectionByBoard => sectionByBoard.CreatedTimeStamp)
+		 . ThenBy(sectionByBoard => sectionByBoard.Name))
+		{
+			Sections.Add(new()
+			{
+				Name = sectionByBoard.Name,
+				IsSectionByBoard = true ,
+				  SectionByBoard = sectionByBoard,
+				  SectionTasks   = new(),
+			});
+		}
+
+		IEnumerable<Models.Member> members = SupabaseImplementModelStateProviderService.Member_s
+		.  Where(member => member.BoardId == ActiveBoard_____.Id);
+		
+		foreach (Models.SectioningByBoard sectioningByBoard in SupabaseImplementModelStateProviderService.SectioningByBoards
+		.Where(sectioningByBoard => sectioningByBoard.SectionByBoard.BoardId == ActiveBoard_____.Id))
+		{
+			Common.Section section = Sections.First(
+			section => section.SectionByBoard.Id == sectioningByBoard
+			.SectionByBoardId);
+
+			List<Guid> assigneeIds =   JsonConvert.DeserializeObject <List<Guid>>(sectioningByBoard.Task.Assignees)!;
+			IEnumerable<Models.Profile> assignees = members.Where  (
+			member =>  assigneeIds.Contains(member.ProfileId)).Select<Models.Member,
+			            Models.Profile>(member =>   member .Profile);
+
+			IEnumerable<Models.TaggingByBoard> taggingByBoards = SupabaseImplementModelStateProviderService.TaggingByBoard__s
+			.Where(
+			    taggingByBoard =>
+			    taggingByBoard.TaskId ==
+			 sectioningByBoard.TaskId);
+
+			if (TagByBoard__IdsToFilter       == null
+			||  TagByBoard__IdsToFilter.Count == 0
+			||  taggingByBoards.Any
+			(   taggingByBoard => TagByBoard__IdsToFilter.Contains(taggingByBoard.TagByBoardId)))
+			if (    AssigneeIdsToFilter       == null
+			||      AssigneeIdsToFilter.Count == 0
+			||      assigneeIds.Any
+			(       assigneeId =>     AssigneeIdsToFilter.Contains(assigneeId)))
+			if (   DueDateRangeToFilter       == null
+			||     DueDateRangeToFilter.Start == null
+			||     DueDateRangeToFilter.End   == null
+			|| (   DueDateRangeToFilter.Start != null
+			&&     DueDateRangeToFilter.End   != null
+			&& sectioningByBoard.Task.DueDate >= DateOnly.FromDateTime(DueDateRangeToFilter.Start.Value)
+			&& sectioningByBoard.Task.DueDate <= DateOnly.FromDateTime(DueDateRangeToFilter.End  .Value)))
+			section.SectionTasks.Add(new()
+			{
+				Task = sectioningByBoard.Task,
+				Tags =    taggingByBoards
+				.Select
+				<Models.TaggingByBoard, Common.Tag>(taggingByBoard => new()
+				{
+					   Id = taggingByBoard.TagByBoard.  Id,
+					Name  = taggingByBoard.TagByBoard.Name,
+					Color = taggingByBoard.TagByBoard.ParseColor(),
+				}).ToList(),
+				Assignees = assignees.ToList(),
+			});
+		}
+	}
+
 	// public record class Section
 	// {
 	// 	public bool IsSectionByBoard                { get; init; } = false;
@@ -374,43 +465,78 @@
 		{
 			try
 			{
-			if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(section.NewTask))
-			{
-				if (section
-					.IsSectionByBoard)
+				if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(section.NewTask))
 				{
-
-				}
-				else
-				{
-					Models.Task newTask = new()
+					if (section
+						.IsSectionByBoard)
 					{
-						Name = section.NewTask,
-						Done = false,
-						Note =      string.Empty,
-						Settings  = string.Empty,
-						ReminderRecurringMode = Models.Task
-						.PossibleReminderRecurringMode.Empty.ToString(),
-						ReminderRecurringSettings = JsonConvert
-						.SerializeObject(new Common.ReminderRecurringSettings()),
-						Checklist = "[]",
-						Assignees = "[]",
-						DueDate = Helper.DefaultDueDate(section.DaysOffset),
-						DueTime = Helper.DefaultDueTime(                  ),
-						ReminderBeginDate = null,
-						ReminderBeginTime = null,
-						ReminderCeaseDate = null,
-						ReminderCeaseTime = null,
-						  BoardId = null,
-						ProfileId = CurrentUserId,
-						Attachments = "[]",
-					};
-					await SupabaseClient.From<Models.Task>().Insert(
-					newTask,      new Postgrest.QueryOptions()
-					    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
-					section.NewTask = string.Empty;
+						Models.Task newTask = new()
+						{
+							Name = section.NewTask,
+							Done = false,
+							Note =      string.Empty,
+							Settings  = string.Empty,
+							ReminderRecurringMode = Models.Task
+							.PossibleReminderRecurringMode.Empty.ToString(),
+							ReminderRecurringSettings = JsonConvert
+							.SerializeObject(new Common.ReminderRecurringSettings()),
+							Checklist = "[]",
+							Assignees = "[]",
+							DueDate = Helper.DefaultDueDate(section.DaysOffset),
+							DueTime = Helper.DefaultDueTime(                  ),
+							ReminderBeginDate = null,
+							ReminderBeginTime = null,
+							ReminderCeaseDate = null,
+							ReminderCeaseTime = null,
+							  BoardId = ActiveBoard_____.Id,
+							ProfileId = null,
+							Attachments = "[]",
+						};
+						newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
+							{ Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+						section.NewTask = string.Empty;
+
+						Models
+						.SectioningByBoard newSectioningByBoard = new()
+						{
+							SectionByBoardId =section.SectionByBoard.Id,
+							TaskId = newTask.Id,
+						};
+						await SupabaseClient.From<Models.SectioningByBoard>()
+						.Insert(newSectioningByBoard,
+						              new Postgrest.QueryOptions()
+						    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+					}
+					else
+					{
+						Models.Task newTask = new()
+						{
+							Name = section.NewTask,
+							Done = false,
+							Note =      string.Empty,
+							Settings  = string.Empty,
+							ReminderRecurringMode = Models.Task
+							.PossibleReminderRecurringMode.Empty.ToString(),
+							ReminderRecurringSettings = JsonConvert
+							.SerializeObject(new Common.ReminderRecurringSettings()),
+							Checklist = "[]",
+							Assignees = "[]",
+							DueDate = Helper.DefaultDueDate(section.DaysOffset),
+							DueTime = Helper.DefaultDueTime(                  ),
+							ReminderBeginDate = null,
+							ReminderBeginTime = null,
+							ReminderCeaseDate = null,
+							ReminderCeaseTime = null,
+							  BoardId = null,
+							ProfileId = CurrentUserId,
+							Attachments = "[]",
+						};
+						await SupabaseClient.From<Models.Task>().Insert(
+						newTask,      new Postgrest.QueryOptions()
+						    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+						section.NewTask = string.Empty;
+					}
 				}
-			}
 			}
 			catch (Postgrest.Exceptions.PostgrestException postgrestException)
 			{
@@ -445,10 +571,28 @@
 		});
 	}
 
+	public void OnChangedSection___ByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionTasksToSections();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSectioningByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapSectionTasksToSections();
+			StateHasChanged();
+		});
+	}
+
+
 	public void ResetInterval(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
 	{
 		Timer.Interval = (TimeSpan.FromDays(1)
-			- DateTime.Now.TimeOfDay).TotalMilliseconds;
+		-  DateTime.Now.TimeOfDay).TotalMilliseconds;
 	}
 
 	protected override async Task OnInitializedAsync()
@@ -462,6 +606,11 @@
 		SupabaseImplementModelStateProviderService.ChangedTask___s += OnChangedTask___s;
 		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s += OnChangedTaggingByBoard__s;
 		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles += OnChangedTaggingByProfiles;
+
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards += OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards += OnChangedSectioningByBoards;
+
+System.Diagnostics.Debug.WriteLine("CALL");
 	}
 
 	public async Task MapSectionTasksToSections()
@@ -475,6 +624,11 @@
 		{
 			await MapSectionTasksToSectionsOfAllMyTasks__();
 		}
+		else
+		if (Page == "board")
+		{
+			await MapSectionTasksToSectionsOfActiveBoard_____();
+		}
 	}
 
 	public void OnElapsedMapSectionTasksToSectionsAgain(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
@@ -486,7 +640,7 @@
 	{
 		await base.OnParametersSetAsync();
 		await SupabaseClient.Realtime    .ConnectAsync();
-		Page = Page ?? string.Empty;
+		Page = Page ??string.Empty;
 		await MapSectionTasksToSections();
 		Timer.Elapsed -= OnElapsedMapSectionTasksToSectionsAgain;
 		if (Page is "next-7-days" or "all-my-tasks")
@@ -513,6 +667,10 @@
 		SupabaseImplementModelStateProviderService.ChangedTask___s -= OnChangedTask___s;
 		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s -= OnChangedTaggingByBoard__s;
 		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles -= OnChangedTaggingByProfiles;
+
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards -= OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards -= OnChangedSectioningByBoards;
+
 		Timer.Stop();
 		Timer.Elapsed -= ResetInterval;
 		Timer.Close();

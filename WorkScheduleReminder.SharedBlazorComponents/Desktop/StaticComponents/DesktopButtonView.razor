@@ -1,5 +1,8 @@
-﻿@*Appear in workspace*@
+﻿@inject NavigationManager NavigationManager
+
+@*Appear in workspace*@
 <MudPaper Class="d-flex flex-row flex-wrap align-center"
+		  Style="padding:8px;"
 		  Elevation="0">
 	<MudMenu Class=""
 			 Size="Size.Small"
@@ -16,10 +19,14 @@
 			</MudButton>
 		</ActivatorContent>
 		<ChildContent>
-			@foreach ((string Icon, string Text) in Set)
+			@foreach ((
+					string Icon,
+					Helper.ViewTypeBoard ViewTypeBoard,
+					string Text,
+					string Href) in ViewTypeBoardItems)
 			{
-				<MudMenuItem AutoClose="false"
-							 OnClick="@(() => { ActiveIcon = Icon; })">
+				<MudMenuItem AutoClose="true"
+							 OnClick=@(ViewTypeBoardItemOnClick((Icon, ViewTypeBoard, Text, Href)))>
 					<MudPaper Class="d-flex flex-row gap-2 align-center"
 							  Style="background-color:transparent;"
 							  Elevation="0">
@@ -35,13 +42,33 @@
 
 @code
 {
+	[Parameter]
+	public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
 
-	public string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
-	public List<(string Icon, string Text)> Set { get; set; } = new()
+	public static string ActiveIcon { get; set; } = Icons.Material.Filled.ViewKanban;
+	public List<( string Icon,  Helper.ViewTypeBoard ViewTypeBoard,
+	              string Text,
+	              string Href)> ViewTypeBoardItems { get; set; } = new()
 	{
-		(Icons.Material.Filled.ViewKanban   , "Kanban"  ),
-		(Icons.Material.Filled.GridView     , "Table"   ),
-		(Icons.Material.Filled.CalendarToday, "Calendar"),
+		(Icons.Material.Filled.ViewKanban   , Helper.ViewTypeBoard.Kanban  , "Kanban"  , "kanban/board"),
+		(Icons.Material.Filled.GridView     , Helper.ViewTypeBoard.Table   , "Table"   , "table")       ,
+		(Icons.Material.Filled.CalendarToday, Helper.ViewTypeBoard.Calendar, "Calendar", "calendar")    ,
 	};
+
+	public Func<Task>   ViewTypeBoardItemOnClick ((
+	string Icon, Helper.ViewTypeBoard ViewTypeBoard,
+	string Text,
+	string Href) viewTypeBoardItem)
+	{
+		return async () =>
+		{
+			ActiveIcon = viewTypeBoardItem.Icon;
+			NavigationManager.NavigateTo(viewTypeBoardItem.Href, forceLoad: false, replace: false);
+			      ActiveViewTypeBoard  = viewTypeBoardItem.ViewTypeBoard;
+			await ActiveViewTypeBoardChanged.InvokeAsync(ActiveViewTypeBoard);
+		};
+	}
 
 }

@@ -1,0 +1,149 @@
+﻿<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown" Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column flex-wrap gap-2 pa-2"
+			  Style="border-radius:20px;"
+			  Elevation="10"
+			  Width="500px">
+		<MudText Style="font-size:larger;font-weight:bold;">
+			Filter by due date & time
+		</MudText>
+		<MudDateRangePicker @bind-DateRange=@(DueDateRangeToFilter)
+							PickerVariant="PickerVariant.Dialog"
+							    AutoClose="false"
+							Editable="true"
+							     Label ="Choose due day"
+							     DateFormat="dd/MM/yyyy"
+							TitleDateFormat="dd/MM/yyyy">
+		</MudDateRangePicker>
+		<MudPaper Class="pa-2"
+				  Style="display:grid;grid-template-columns:repeat(2,1fr);grid-gap:8px;"
+				  Elevation="0"
+				  Width="100%">
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRange(DateTime.MinValue, DateTime.Now.Date)">
+				<MudText>
+					Overdue
+				</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRange(DateTime.Now.Date, DateTime.Now.Date)">
+				<MudText>
+					Today
+				</MudText>
+			</MudButton>
+			<MudButton Class="d-flex flex-wrap rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRangeCurrentWeek_(DateTime.Now.Date)">
+				<MudText>
+					This week
+				</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRangeCurrentWeek_(DateTime.Now.AddDays(+7).Date)">
+				<MudText>
+					Next week
+				</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRangeCurrentMonth(DateTime.Now.Date)">
+				<MudText>
+					This month
+				</MudText>
+			</MudButton>
+			<MudButton Class="rounded-pill"
+					   Size="Size.Small"
+					   Variant="Variant.Text"
+					   OnClick="SetDueDateRangeCurrentMonth(DateTime.Now.AddDays(DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)).Date)">
+				<MudText>
+					Next month
+				</MudText>
+			</MudButton>
+		</MudPaper>
+		<MudButton Class="rounded-pill"
+				   Size="Size.Small"
+				   Variant="Variant.Text"
+				   Color="Color.Error"
+				   OnClick="SetDueDateRange(null, null)">
+			<MudText>
+				Remove filter
+			</MudText>
+		</MudButton>
+	</MudPaper>
+</Animate>
+
+@code
+{
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
+	[Parameter]
+	public static        DateRange  DueDateRangeToFilter        { get; set; } = new DateRange();
+	[Parameter]
+	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
+
+	[Parameter]
+	public static        bool  HasFilter        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> HasFilterChanged { get; set; }
+
+	public static Guid LastActiveBoardId { get; set; }
+	[CascadingParameter(Name = nameof(ActiveBoard_____))]
+	public Models.Board ActiveBoard_____ { get; set; } = null!;
+
+	public Func<Task> SetDueDateRange(DateTime? beginDueDateTime, DateTime? ceaseDueDateTime)
+	{
+		return async () =>
+		{
+			DueDateRangeToFilter = new(beginDueDateTime, ceaseDueDateTime);
+			await DueDateRangeToFilterChanged.InvokeAsync(DueDateRangeToFilter);
+
+			HasFilter =
+			beginDueDateTime != null &&
+			ceaseDueDateTime != null ;
+			await HasFilterChanged.InvokeAsync(HasFilter);
+		};
+	}
+
+	public Func<Task> SetDueDateRangeCurrentWeek_(DateTime currentDateTime)
+	{
+		return async () =>
+		{
+			int beginOfCurrentWeek = (7 + (                     currentDateTime.DayOfWeek - DayOfWeek.Sunday)) % 7;
+			int ceaseOfCurrentWeek = (7 + (DayOfWeek.Saturday - currentDateTime.DayOfWeek                   )) % 7;
+			await SetDueDateRange(
+				currentDateTime.AddDays(-1 * beginOfCurrentWeek).Date,
+				currentDateTime.AddDays(+1 * ceaseOfCurrentWeek).Date)();
+		};
+	}
+
+	public Func<Task> SetDueDateRangeCurrentMonth(DateTime currentDateTime)
+	{
+		return async () =>
+		{
+			int daysInMonth = DateTime.DaysInMonth(currentDateTime.Year, currentDateTime.Month);
+			DateTime ceaseDateTimeOfMonth = new DateTime(currentDateTime.Year, currentDateTime.Month, daysInMonth);
+			DateTime beginDateTimeOfMonth = new DateTime(currentDateTime.Year, currentDateTime.Month, 1);
+			await SetDueDateRange(beginDateTimeOfMonth, ceaseDateTimeOfMonth)();
+		};
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		if (LastActiveBoardId != ActiveBoard_____.Id)
+		{
+			LastActiveBoardId  = ActiveBoard_____.Id;
+			await SetDueDateRange(null, null)();
+		}
+	}
+}
