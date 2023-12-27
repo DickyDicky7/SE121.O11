@@ -162,31 +162,6 @@
 						 Task="ChosenTask"
 						 TogglePopupMenuTaskDetailVisible="TogglePopupMenuTaskDetailVisible" />
 </MudOverlay>
-
-                        }
-                    }
-                </MudPaper>
-            </MudPaper>
-        }
-        @foreach (int i in Enumerable.Range(1, DaysOfNextMonthInLastWeek))
-        {
-            <MudPaper Class="d-flex flex-row align-center justify-content-center"
-                      Elevation="3"
-                      Width="100%"
-                      Height="100%">
-                <MudText>
-                    @NextMonth
-                </MudText>
-            </MudPaper>
-        }
-    </MudPaper>
-</MudPaper>
-<MudOverlay Visible="@TaskDetailVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="(()=>{TaskDetailVisible=!TaskDetailVisible;})">
-    <TaskDetail @onclick:stopPropagation WorkspaceTask="@WorkspaceTask" />
-</MudOverlay>
 @code
 {
 
