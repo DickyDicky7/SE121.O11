@@ -21,8 +21,6 @@
 	<MudPaper Class="@($"d-flex flex-row {Theme}")"
 			  Elevation="0"
 			  Width="100vw" Height="100vh">
-														<p>@(AssigneeIdsToFilter != null ? AssigneeIdsToFilter.Count : "Nothing")</p>
-
 		@* Sidebar *@
 		<DesktopBarSide @bind-ActiveViewName="ActiveViewName"
 		                @bind-ActiveViewIcon="ActiveViewIcon"
