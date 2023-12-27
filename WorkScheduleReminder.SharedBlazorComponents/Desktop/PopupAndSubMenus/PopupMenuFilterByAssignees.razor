@@ -87,7 +87,7 @@
 		            Checked ;
 	}
 
-	public List<Assignee> Assignees = new();
+	public static List<Assignee> Assignees = new();
 	public static Guid LastActiveBoardId { get; set; }
 	[CascadingParameter(Name = nameof(ActiveBoard_____))]
 	public Models.Board ActiveBoard_____ { get; set; } = null!;
