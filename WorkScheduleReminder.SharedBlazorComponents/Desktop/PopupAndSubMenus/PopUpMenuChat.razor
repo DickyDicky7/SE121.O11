@@ -1,142 +1,160 @@
-﻿<Animate style="width:100%;height:100%;"
-         Animation="Animations.FadeDown"
-         Duration="TimeSpan.FromSeconds(0.5)">
-    <MudPaper Class="d-flex flex-column gap-2 pa-2 align-center border-2"
-              Style="border-radius:20px;overflow:hidden;"
-              Elevation="0"
-              Width="400px"
-              Height="80vh">
-        <MudPaper Class="d-flex flex-row align-center"
-                  Elevation="0"
-                  Width="100%">
-            <MudText Style="font-size:large;font-weight:bold;">
-                @($"{TaskName}'s Chat")
-            </MudText>
-        </MudPaper>
-        <MudPaper Class="d-flex flex-column gap-2"
-                  Style="overflow-y:scroll;"
-                  Elevation="0"
-                  Width="100%"
-                  Height="100%">
-            @foreach (Message msg in MessageList)
-            {
-                if (msg.BelongToThisUser)
-                {
-                    <MudPaper Class="pa-2 mud-theme-info"
-                              Style="border-radius:10px;align-self:end;"
-                              Elevation=0
-                              MaxWidth="75%">
-                        <MudText Style="">
-                            @msg.Content
-                        </MudText>
-                    </MudPaper>
-                }
-                else
-                {
-                    <MudPaper Class="d-flex flex-row gap-2"
-                              Style="align-self:start"
-                              Elevation="0"
-                              MaxWidth="75%">
-                        <MudAvatar>
-                            <MudImage Src="" />
-                        </MudAvatar>
-                        <MudPaper Class="pa-2 mud-theme-warning"
-                                  Style="border-radius:10px;"
-                                  Elevation=0
-                                  MaxWidth="100%">
-                            <MudText Style="">
-                                @msg.Content
-                            </MudText>
-                        </MudPaper>
-                    </MudPaper>
+﻿@implements IDisposable
+@inject Supabase.Client SupabaseClient
+@inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 
-                }
-            }
-        </MudPaper>
-        <MudPaper Class="d-flex flex-row"
-                  Elevation="0"
-                  Width="100%">
-            <MudTextField @bind-Value=NewMessage
-                          Immediate=true
-                          FullWidth=true
-                          Placeholder="Enter message"
-                          DisableUnderLine=true
-                          Variant="Variant.Outlined"
-                          Margin="Margin.Dense"
-                          TextUpdateSuppression=false />
-            <MudIconButton Icon="@Icons.Material.Filled.Send"
-                           Color="Color.Info"
-                           OnClick="AddMessage" />
-        </MudPaper>
-    </MudPaper>
+<Animate style="width:100%;height:100%;"
+		 Animation="Animations.FadeDown"
+		 Duration="TimeSpan.FromSeconds(0.5)">
+	<MudPaper Class="d-flex flex-column gap-2 pa-2 align-center border-2"
+			  Style="border-radius:20px;overflow:hidden;"
+			  Elevation="10"
+			  Width="400px"
+			  Height="80vh">
+		<MudPaper Class="d-flex flex-row align-center"
+				  Elevation="0"
+				  Width="100%">
+			<MudText Style="font-size:large;font-weight:bold;">
+				@($"{TaskName}'s Chat")
+			</MudText>
+		</MudPaper>
+		<MudPaper Class="d-flex flex-column-reverse gap-2"
+				  Style="overflow-y:auto;"
+				  Elevation="0"
+				  Width="100%"
+				  Height="100%">
+			<Virtualize Context="taskComment" Items="TaskComments.Reverse<TaskComment>().ToList()" TItem="TaskComment">
+				@if (BelongToCurrentUser(taskComment))
+				{
+					<MudPaper @key=@(taskComment.Comment.Id) Class="pa-2 mud-theme-info"
+							  Style="border-radius:10px;align-self:end;"
+							  Elevation=0
+							  MaxWidth="75%">
+						<MudText Style="">
+							@taskComment.Comment.Message
+						</MudText>
+					</MudPaper>
+				}
+				else
+				{
+					<MudPaper @key=@(taskComment.Comment.Id) Class="d-flex flex-row gap-2"
+							  Style="align-self:start;"
+							  Elevation="0"
+							  MaxWidth="75%">
+						<MudAvatar>
+							<MudImage Src="" />
+						</MudAvatar>
+						<MudPaper Class="pa-2 mud-theme-warning"
+								  Style="border-radius:10px;"
+								  Elevation=0
+								  MaxWidth="100%">
+							<MudText Style="">
+								@taskComment.Comment.Message
+							</MudText>
+						</MudPaper>
+					</MudPaper>
+
+				}
+			</Virtualize>
+		</MudPaper>
+		<MudPaper Class="d-flex flex-row"
+				  Elevation="0"
+				  Width="100%">
+			<MudTextField @bind-Value=NewMessage
+						  Immediate=true
+						  FullWidth=true
+						  Placeholder="Enter message"
+						  DisableUnderLine=true
+						  Variant="Variant.Outlined"
+						  Margin="Margin.Dense"
+						  TextUpdateSuppression=false />
+			<MudIconButton Icon="@Icons.Material.Filled.Send"
+						   Color="Color.Info"
+						   OnClick="CreateNewMessage" />
+		</MudPaper>
+	</MudPaper>
 </Animate>
 
 @code {
-    [Parameter(CaptureUnmatchedValues = true)]
-    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
-    public string NewMessage = string.Empty;
-    public string TaskName = "Task Name";
+	[Parameter]
+	public Models.Task Task { get; set; } = new() { Id = Guid.Parse("b44b9305-c872-4ab2-b1c7-a7e66454bf1a"), };
+	[CascadingParameter(Name = nameof(CurrentUserId))]
+	public Guid CurrentUserId { get; set; }
 
-    public record Message
-    {
-        public string Content { get; set; } = default!;
-        public bool BelongToThisUser { get; set; } = true;
-        public DateTime DateTimeCreated { get; set; } = default!;
-    }
-    public List<Message> MessageList { get; set; } = new();
-    public void AddMessage()
-    {
-        MessageList.Add(new Message()
-            {
-                Content = NewMessage,
-                DateTimeCreated = DateTime.Now
-            });
-        NewMessage = string.Empty;
-    }
+	public string NewMessage = string.Empty;
+	public string TaskName = "Task Name";
+	public bool BelongToCurrentUser(TaskComment taskComment) => taskComment.Comment != null &&
+	taskComment.Comment.ProfileId == CurrentUserId;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        foreach (int i in Enumerable.Range(1, 30))
-        {
-            if (i % 2 == 0)
-            {
-                if (i % 3 == 0)
-                {
-                    MessageList.Add(new Message()
-                        {
-                            Content = $"Message {i}: This sentence contain a lot of words words words words"
-                        });
-                }
-                else
-                {
-                    MessageList.Add(new Message()
-                        {
-                            Content = $"Message {i}"
-                        });
-                }
-            }
-            else
-            {
-                if (i % 3 == 0)
-                {
-                    MessageList.Add(new Message()
-                        {
-                            Content = $"Message {i}: This sentence contain a lot of words words words words",
-                            BelongToThisUser = false
-                        });
-                }
-                else
-                {
-                    MessageList.Add(new Message()
-                        {
-                            Content = $"Message {i}",
-                            BelongToThisUser = false
-                        });
-                }
-            }
-        }
 
-    }
+	public record class TaskComment
+	{
+		public Models.Comment Comment { get; set; } = null!;
+	}
+
+	public List<TaskComment> TaskComments { get; set; } = new();
+
+
+	public async Task MapCommentModelsToTaskCommentRecords()
+	{
+		TaskComments.Clear();
+		foreach (Models.Comment comment in SupabaseImplementModelStateProviderService.Comments.Where(
+		comment => comment.TaskId == Task.Id).OrderBy(comment => comment.CreatedTimeStamp))
+		{
+			TaskComments.Add(new()
+				{
+					Comment = comment,
+				});
+		}
+		await System.Threading.Tasks.Task.CompletedTask;
+	}
+
+	public async Task CreateNewMessage()
+	{
+		try
+		{
+			Models.Comment newComment = new()
+				{
+					Message = NewMessage,
+					TaskId = Task.Id,
+					ProfileId = CurrentUserId,
+				};
+			await SupabaseClient.From<Models.Comment>().Insert(newComment, new Postgrest.QueryOptions()
+				{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
+			// MessageList.Add(new Message()
+			// 	{
+			// 		Content = NewMessage,
+			// 		DateTimeCreated = DateTime.Now
+			// 	});
+			NewMessage = string.Empty;
+
+		}
+		catch (Postgrest.Exceptions.PostgrestException postgrestException)
+		{
+			System.Diagnostics.Debug.WriteLine(postgrestException.Message);
+		}
+	}
+
+	public void OnChangedComments()
+	{
+		InvokeAsync(async () =>
+		{
+			await MapCommentModelsToTaskCommentRecords();
+			StateHasChanged();
+		});
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		await MapCommentModelsToTaskCommentRecords();
+		SupabaseImplementModelStateProviderService.ChangedComments += OnChangedComments;
+	}
+
+	public void Dispose()
+	{
+		SupabaseImplementModelStateProviderService.ChangedComments -= OnChangedComments;
+	}
 }

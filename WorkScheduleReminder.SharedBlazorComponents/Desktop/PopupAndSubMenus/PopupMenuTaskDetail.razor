@@ -276,7 +276,16 @@
 	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
 							 Task="Task" />
 </MudOverlay>
-
+@* <MudOverlay Class="border-2"
+			Visible="PopupMenuSelectAssigneeVisible"
+			DarkBackground="true"
+			AutoClose="true"
+			ZIndex="30"
+			OnClick="TogglePopupMenuSelectAssigneeVisible">
+	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
+							 Task="Task" />
+</MudOverlay>
+ *@
 @code
 {
 	public bool PopupMenuTagAndTagging_Visible { get; set; } = false;

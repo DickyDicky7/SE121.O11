@@ -21,7 +21,8 @@
 				  Width="100%"
 				  Height="100%">
 			<Virtualize Context="section" Items="Sections.Reverse<Common.Section>().ToList()">
-				<MudPaper Class="d-flex flex-row gap-2 align-center"
+				<MudPaper @key=@(section.SectionByBoard  .Id)
+						  Class="d-flex flex-row gap-2 align-center"
 						  Elevation="0"
 						  Width="100%">
 					<MudTextField @bind-Value=@(section.Name)
