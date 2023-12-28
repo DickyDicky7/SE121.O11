@@ -5,68 +5,100 @@
 <Animate style="width:100%;height:100%;"
 		 Animation="Animations.FadeDown"
 		 Duration="TimeSpan.FromSeconds(0.5)">
-	<MudPaper Class="d-flex flex-column gap-2 pa-2 align-center border-2"
+	<MudPaper @attributes=AdditionalAttributes
+			  Class="d-flex flex-column gap-2 pa-2 align-center border-2"
 			  Style="border-radius:20px;overflow:hidden;"
 			  Elevation="10"
-			  Width="400px"
+			  Width="500px"
 			  Height="80vh">
 		<MudPaper Class="d-flex flex-row align-center"
 				  Elevation="0"
 				  Width="100%">
 			<MudText Style="font-size:large;font-weight:bold;">
-				@($"{TaskName}'s Chat")
+				@(@$"Task ""{Task.Name}"" 's Chat")
 			</MudText>
 		</MudPaper>
 		<MudPaper Class="d-flex flex-column-reverse gap-2"
 				  Style="overflow-y:auto;"
 				  Elevation="0"
-				  Width="100%"
+				  Width ="100%"
 				  Height="100%">
-			<Virtualize Context="taskComment" Items="TaskComments.Reverse<TaskComment>().ToList()" TItem="TaskComment">
+			<Virtualize Context="taskComment"
+						Items="TaskComments.Reverse<TaskComment>().ToList()"
+						TItem="TaskComment" OverscanCount="10">
 				@if (BelongToCurrentUser(taskComment))
 				{
-					<MudPaper @key=@(taskComment.Comment.Id) Class="pa-2 mud-theme-info"
+					<MudPaper @key=@(taskComment.Comment.Id)
+							  Class="pa-2 mud-theme-info"
 							  Style="border-radius:10px;align-self:end;"
-							  Elevation=0
+							  Elevation="0"
 							  MaxWidth="75%">
-						<MudText Style="">
-							@taskComment.Comment.Message
-						</MudText>
+						<MudTooltip Arrow="true"
+									Color="Color.Dark"
+									Placement="Placement.Start"
+									Text=@($"Sent at {taskComment.Comment.CreatedTimeStamp:HH:mm, dd-MM-yyyy}")>
+							<MudText Style="">
+								@taskComment.Comment.Message
+							</MudText>
+						</MudTooltip>
 					</MudPaper>
 				}
 				else
 				{
-					<MudPaper @key=@(taskComment.Comment.Id) Class="d-flex flex-row gap-2"
+					<MudPaper @key=@(taskComment.Comment.Id)
+							  Class="d-flex flex-row gap-2"
 							  Style="align-self:start;"
 							  Elevation="0"
 							  MaxWidth="75%">
-						<MudAvatar>
-							<MudImage Src="" />
-						</MudAvatar>
+						<MudTooltip Arrow="true"
+									Color="Color.Dark"
+									Placement="Placement.Start"
+									Text = "@taskComment.Comment.Profile.Email">
+							<MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+								@if (string.IsNullOrWhiteSpace(taskComment
+                                   .Comment.Profile.AvatarURL))
+								{
+								@(taskComment
+                                   .Comment.Profile.Email[0].ToString()
+                                           .ToUpper())
+								}
+								else
+								{
+									<MudImage Src=@(
+                                  taskComment
+                                   .Comment.Profile.AvatarURL) />
+								}
+							</MudAvatar>
+						</MudTooltip>
 						<MudPaper Class="pa-2 mud-theme-warning"
 								  Style="border-radius:10px;"
 								  Elevation=0
 								  MaxWidth="100%">
-							<MudText Style="">
-								@taskComment.Comment.Message
-							</MudText>
+							<MudTooltip Arrow="true"
+										Color="Color.Dark"
+										Placement="Placement.End"
+										Text=@($"Sent at {taskComment.Comment.CreatedTimeStamp:HH:mm, dd-MM-yyyy}")>
+								<MudText Style="">
+									@taskComment.Comment.Message
+								</MudText>
+							</MudTooltip>
 						</MudPaper>
 					</MudPaper>
-
 				}
 			</Virtualize>
 		</MudPaper>
 		<MudPaper Class="d-flex flex-row"
 				  Elevation="0"
 				  Width="100%">
-			<MudTextField @bind-Value=NewMessage
+			<MudTextField @bind-Value=@(NewMessage)
 						  Immediate=true
 						  FullWidth=true
 						  Placeholder="Enter message"
 						  DisableUnderLine=true
 						  Variant="Variant.Outlined"
 						  Margin="Margin.Dense"
-						  TextUpdateSuppression=false />
+						  TextUpdateSuppression=false
+						  OnKeyDown="CreateNewMessageOnKeyDown"/>
 			<MudIconButton Icon="@Icons.Material.Filled.Send"
 						   Color="Color.Info"
 						   OnClick="CreateNewMessage" />
@@ -74,41 +106,51 @@
 	</MudPaper>
 </Animate>
 
-@code {
+@code
+{
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
 	[Parameter]
-	public Models.Task Task { get; set; } = new() { Id = Guid.Parse("b44b9305-c872-4ab2-b1c7-a7e66454bf1a"), };
+	public Models.Task  Task  { get; set; } = null!;
 	[CascadingParameter(Name = nameof(CurrentUserId))]
 	public Guid CurrentUserId { get; set; }
 
-	public string NewMessage = string.Empty;
-	public string TaskName = "Task Name";
-	public bool BelongToCurrentUser(TaskComment taskComment) => taskComment.Comment != null &&
-	taskComment.Comment.ProfileId == CurrentUserId;
-
+	public string  NewMessage { get; set; } = string.Empty;
+	public bool BelongToCurrentUser(TaskComment taskComment)
+	=> taskComment.Comment != null
+	&& taskComment.Comment.ProfileId 
+	== CurrentUserId;
+	public List<TaskComment> TaskComments { get; set; } = new();
 
 	public record class TaskComment
 	{
 		public Models.Comment Comment { get; set; } = null!;
 	}
 
-	public List<TaskComment> TaskComments { get; set; } = new();
-
-
 	public async Task MapCommentModelsToTaskCommentRecords()
 	{
-		TaskComments.Clear();
+		   TaskComments.Clear();
 		foreach (Models.Comment comment in SupabaseImplementModelStateProviderService.Comments.Where(
-		comment => comment.TaskId == Task.Id).OrderBy(comment => comment.CreatedTimeStamp))
+		comment =>
+		comment.TaskId == Task.Id).OrderBy(
+		comment =>
+		comment.CreatedTimeStamp))
 		{
 			TaskComments.Add(new()
-				{
-					Comment = comment,
-				});
+			{
+				Comment = comment,
+			});
 		}
 		await System.Threading.Tasks.Task.CompletedTask;
+	}
+
+	public async Task CreateNewMessageOnKeyDown(KeyboardEventArgs keyboardEventArgs)
+	{
+		if (keyboardEventArgs.Code == "Enter" && !string.IsNullOrWhiteSpace(NewMessage))
+		{
+		   await      CreateNewMessage();
+		}
 	}
 
 	public async Task CreateNewMessage()
@@ -116,24 +158,21 @@
 		try
 		{
 			Models.Comment newComment = new()
-				{
-					Message = NewMessage,
-					TaskId = Task.Id,
-					ProfileId = CurrentUserId,
-				};
-			await SupabaseClient.From<Models.Comment>().Insert(newComment, new Postgrest.QueryOptions()
-				{ Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
-			// MessageList.Add(new Message()
-			// 	{
-			// 		Content = NewMessage,
-			// 		DateTimeCreated = DateTime.Now
-			// 	});
-			NewMessage = string.Empty;
-
+			{
+				Message = NewMessage,
+				   TaskId = Task.Id ,
+				ProfileId = CurrentUserId,
+			};
+			await SupabaseClient.From<Models.Comment>().Insert(
+			newComment, new Postgrest.QueryOptions()
+			{Returning    = Postgrest.QueryOptions.ReturnType.Minimal, });
+			NewMessage    =    string.Empty;
 		}
 		catch (Postgrest.Exceptions.PostgrestException postgrestException)
 		{
-			System.Diagnostics.Debug.WriteLine(postgrestException.Message);
+			System
+			.Diagnostics.Debug.WriteLine(
+			postgrestException.Message);
 		}
 	}
 

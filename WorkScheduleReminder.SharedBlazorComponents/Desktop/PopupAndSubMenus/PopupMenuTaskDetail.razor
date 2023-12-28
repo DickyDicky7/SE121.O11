@@ -16,7 +16,7 @@
 	<MudPaper Class="d-flex flex-column gap-2 justify-start pa-2"
 			  Style="border-radius:20px;"
 			  Elevation="10"
-			  Width="500px"
+			  Width="600px"
 			  MaxHeight="90vh" @attributes="AdditionalAttributes">
 		@*link and buttons*@
 		<MudPaper Class="d-flex flex-row pa-2"
@@ -92,6 +92,13 @@
 						   Color="Color.Default"
 						   OnClick="TogglePopupMenuSelectSection_Visible">
 					Section
+				</MudButton>
+				<MudButton Class="rounded-pill align-content-start"
+						   Size=Size.Small
+						   StartIcon="@Icons.Material.Filled.Chat"
+						   Color="Color.Default"
+						   OnClick="TogglePopupMenuChatVisible">
+					Chat
 				</MudButton>
 			}
 		</MudPaper>
@@ -276,22 +283,23 @@
 	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
 							 Task="Task" />
 </MudOverlay>
-@* <MudOverlay Class="border-2"
-			Visible="PopupMenuSelectAssigneeVisible"
+<MudOverlay Class="border-2"
+			Visible="PopupMenuChatVisible"
 			DarkBackground="true"
 			AutoClose="true"
 			ZIndex="30"
-			OnClick="TogglePopupMenuSelectAssigneeVisible">
-	<PopupMenuSelectAssignee @onclick:stopPropagation @bind-ShouldUpdateTask=@(ShouldUpdateTask)
-							 Task="Task" />
+			OnClick="TogglePopupMenuChatVisible">
+	<PopupMenuChat @onclick:stopPropagation
+				   Task="Task" />
 </MudOverlay>
- *@
+
 @code
 {
 	public bool PopupMenuTagAndTagging_Visible { get; set; } = false;
 	public bool PopupMenuReminderVisible { get; set; } = false;
 	public bool PopupMenuSelectAssigneeVisible { get; set; } = false;
 	public bool PopupMenuSelectSection_Visible { get; set; } = false;
+	public bool PopupMenuChatVisible { get; set; } = false;
 
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
@@ -377,6 +385,12 @@
 	{
 		PopupMenuSelectSection_Visible = !
 		PopupMenuSelectSection_Visible;
+	}
+
+	public void TogglePopupMenuChatVisible()
+	{
+		PopupMenuChatVisible = !
+		PopupMenuChatVisible;
 	}
 
 	public Action RemoveSubtask(Subtask subtask)
