@@ -8,7 +8,7 @@
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
 >
 
-  <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
+  <Identity Name="maui-package-name-placeholder" Publisher="CN=Work Schedule Reminder" Version="0.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="42287A49-63B5-4421-BD1F-A773E83910A3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 

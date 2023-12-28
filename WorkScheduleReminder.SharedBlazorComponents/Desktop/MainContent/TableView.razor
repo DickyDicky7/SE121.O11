@@ -46,7 +46,7 @@
 		<Virtualize Context="section" Items="Sections">
 			<MudPaper @key=@(section.SectionByBoard.Id)
 					  Class="d-flex flex-row align-center justify-space-between"
-					  Style="position:sticky;top:0px;"
+					  Style="position:relative;"
 					  Elevation="10"
 					  Width="100%">
 				<MudPaper Class="d-flex flex-row align-center"
@@ -126,7 +126,7 @@
 					<TemplateColumn Hidden="@(!ColumnPropertiesList[2].Visible)" Title="@ColumnPropertiesList[2].Name">
 						<CellTemplate>
 							<MudPaper Class="align-center justify-content-start"
-									  Style="position:sticky;"
+									  Style="position:relative;"
 									  Elevation="0"
 									  Width="100%"
 									  Height="50px">
@@ -194,6 +194,7 @@
 	</MudPaper>
 </MudPaper>
 <MudOverlay Visible="@PopupMenuTaskDetailVisible"
+			ZIndex="10"
 			DarkBackground="true"
 			AutoClose="true"
 			OnClick="TogglePopupMenuTaskDetailVisible">
@@ -206,6 +207,12 @@
 {
 	[CascadingParameter(Name = nameof(ActiveBoard_____))]
 	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	[CascadingParameter(Name = nameof(TagByBoard__IdsToFilter))]
+	public List<Guid> TagByBoard__IdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(    AssigneeIdsToFilter))]
+	public List<Guid>     AssigneeIdsToFilter { get; set; } = null!;
+	[CascadingParameter(Name = nameof(   DueDateRangeToFilter))]
+	public DateRange     DueDateRangeToFilter { get; set; } = null!;
 
 	public record class ColumnProperties
 	{
@@ -236,7 +243,7 @@
 		sectionByBoard => 
 		sectionByBoard.BoardId == ActiveBoard_____.Id)
 		 .OrderBy(sectionByBoard => sectionByBoard.CreatedTimeStamp)
-		 .OrderBy(sectionByBoard => sectionByBoard.Name))
+		 . ThenBy(sectionByBoard => sectionByBoard.Name))
 		{
 			Sections.Add(new()
 			{
@@ -262,12 +269,31 @@
 			member =>  assigneeIds.Contains(member.ProfileId)).Select<Models.Member,
 			            Models.Profile>(member =>   member .Profile);
 
+			IEnumerable<Models.TaggingByBoard> taggingByBoards = SupabaseImplementModelStateProviderService.TaggingByBoard__s
+			.Where(
+			    taggingByBoard =>
+			    taggingByBoard.TaskId ==
+			 sectioningByBoard.TaskId);
+
+			if (TagByBoard__IdsToFilter       == null
+			||  TagByBoard__IdsToFilter.Count == 0
+			||  taggingByBoards.Any
+			(   taggingByBoard => TagByBoard__IdsToFilter.Contains(taggingByBoard.TagByBoardId)))
+			if (    AssigneeIdsToFilter       == null
+			||      AssigneeIdsToFilter.Count == 0
+			||      assigneeIds.Any
+			(       assigneeId =>     AssigneeIdsToFilter.Contains(assigneeId)))
+			if (   DueDateRangeToFilter       == null
+			||     DueDateRangeToFilter.Start == null
+			||     DueDateRangeToFilter.End   == null
+			|| (   DueDateRangeToFilter.Start != null
+			&&     DueDateRangeToFilter.End   != null
+			&& sectioningByBoard.Task.DueDate >= DateOnly.FromDateTime(DueDateRangeToFilter.Start.Value)
+			&& sectioningByBoard.Task.DueDate <= DateOnly.FromDateTime(DueDateRangeToFilter.End  .Value)))
 			section.SectionTasks.Add(new()
 			{
 				Task = sectioningByBoard.Task,
-				Tags = SupabaseImplementModelStateProviderService.TaggingByBoard__s.Where(
-				taggingByBoard =>
-				taggingByBoard.TaskId == sectioningByBoard.TaskId)
+				Tags =    taggingByBoards
 				.Select
 				<Models.TaggingByBoard, Common.Tag>(taggingByBoard => new()
 				{
@@ -432,8 +458,9 @@
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		await base.OnAfterRenderAsync(firstRender);
-		if (LastActiveBoardId != ActiveBoard_____.Id)
+		if (LastActiveBoardId != ActiveBoard_____.Id   || firstRender)
 		{
+System.Diagnostics.Debug.WriteLine("HAHAHA");
 			LastActiveBoardId  = ActiveBoard_____.Id;
 			await MapSectionsByBoardsToSections();
 		}
