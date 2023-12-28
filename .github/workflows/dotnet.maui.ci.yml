@@ -2,6 +2,8 @@ name: .NET MAUI CI Build
 
 on:
   push        :
+    tags:
+      - '*'
     branches: [ "master" ]
     paths-ignore:
       - '**/*.md'
@@ -122,6 +124,41 @@ jobs:
         with:
           name: work-schedule-reminder-installer-windows10-x64
           path: .\**\AppPackages\**\*.*
+
+
+      -
+        name: Compress Installer
+        run : |
+          zip work_schedule_reminder_installer_windows10_x64 .\**\AppPackages\**\*.*
+      -
+        name: Create Version
+        run : |
+          $version = powershell get-date -format "{dd-MMM-yyyy HH:mm}"
+      -
+        name: Create Release
+        uses: actions/create-release@v1
+        id  : create_release
+        with:
+          draft     : false
+          prerelease: false
+          release_name: Release $version
+          tag_name : ${{ github.ref }}
+          body_path:  CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      -
+        name: Upload Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: work_schedule_reminder_installer_windows10_x64.zip
+          asset_name: work_schedule_reminder_installer_windows10_x64
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+
+
 
 
 
