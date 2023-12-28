@@ -92,37 +92,35 @@ jobs:
           name: dotnet-stryker-mutation-report
           path: ./WorkScheduleReminder.Testing/StrykerOutput/**/**/*.html
 
+      #--- Publish ---#
+      
       -
-        name: Decode pfx cert
+        name: Decode .pfx Certificate
         run : |
           echo "${{ secrets.WINDOWS_WORK_SCHEDULE_REMINDER_PFX }}" > WorkScheduleReminder.pfx.base64
           certutil -decode WorkScheduleReminder.pfx.base64 WorkScheduleReminder.pfx
-
       -
-        name: Add pfx cert to store
+        name: Add .pfx Certificate To Store
         run : |
           certutil -user -q -p ${{ secrets.WINDOWS_WORK_SCHEDULE_REMINDER_PFX_PASSWORD }} -importpfx WorkScheduleReminder.pfx NoRoot
-
       -
-        name: Write File
+        name: Overwrite launchSettings.json File
         uses: DamianReeves/write-file-action@v1.2
         with:
           path: ./WorkScheduleReminder.MAUIBlazor/Properties/launchSettings.json
-          contents: |
+          contents  : |
             { "profiles": { "Windows Machine": { "commandName": "MsixPackage", /* Unpack The App. Replace With "MsixPackage" If You Want To Change Back To MsixPackage */ "nativeDebugging": false } } }
           write-mode: overwrite
-            
-
       -
         name: Publish
         working-directory: ./WorkScheduleReminder.MAUIBlazor
         run : |
           dotnet publish WorkScheduleReminder.MAUIBlazor.csproj -c Release -f:net7.0-windows10.0.19041.0 /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint="${{ secrets.WINDOWS_WORK_SCHEDULE_REMINDER_PFX_THUMBPRINT }}" /p:WindowsPackageType=MSIX
-
       -
-        name: Upload
+        name: Upload .msix Installer
         uses: actions/upload-artifact@v3.1.3
         with:
+          name: work-schedule-reminder-installer-windows10-x64
           path: .\**\AppPackages\**\*.*
 
 
