@@ -33,7 +33,7 @@
 
 
 	<ItemGroup>
-		<ProjectReference Include="..\WorkScheduleReminder.MAUIBlazor\WorkScheduleReminder.MAUIBlazor.csproj" />
+		<!-- <ProjectReference Include="..\WorkScheduleReminder.MAUIBlazor\WorkScheduleReminder.MAUIBlazor.csproj" /> -->
 		<ProjectReference Include="..\WorkScheduleReminder.SharedBusinessLogic\WorkScheduleReminder.SharedBusinessLogic.csproj" />
 		<ProjectReference Include="..\WorkScheduleReminder.SharedBlazorComponents\WorkScheduleReminder.SharedBlazorComponents.csproj" />
 	</ItemGroup>
