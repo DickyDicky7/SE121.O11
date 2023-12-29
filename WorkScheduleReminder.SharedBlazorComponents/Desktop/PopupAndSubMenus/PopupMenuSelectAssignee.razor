@@ -22,7 +22,8 @@
 				  Width="100%"
 				  Height="100%">
 			<Virtualize Context="assignee" Items="Assignees">
-				<MudPaper Class="d-flex flex-row"
+				<MudPaper @key=@(assignee.Profile.Id)
+						  Class="d-flex flex-row"
 						  Elevation="0"
 						  Width="100%">
 					<MudButton Class="rounded pill"
@@ -82,6 +83,8 @@
 			Checked = assigneeIds.Contains(member.ProfileId),
 		})
 		.ToList();
+
+		await System.Threading.Tasks.Task.CompletedTask;
 	}
 
 	protected override async Task OnInitializedAsync()
