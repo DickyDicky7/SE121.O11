@@ -76,8 +76,9 @@ jobs:
 
       -
         name: Test
+        working-directory: ./WorkScheduleReminder.Testing
         run : |
-          dotnet test --verbosity normal
+          dotnet test --verbosity detailed
 
       #--- Mutation Testing ---#
 
