@@ -147,8 +147,8 @@ jobs:
         with:
           draft     : false
           prerelease: false
-          release_name: Release ver ${{ steps.create_version.outputs.VERSION }}
-          tag_name: v${{ steps.create_version.outputs.VERSION }}
+          release_name: ${{ steps.create_version.outputs.VERSION }}
+          tag_name:     ${{ steps.create_version.outputs.VERSION }}
           body: |
             Changes in this release: N/A          
         env:
