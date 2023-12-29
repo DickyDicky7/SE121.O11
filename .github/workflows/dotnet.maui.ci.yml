@@ -135,6 +135,7 @@ jobs:
         name: Create Version
         run : |
           $version = powershell get-date -format "{dd-MMM-yyyy HH:mm}"
+          echo "VERSION=$version" >> $GITHUB_ENV
       -
         name: Create Release
         uses: actions/create-release@v1
@@ -142,9 +143,10 @@ jobs:
         with:
           draft     : false
           prerelease: false
-          release_name: Release $version
-          tag_name : ${{ github.ref }}
-          # body_path:  CHANGELOG.md
+          release_name: Release ver ${{ env.VERSION }}
+          tag_name: v.${{ env.VERSION }}
+          body: |
+            Changes in this release: N/A          
         env:
           GITHUB_TOKEN: ${{ github.token }}
       -
