@@ -125,17 +125,20 @@ jobs:
         with:
           name: work-schedule-reminder-installer-windows10-x64
           path: .\**\AppPackages\**\*.*
+          retention-days: 7
+
 
 
       -
         name: Compress Installer
+        working-directory: ./WorkScheduleReminder.MAUIBlazor/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages
         run : |
-          powershell Compress-Archive -DestinationPath work_schedule_reminder_installer_windows10_x64.zip -LiteralPath .\**\AppPackages\**\*.*
+          Compress-Archive -DestinationPath 'work_schedule_reminder_installer_windows10_x64.zip' -LiteralPath '.'
       -
         name: Create Version
         id  : create_version
         run : |
-          $version = powershell get-date -format "{dd-MMM-yyyy.HH:mm}"
+          $version = Get-Date -Format dd-MMM-yyyy.HH:mm
           echo "VERSION=$version" >> $GITHUB_OUTPUT
       -
         name: Create Release
