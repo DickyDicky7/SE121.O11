@@ -158,8 +158,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./work_schedule_reminder_installer_windows10_x64.zip
-          asset_name:   work_schedule_reminder_installer_windows10_x64
+          asset_path: ./WorkScheduleReminder.MAUIBlazor/bin/Release/net7.0-windows10.0.19041.0/win10-x64/AppPackages/work_schedule_reminder_installer_windows10_x64.zip
+          asset_name: work_schedule_reminder_installer_windows10_x64
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
