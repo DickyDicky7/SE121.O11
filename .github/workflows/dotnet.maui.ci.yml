@@ -133,9 +133,10 @@ jobs:
           powershell Compress-Archive -DestinationPath work_schedule_reminder_installer_windows10_x64.zip -LiteralPath .\**\AppPackages\**\*.*
       -
         name: Create Version
+        id  : create_version
         run : |
           $version = powershell get-date -format "{dd-MMM-yyyy.HH:mm}"
-          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
       -
         name: Create Release
         uses: actions/create-release@v1
@@ -143,8 +144,8 @@ jobs:
         with:
           draft     : false
           prerelease: false
-          release_name: Release ver ${{ env.VERSION }}
-          tag_name: v${{ env.VERSION }}
+          release_name: Release ver ${{ steps. create_version.outputs.VERSION }}
+          tag_name: v${{ steps.create_version.outputs.VERSION }}
           body: |
             Changes in this release: N/A          
         env:
