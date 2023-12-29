@@ -58,18 +58,19 @@
 						   Icon="@Icons.Material.Filled.Notifications"
 						   OnClick="ToggleNotifiVisible" />
 		</MudTooltip> *@
-        <MudTooltip Placement="Placement.Left"
-                    Arrow="true"
-                    Color="Color.Dark" Text="Notifications">
-            <MudToggleIconButton @bind-Toggled=LightMode @bind-Toggled:after=ToggleLightMode
-                                 Icon="@Icons.Material.Filled.LightMode"
-                                 ToggledIcon="@Icons.Material.Filled.DarkMode"
-                                 Color="Color.Info"
-                                 ToggledColor="Color.Default"
-                                 Size="Size.Small"
-                                 ToggledSize="Size.Small" />
-			<MudSwitch @bind-Checked=LightMode/>
-        </MudTooltip>
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Toggle light/dark mode">
+			<MudToggleIconButton Toggled=@(IsDarkMode)
+								 ToggledChanged=@(ToggleDarkMode)
+								 Icon="@Icons.Material.Filled.LightMode"
+								 ToggledIcon="@Icons.Material.Filled.DarkMode"
+								 Color="Color.Warning"
+								 ToggledColor="Color.Primary"
+								 Size="Size.Small"
+								 ToggledSize="Size.Small" />
+			@* <MudSwitch @bind-Checked=IsDarkMode/> *@
+		</MudTooltip>
 		<MudTooltip Placement="Placement.Left"
 					Arrow="true"
 					Color="Color.Dark" Text="Search">
@@ -144,13 +145,18 @@
 	public bool SearchVisible { get; set; } = false;
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public bool OnSync { get; set; } = false;
-	public bool LightMode { get; set; } = true;
-	public bool LightModeToolTipString = "Light Mode";
 
-	public void ToggleLightMode()
+	[Parameter]
+	public               bool  IsDarkMode        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> IsDarkModeChanged { get; set; }
+
+	public async Task ToggleDarkMode(  bool isDarkMode)
 	{
-		
+		IsDarkMode = isDarkMode;
+		await IsDarkModeChanged.InvokeAsync(IsDarkMode);
 	}
+
 	public void ToggleNotifiVisible()
 	{
 		NotifiVisible = !NotifiVisible;
