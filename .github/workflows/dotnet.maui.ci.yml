@@ -129,7 +129,7 @@ jobs:
       -
         name: Compress Installer
         run : |
-          zip work_schedule_reminder_installer_windows10_x64 .\**\AppPackages\**\*.*
+          powershell Compress-Archive -DestinationPath work_schedule_reminder_installer_windows10_x64.zip -LiteralPath .\**\AppPackages\**\*.*
       -
         name: Create Version
         run : |
