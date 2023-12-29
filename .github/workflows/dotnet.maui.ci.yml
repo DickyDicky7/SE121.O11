@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env: { DOTNET_NOLOGO: true, DOTNET_CLI_TELEMETRY_OPTOUT: true, DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true, }
 
