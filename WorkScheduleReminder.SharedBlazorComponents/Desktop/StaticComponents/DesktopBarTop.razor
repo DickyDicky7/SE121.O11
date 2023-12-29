@@ -50,13 +50,26 @@
 						   Size="Size.Small"
 						   Icon="@Icons.Material.Filled.Sync" />
 		</MudTooltip>
-		<MudTooltip Placement="Placement.Left"
+		@* <MudTooltip Placement="Placement.Left"
 					Arrow="true"
 					Color="Color.Dark" Text="Notifications">
 			<MudIconButton Class="rounded-cycle"
 						   Size="Size.Small"
 						   Icon="@Icons.Material.Filled.Notifications"
 						   OnClick="ToggleNotifiVisible" />
+		</MudTooltip> *@
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Toggle light/dark mode">
+			<MudToggleIconButton Toggled=@(IsDarkMode)
+								 ToggledChanged=@(ToggleDarkMode)
+								 Icon="@Icons.Material.Filled.LightMode"
+								 ToggledIcon="@Icons.Material.Filled.DarkMode"
+								 Color="Color.Warning"
+								 ToggledColor="Color.Primary"
+								 Size="Size.Small"
+								 ToggledSize="Size.Small" />
+			@* <MudSwitch @bind-Checked=IsDarkMode/> *@
 		</MudTooltip>
 		<MudTooltip Placement="Placement.Left"
 					Arrow="true"
@@ -133,6 +146,17 @@
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public bool OnSync { get; set; } = false;
 
+	[Parameter]
+	public               bool  IsDarkMode        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> IsDarkModeChanged { get; set; }
+
+	public async Task ToggleDarkMode(  bool isDarkMode)
+	{
+		IsDarkMode = isDarkMode;
+		await IsDarkModeChanged.InvokeAsync(IsDarkMode);
+	}
+
 	public void ToggleNotifiVisible()
 	{
 		NotifiVisible = !NotifiVisible;
@@ -153,7 +177,7 @@
 		Timer.Start();
 	}
 
-	public void Timer_OnElapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+	public void Timer_OnElapsed(object? sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
 	{
 		SyncOnClick();
 	}
