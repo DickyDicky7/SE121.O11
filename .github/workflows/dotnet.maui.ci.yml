@@ -138,8 +138,7 @@ jobs:
         name: Create Version
         id  : create_version
         run : |
-          $version = Get-Date -Format dd-MMM-yyyy.HH:mm
-          echo "VERSION=$version" >> $GITHUB_OUTPUT
+          echo "VERSION=$(Get-Date -Format dd-MMM-yyyy.HH:mm)" >> "$GITHUB_OUTPUT"
       -
         name: Create Release
         uses: actions/create-release@v1
