@@ -138,8 +138,7 @@ jobs:
         name: Create Version
         id  : create_version
         run : |
-          $new_version = Get-Date -Format dd-MMM-yyyy.HH:mm
-          echo ::set-output name=VERSION::$( $new_version )
+          echo "VERSION=$(Get-Date -Format dd-MMM-yyyy.HH:mm)" >> "$GITHUB_OUTPUT"
       -
         name: Create Release
         uses: actions/create-release@v1
@@ -147,12 +146,13 @@ jobs:
         with:
           draft     : false
           prerelease: false
-          release_name: ${{ steps.create_version.outputs.VERSION }}
-          tag_name:     ${{ steps.create_version.outputs.VERSION }}
+          release_name: Latest release version $VERSION
+          tag_name: $VERSION
           body: |
             Changes in this release: N/A          
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          VERSION     : ${{  steps.create_version.outputs.VERSION }}
       -
         name: Upload Release
         uses: actions/upload-release-asset@v1
