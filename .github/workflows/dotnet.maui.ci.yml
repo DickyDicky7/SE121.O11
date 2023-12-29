@@ -135,24 +135,18 @@ jobs:
         run : |
           Compress-Archive -DestinationPath 'work_schedule_reminder_installer_windows10_x64.zip' -LiteralPath '.'
       -
-        name: Create Version
-        id  : create_version
-        run : |
-          echo "VERSION=$(Get-Date -Format dd-MMM-yyyy.HH:mm)" >> "$GITHUB_OUTPUT"
-      -
         name: Create Release
         uses: actions/create-release@v1
         id  : create_release
         with:
           draft     : false
           prerelease: false
-          release_name: Latest release version $VERSION
-          tag_name: $VERSION
+          release_name: Latest release version ${{ github.ref }}
+          tag_name: ${{ github.ref }}
           body: |
             Changes in this release: N/A          
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          VERSION     : ${{  steps.create_version.outputs.VERSION }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       -
         name: Upload Release
         uses: actions/upload-release-asset@v1
