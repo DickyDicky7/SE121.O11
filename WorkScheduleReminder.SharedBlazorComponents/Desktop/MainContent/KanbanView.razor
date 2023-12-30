@@ -251,6 +251,9 @@
 		}
 		Sections[0].Name = "Today";
 		Sections[1].Name = "Tomorrow";
+
+await System.Threading.Tasks
+       .Task. CompletedTask;
 	}
 
 	public async Task MapSectionTasksToSectionsOfAllMyTasks__()
@@ -362,6 +365,9 @@
 				System.Diagnostics.Debug.WriteLine("SectionTask Not In Any Section");
 			}
 		}
+
+await System.Threading.Tasks
+       .Task. CompletedTask;
 	}
 
 	public async Task MapSectionTasksToSectionsOfActiveBoard_____()
@@ -433,6 +439,9 @@
 				Assignees = assignees.ToList(),
 			});
 		}
+
+await System.Threading.Tasks
+       .Task. CompletedTask;
 	}
 
 	// public record class Section
@@ -493,7 +502,7 @@
 							Attachments = "[]",
 						};
 						newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
-							{ Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
+						    { Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
 						section.NewTask = string.Empty;
 
 						Models
