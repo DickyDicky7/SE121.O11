@@ -60,7 +60,7 @@
 		</MudTooltip> *@
         <MudTooltip Placement="Placement.Left"
                     Arrow="true"
-                    Color="Color.Dark" Text="Notifications">
+                    Color="Color.Dark" Text="@LightModeToolTipString">
             <MudToggleIconButton @bind-Toggled=LightMode @bind-Toggled:after=ToggleLightMode
                                  Icon="@Icons.Material.Filled.LightMode"
                                  ToggledIcon="@Icons.Material.Filled.DarkMode"
@@ -68,7 +68,6 @@
                                  ToggledColor="Color.Default"
                                  Size="Size.Small"
                                  ToggledSize="Size.Small" />
-			<MudSwitch @bind-Checked=LightMode/>
         </MudTooltip>
 		<MudTooltip Placement="Placement.Left"
 					Arrow="true"
@@ -104,40 +103,40 @@
 
 @code
 {
-	[CascadingParameter(Name = nameof(ActiveViewType))]
-	public Helper.ViewType ActiveViewType { get; set; }
+		[CascadingParameter(Name = nameof(ActiveViewType))]
+		public Helper.ViewType ActiveViewType { get; set; }
 
-	// [Parameter]
-	// public bool IsDarkMode = 
+		// [Parameter]
+		// public bool IsDarkMode = 
 
-	[Parameter]
-	public bool                IsIndividualToWorkspace        { get; set; }
-	[Parameter]
-	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
+		[Parameter]
+		public bool                IsIndividualToWorkspace        { get; set; }
+		[Parameter]
+		public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
 
-	[Parameter]
-	public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
-	[Parameter]
-	public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
+		[Parameter]
+		public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
+		[Parameter]
+		public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
 
-	[Parameter]
-	public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
-	[Parameter]
-	public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
 
-	[Parameter]
-	public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
 
-	[Parameter]
-	public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
+		[Parameter]
+		public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
 
 	public string OnSyncStyle { get; set; } = "margin:0 0 0 5px;";
 	public bool NotifiVisible { get; set; } = false;
@@ -145,11 +144,14 @@
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public bool OnSync { get; set; } = false;
 	public bool LightMode { get; set; } = true;
-	public bool LightModeToolTipString = "Light Mode";
+	public string LightModeToolTipString = "Light Mode";
 
 	public void ToggleLightMode()
 	{
-		
+		if (LightMode == true)
+			LightModeToolTipString = "Light Mode";
+		else
+			LightModeToolTipString = "Dark Mode"; 
 	}
 	public void ToggleNotifiVisible()
 	{

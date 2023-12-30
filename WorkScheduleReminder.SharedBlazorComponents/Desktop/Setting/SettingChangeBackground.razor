@@ -1,0 +1,40 @@
+﻿@inject Supabase.Client SupabaseClient
+<MudPaper Class="d-flex flex-column gap-2 pa-2 align-center"
+          Elevation="0"
+          Width="100%">
+    <MudChipSet @bind-SelectedChip=SelectedChip @bind-SelectedChip:after=OnSelectedChipChanged
+                Class="d-flex flex-row gap-2"
+                Filter=true
+                Mandatory=true>
+        @foreach(Color color in Colors)
+        {
+            <MudChip Default="@(color==DefaultColor)"
+                     Size="Size.Large"
+                     Color="color"
+                     SelectedColor="color"
+                     Variant="Variant.Filled" />
+        }
+    </MudChipSet>
+</MudPaper>
+
+@code {
+    [CascadingParameter(Name = nameof(CurrentUserProfile))]
+    public Models.Profile CurrentUserProfile { get; set; } = null!;
+    [CascadingParameter(Name = nameof(CurrentUserId))]
+    public Guid CurrentUserId { get; set; }
+
+    public Color DefaultColor = Color.Info;
+    public List<Color> Colors { get; set; } = new();
+    public MudChip SelectedChip = null!;
+    public void OnSelectedChipChanged()
+    {
+
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Colors.Add(Color.Info);
+        Colors.Add(Color.Primary);
+        Colors.Add(Color.Warning);
+    }
+}

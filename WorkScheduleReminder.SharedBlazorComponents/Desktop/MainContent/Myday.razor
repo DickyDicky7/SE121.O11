@@ -24,7 +24,10 @@
 				   Height="100%"
 				   Anchor="Anchor.Right"
 				   Variant="@DrawerVariant.Persistent">
-			<MudDrawerHeader>
+			<MudDrawerHeader Class="d-flex flex-column gap-2 pa-2">
+				<MudText Style="font-size:large;font-weight:bold">
+					Suggested for today
+				</MudText>
 				<MudTextField T="string"
 							  Placeholder="Filter"
 							  Immediate="true"
