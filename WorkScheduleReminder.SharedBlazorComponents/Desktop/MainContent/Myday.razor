@@ -3,6 +3,7 @@
 @* @page "/" *@
 @page "/myday"
 
+@implements IDisposable
 @inject Supabase.Client SupabaseClient
 @inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 @using Newtonsoft.Json
@@ -23,7 +24,10 @@
 				   Height="100%"
 				   Anchor="Anchor.Right"
 				   Variant="@DrawerVariant.Persistent">
-			<MudDrawerHeader>
+			<MudDrawerHeader Class="d-flex flex-column gap-2 pa-2">
+				<MudText Style="font-size:large;font-weight:bold">
+					Suggested for today
+				</MudText>
 				<MudTextField T="string"
 							  Placeholder="Filter"
 							  Immediate="true"
@@ -184,7 +188,7 @@
 	public Models.Profile CurrentUserProfile { get; set; } = null!;
 
 	public Models.Task ChosenTask { get; set; } = null!;
-	public List<Models.Task> SuggestedTasks { get; set; } = null!;
+	public List<Models.Task> SuggestedTasks  { get; set; } = null!;
 	public List<Common.Task__AndPinOrNot> MyDayTasks { get; set; } = null!;
 	public Common.MyDayTasks MyDayTasksCurrentUserProfile { get; set; } = null!;
 
@@ -224,6 +228,9 @@
 			&& !MyDayTasksCurrentUserProfile.TaskIdsAndPinOrNot.Any(taskIdAndPinOrNot => taskIdAndPinOrNot.TaskId == task.Id);
 		})
 		.OrderBy(task => task.DueDate).ThenBy(task => task.DueTime).ToList();
+
+		await System
+		.Threading.Tasks.Task.CompletedTask;
 	}
 
 	public Func<bool, Task> PushPinOnClick(Common.Task__AndPinOrNot task__AndPinOrNot)
@@ -377,9 +384,67 @@
 		}
 	}
 
+	public void OnChangedTask___s()
+	{
+		InvokeAsync(async () =>
+		{
+			await FetchMyDayView();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTaggingByBoard__s()
+	{
+		InvokeAsync(async () =>
+		{
+			await FetchMyDayView();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedTaggingByProfiles()
+	{
+		InvokeAsync(async () =>
+		{
+			await FetchMyDayView();
+			StateHasChanged();
+		});
+	}
+
+	public void OnChangedSection___ByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await FetchMyDayView();
+			StateHasChanged();
+		});
+	}
+	public void OnChangedSectioningByBoards()
+	{
+		InvokeAsync(async () =>
+		{
+			await FetchMyDayView();
+			StateHasChanged();
+		});
+	}
+
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 		await FetchMyDayView();
+		SupabaseImplementModelStateProviderService.ChangedTask___s += OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s += OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles += OnChangedTaggingByProfiles;
+		
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards += OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards += OnChangedSectioningByBoards;
+	}
+
+	public void Dispose()
+	{
+		SupabaseImplementModelStateProviderService.ChangedTask___s -= OnChangedTask___s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByBoard__s -= OnChangedTaggingByBoard__s;
+		SupabaseImplementModelStateProviderService.ChangedTaggingByProfiles -= OnChangedTaggingByProfiles;
+
+		SupabaseImplementModelStateProviderService.ChangedSection___ByBoards -= OnChangedSection___ByBoards;
+		SupabaseImplementModelStateProviderService.ChangedSectioningByBoards -= OnChangedSectioningByBoards;
 	}
 }

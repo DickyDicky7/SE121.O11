@@ -41,11 +41,11 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 					, authenticationType: "SUPABASE_GOTRUE"));
 				}
 			}
-			return new
-				   (claimsPrincipal);
+			return await System.Threading
+			.Tasks.Task.FromResult<AuthenticationState>( new(claimsPrincipal));
 		}
 
-        private async Task<(bool ok, string reason)> SignUp_(string email, string password)
+		private async Task<(bool ok, string reason)> SignUp_(string email, string password)
 		{
 			try
 			{
@@ -295,6 +295,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 
 		private async Task<(bool ok, string reason)> CheckPasswordRecoveryCode(string passwordRecoveryCode)
 		{
+#pragma warning disable CS0168 // Variable is declared but never used
 			try
 			{
 				string[] partsOfPasswordRecoveryCode =    passwordRecoveryCode.Split('&');
@@ -312,6 +313,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents.Services.Implementations
 			{
 				return (ok: false, reason: Message.Error.INVALID_PASSWORD_RECOVERY_CODE);
 			}
+#pragma warning restore CS0168 // Variable is declared but never used
 		}
 
 		private async Task<(bool ok, string reason)> ResetPassword(string newPassword)

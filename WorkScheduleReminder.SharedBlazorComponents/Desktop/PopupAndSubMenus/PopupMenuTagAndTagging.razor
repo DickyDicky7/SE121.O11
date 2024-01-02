@@ -51,6 +51,9 @@
 						  TextUpdateSuppression="false"
 						  Label="Name your tag!" />
 			@*Choose tag's color*@
+			<MudText>
+				Choose tag's color
+			</MudText>
 			<MudChipSet @bind-SelectedChip="SelectedColoredChip" @bind-SelectedChip:after="SetSelectedColoredChip"
 						Style="display:grid;grid-gap:8px;grid-template-columns:repeat(2,1fr);"
 						Filter="true"
@@ -58,11 +61,10 @@
 				@foreach (Color color in Colors)
 				{
 					<MudChip Default="@(color == ChosenTag.Color)"
-							 Text="#Tag"
 							 Size="Size.Small"
 							 Color="color"
 							 SelectedColor="color"
-							 Variant="Variant.Text" />
+							 Variant="Variant.Filled" />
 				}
 			</MudChipSet>
 			@*Action button(s)*@
@@ -261,6 +263,10 @@
 				});
 			}
 		}
+
+		await System
+		.Threading
+		.Tasks.Task.CompletedTask;
 	}
 
 	public void SetSelectedColoredChip()

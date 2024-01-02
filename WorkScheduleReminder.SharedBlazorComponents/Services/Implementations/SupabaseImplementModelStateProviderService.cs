@@ -229,6 +229,8 @@ Debug.WriteLine("[Cease 2]");
 			{
 Debug.WriteLine(exception.Message);
 			}
+			await System
+			   .Threading.Tasks.Task.CompletedTask;
 		}
 
 		private async Task FetchAndNotifyChangedCustomViews()

@@ -35,7 +35,9 @@
 		{
 			if (eventDictionary.ContainsKey(key))
 			if (eventDictionary[key] != null)
+#pragma warning disable CS8601 // Possible null reference assignment.
 				eventDictionary[key] -= @event;
+#pragma warning restore CS8601 // Possible null reference assignment.
 		}
 	}
 }
