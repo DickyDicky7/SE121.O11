@@ -505,7 +505,7 @@ Path.Combine(folderPath, fileName);
 						await readStream.ReadAsync(buffers);
 						string filePath;
 						if (Task.IsBoardTask())
-filePath = @$"{Task.Board!.OwnerId}/Boards/{Task.Board.Id}/{CurrentUserId}/{DateTimeOffset.Now.ToString().Replace('/', '-').Replace(' ', '_')}/{readyToUploadFile.Name}";
+filePath = @$"{Task.Board!.OwnerId}/Boards/{Task.Board.Id}/{CurrentUserId}/{DateTimeOffset.Now.ToString().Replace('/', '-')  .Replace(' ', '_')}/{readyToUploadFile.Name}";
 						else
 filePath = @$"{CurrentUserId}/Personal/{DateTimeOffset.Now.ToString().Replace('/', '-').Replace(' ', '_')}/{readyToUploadFile.Name}";
 						string  path =    await  SupabaseClient.Storage.From("generals")
