@@ -199,12 +199,14 @@
 			OnClick="TogglePopupMenuCreateCustomViewVisible">
 	<PopupMenuCreateCustomView @onclick:stopPropagation />
 </MudOverlay>
-<MudOverlay Class="border-2"
+<MudOverlay Class="border-0"
             Visible="SettingVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="ToggleSetting">
-    <SettingList @onclick:stopPropagation />
+    <SettingList @onclick:stopPropagation
+                 CurrentThemeIdChanged=
+                "CurrentThemeIdChanged" />
 </MudOverlay>
 
 @code
@@ -246,6 +248,10 @@
 	public EventCallback<Models.CustomView> ActiveCustomViewChanged { get; set; }
 	[CascadingParameter(Name = nameof(CurrentUserProfile))]
 	public Models.Profile CurrentUserProfile { get; set; } = null!;
+    [Parameter]
+    public               byte  CurrentThemeId        { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
 
 	public RealtimeChannel RealtimeChannelDeletesMembers     { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesBoards      { get; set; } = null!;

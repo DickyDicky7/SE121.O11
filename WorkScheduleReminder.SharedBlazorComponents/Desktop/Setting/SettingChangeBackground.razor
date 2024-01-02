@@ -1,0 +1,68 @@
+﻿@inject Supabase.Client SupabaseClient
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
+<MudPaper Class="d-flex flex-column gap-2 pa-2 align-center"
+          Elevation="0"
+          Width="100%">
+    <MudChipSet Class="d-flex flex-row flex-wrap gap-2"
+                Filter="true"
+                Mandatory="true">
+        @foreach ((byte themeId, MudTheme theme) in Themes)
+        {
+            <MudChip Default="@(personalSettings.ThemeId == themeId)"
+                     Style=@($"background-color:{theme.Palette.Info};")
+                     Size="Size.Large"
+                     OnClick=@(ChipOnClick(themeId))
+                     SelectedColor="Color.Success" Variant="Variant.Filled" />
+        }
+    </MudChipSet>
+</MudPaper>
+
+@code
+{
+    [CascadingParameter(Name = nameof(CurrentUserProfile))]
+    public Models.Profile CurrentUserProfile { get; set; } = null!;
+    [CascadingParameter(Name = nameof(CurrentUserId))]
+    public Guid CurrentUserId { get; set; }
+
+    public List<(byte themeId, MudTheme theme)> Themes { get; set; } = new();
+    public Common.PersonalSettings personalSettings    { get; set; } = null!;
+
+    [Parameter]
+    public               byte  CurrentThemeId        { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
+
+    public Func<Task> ChipOnClick(byte themeId)
+    {
+        return async () =>
+        {
+            try
+            {
+                personalSettings.ThemeId = themeId;
+                      CurrentUserProfile.PersonalSettings = JsonConvert.SerializeObject(personalSettings);
+                await CurrentUserProfile.Update<Models.Profile>();
+                      CurrentThemeId     = themeId;
+                await CurrentThemeIdChanged
+                .InvokeAsync(CurrentThemeId);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine(exception.Message);
+            }
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        foreach (( byte themeId, MudTheme theme) in Helper.CustomThemes)
+        {
+            Themes.Add((themeId, theme));
+        }
+               personalSettings =       JsonConvert.DeserializeObject<
+        Common.PersonalSettings>(CurrentUserProfile.PersonalSettings)!;
+    }
+}

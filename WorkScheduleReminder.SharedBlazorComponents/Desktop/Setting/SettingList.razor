@@ -1,130 +1,164 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.Setting.Profile
 
 <Animate style="width:100%;height:100%;"
-		 Animation="Animations.FadeDown"
-		 Duration="TimeSpan.FromSeconds(0.5)">
-	<MudPaper @attributes=AdditionalAttributes
-			  Style="border-radius:20px;overflow:hidden"
-			  Elevation="10"
-			  Width="400px"
-			  MaxHeight="60vh">
-		@if (State == 0)
-		{
-			<MudPaper Class="d-flex flex-column gap-2 pa-2"
-					  Elevation="0"
-					  Width="100%">
-				@*Header*@
-				<MudPaper Class="d-flex flex-row gap-2 align-center justify-content-start"
-						  Elevation="0"
-						  Width="100%">
-					<MudAvatar>
-						<MudImage Src="@Helper.GetResource("/images/catsayhello.png")" />
-					</MudAvatar>
-					<MudText Style="font-size:large;font-weight:bold">
-						Master
-					</MudText>
-				</MudPaper>
-				@*List of content*@
-				<MudPaper Class="d-flex flex-column"
-						  Style="overflow:scroll"
-						  Elevation="0"
-						  Width="100%">
-					@foreach (ChildContent Content in ChildContentList)
-					{
-						if (Content.DirectChild == true)
-						{
-							<MudButton Style="padding:0;"
-									   FullWidth="true"
-									   OnClick="()=>SetState(Content.State)">
-								<MudPaper Class="d-flex flex-row align-center justify-space-between"
-										  Elevation="0"
-										  Width="100%">
-									<MudText>
-										@Content.Name
-									</MudText>
-									<MudIcon Icon="@Icons.Material.Filled.ChevronRight"
-											 Size="Size.Small" />
-								</MudPaper>
-							</MudButton>
-						}
-					}
-				</MudPaper>
-			</MudPaper>
-		}
-		else
-		{
-			@foreach (ChildContent Content in ChildContentList)
-			{
-				if (Content.State == State)
-				{
-					<MudPaper Class="d-flex flex-column gap-2 pa-2"
-							  Elevation="0"
-							  Width="100%">
-						@*Navigation bar*@
-						<MudPaper Class="d-flex flex-row align-center justify-content-start"
-								  Elevation="0"
-								  Width="100%">
-							<MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
-										   OnClick="()=>SetState(Content.PreviousState)" />
-							<MudText Style="font-size:larger;font-weight:bold">
-								@Content.Name
-							</MudText>
-						</MudPaper>
-						@Content.Content
-					</MudPaper>
-					break;
-				}
-			}
-		}
-	</MudPaper>
+         Animation="Animations.FadeDown"
+         Duration="TimeSpan.FromSeconds(0.5)">
+    <MudPaper @attributes=AdditionalAttributes
+              Style="border-radius:20px;overflow:hidden"
+              Elevation="10"
+              Width="400px"
+              MaxHeight="60vh">
+        @if (State == 0)
+        {
+            <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                      Elevation="0"
+                      Width="100%">
+                @*Header*@
+                <MudPaper Class="d-flex flex-row gap-2 align-center justify-content-start"
+                          Elevation="0"
+                          Width="100%">
+                    <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
+                        @if
+                       (CurrentUserProfile != null)
+                            @if (string.IsNullOrWhiteSpace
+                           (CurrentUserProfile.AvatarURL))
+                            {
+                                @(CurrentUserProfile.Email[0].ToString()
+                                    .ToUpper())
+                            }
+                            else
+                            {
+                                <MudImage Src=@(CurrentUserProfile.AvatarURL) />
+                            }
+                    </MudAvatar>
+                    <MudText Style="font-size:large;font-weight:bold">
+                        @if (CurrentUserProfile != null)
+                        {
+                            @(CurrentUserProfile.Email.Split('@').First())
+                        }
+                        else
+                        {
+                            @("User")
+                        }
+                    </MudText>
+                </MudPaper>
+                @*List of content*@
+                <MudPaper Class="d-flex flex-column"
+                          Style="overflow:scroll"
+                          Elevation="0"
+                          Width="100%">
+                    @foreach (ChildContent Content in ChildContentList)
+                    {
+                        if (Content.DirectChild == true)
+                        {
+                            <MudButton Style="padding:0;"
+                                       FullWidth="true"
+                                       OnClick="()=>SetState(Content.State)">
+                                <MudPaper Class="d-flex flex-row align-center justify-space-between"
+                                          Elevation="0"
+                                          Width="100%"
+                                          Height="50px">
+                                    <MudText>
+                                        @Content.Name
+                                    </MudText>
+                                    <MudIcon Icon="@Icons.Material.Filled.ChevronRight"
+                                             Size="Size.Small" />
+                                </MudPaper>
+                            </MudButton>
+                        }
+                    }
+                </MudPaper>
+            </MudPaper>
+        }
+        else
+        {
+            @foreach (ChildContent Content in ChildContentList)
+            {
+                if (Content.State == State)
+                {
+                    <MudPaper Class="d-flex flex-column gap-2 pa-2"
+                              Elevation="0"
+                              Width="100%">
+                        @*Navigation bar*@
+                        <MudPaper Class="d-flex flex-row align-center justify-content-start"
+                                  Elevation="0"
+                                  Width="100%">
+                            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+                                           OnClick="()=>SetState(Content.PreviousState)" />
+                            <MudText Style="font-size:larger;font-weight:bold">
+                                @Content.Name
+                            </MudText>
+                        </MudPaper>
+                        @Content.Content
+                    </MudPaper>
+                    break;
+                }
+            }
+        }
+    </MudPaper>
 </Animate>
 
 @code {
-	[Parameter(CaptureUnmatchedValues = true)]
-	public IDictionary<string, object>? AdditionalAttributes { get; set; }
-	public double State { get; set; } = 0;
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IDictionary<string, object>? AdditionalAttributes { get; set; }
+    public double State { get; set; } = 0;
+    [CascadingParameter(Name = nameof(CurrentUserProfile))]
+    public Models.Profile CurrentUserProfile { get; set; } = null!;
 
-	public record ChildContent
-	{
-		public bool DirectChild { get; set; } = false;
-		public double State { get; set; } = default!;
-		public double PreviousState { get; set; } = default!;
-		public string Name { get; set; } = default!;
-		public RenderFragment Content { get; set; } = null!;
-	}
-	public List<ChildContent> ChildContentList { get; set; } = new();
+    [Parameter]
+    public byte CurrentThemeId { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
 
-	public void SetState(double _State)
-	{
-		State = _State;
-	}
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
-		ChildContentList.Add(new ChildContent()
-				{
-					DirectChild = true,
-					State = 1,
-					PreviousState = 0,
-					Name = "My Profile",
-					Content = @<SettingMyProfile @bind-ParentState=State />
-			}
-	);
-		ChildContentList.Add(new ChildContent()
-				{
-					State = 1.1,
-					PreviousState = 1,
-					Name = "Reset Password",
-					Content = @<SettingResetPassword />
-			}
-	);
-		ChildContentList.Add(new ChildContent()
-				{
-					State = 1.2,
-					PreviousState = 1,
-					Name = "Delete Account",
-					Content = @<SettingDeleteAccount />
-		}
-		);
-	}
+    public record ChildContent
+    {
+        public bool DirectChild { get; set; } = false;
+        public double State { get; set; } = default!;
+        public double PreviousState { get; set; } = default!;
+        public string Name { get; set; } = default!;
+        public RenderFragment Content { get; set; } = null!;
+    }
+    public List<ChildContent> ChildContentList { get; set; } = new();
+
+    public void SetState(double _State)
+    {
+        State = _State;
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ChildContentList.Add(new ChildContent()
+                {
+                    DirectChild = true,
+                    State = 1,
+                    PreviousState = 0,
+                    Name = "My Profile",
+                    Content = @<SettingMyProfile @bind-ParentState=State />
+            }
+        );
+        ChildContentList.Add(new ChildContent()
+                {
+                    State = 1.1,
+                    PreviousState = 1,
+                    Name = "Reset Password",
+                    Content = @<SettingResetPassword />
+            }
+        );
+        ChildContentList.Add(new ChildContent()
+                {
+                    State = 1.2,
+                    PreviousState = 1,
+                    Name = "Delete Account",
+                    Content = @<SettingDeleteAccount />
+            }
+    );
+        ChildContentList.Add(new ChildContent()
+                {
+                    DirectChild = true,
+                    State = 2,
+                    PreviousState = 0,
+                    Name = "Change Background Color",
+                    Content = @<SettingChangeBackground CurrentThemeIdChanged="CurrentThemeIdChanged" />
+        });
+    }
 }
