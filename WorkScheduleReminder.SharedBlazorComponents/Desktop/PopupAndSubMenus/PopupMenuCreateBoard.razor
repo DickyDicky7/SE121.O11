@@ -34,7 +34,7 @@
 				  Elevation="0"
 				  MaxHeight="100px">
 			<Virtualize Context="sectionName" Items="SectionNames.Reverse().ToList()">
-				<Animate @key="sectionName"
+				<Animate @key =@(sectionName)
 						 style="width:100%;height:100%;"
 						 Animation="Animations.FadeIn"
 						 Duration="TimeSpan.FromSeconds(1)">
@@ -64,31 +64,40 @@
 		<MudText Style="font-weight:bold;font-size:larger;">
 			Choose your display icon
 		</MudText>
-		<MudPaper Class="d-flex flex-column gap-2"
-				  Style="overflow:auto;"
-				  Elevation="0">
-			<MudChipSet @bind-SelectedChip=SelectedChip
-						Style="margin:auto;">
-				<MudChip Default="true"
-						 Text="None"
-						 Size="Size.Large"
-						 Style="width:100px;"
-						 Variant="Variant.Text"
-						 SelectedColor="Color.Info" />
-				<Virtualize Context="icon" Items="AvailableIcons">
-					<MudTooltip @key="@icon.iconDescription"
-								Text="@icon.iconDescription"
-								Arrow=true
-								Color="Color.Dark">
-						<MudChip Text="@icon.iconImage.ToString()"
-								 Size="Size.Large"
-								 Style="width:100px;"
-								 Variant="Variant.Text"
-								 SelectedColor="Color.Info" />
-					</MudTooltip>
-				</Virtualize>
-			</MudChipSet>
-		</MudPaper>
+		<MudChipSet @bind-SelectedChip=SelectedChip
+					Style="margin:auto;display:grid;grid-template-columns:repeat(4, 1fr);">
+			<MudChip Default="true"
+					 Text="None"
+					 Size="Size.Large"
+					 Style="width:100px;"
+					 Variant="Variant.Text"
+					 SelectedColor="Color.Info" />
+			@foreach (var icon in AvailableIcons)
+			{
+				<MudTooltip @key="@icon.iconDescription"
+							Text="@icon.iconDescription"
+							Arrow=true
+							Color="Color.Dark">
+					<MudChip Text="@icon.iconImage.ToString()"
+							 Size="Size.Large"
+							 Style="width:100px;"
+							 Variant="Variant.Text"
+							 SelectedColor="Color.Info" />
+				</MudTooltip>
+			}
+			@* <Virtualize Context="icon" Items="AvailableIcons">
+			<MudTooltip @key="@icon.iconDescription"
+			Text="@icon.iconDescription"
+			Arrow=true
+			Color="Color.Dark">
+			<MudChip Text="@icon.iconImage.ToString()"
+			Size="Size.Large"
+			Style="width:100px;"
+			Variant="Variant.Text"
+			SelectedColor="Color.Info" />
+			</MudTooltip>
+			</Virtualize> *@
+		</MudChipSet>
 		<MudButton Class="rounded-pill justify-self-center"
 				   Size="Size.Small"
 				   Color="Color.Info"

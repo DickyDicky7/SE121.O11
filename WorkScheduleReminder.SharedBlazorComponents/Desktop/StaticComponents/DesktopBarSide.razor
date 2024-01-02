@@ -58,11 +58,12 @@
 			  Height="100%">
 		<MudList Class=""
 				 Dense="true"
+				 Color="Color.Info"
 				 DisableGutters="true"
 				 DisablePadding="true">
 			@*default views*@
 			<MudButton Class=" justify-start"
-					   IconColor="Color.Dark"
+					   IconColor="@Color.Default"
 					   StartIcon="@Icons.Material.Filled.ViewAgenda"
 					   Size="Size.Large"
 					   FullWidth="true"
@@ -71,7 +72,7 @@
 				<MudText Style="">My day</MudText>
 			</MudButton>
 			<MudButton Class=" justify-start"
-					   IconColor="Color.Dark"
+					   IconColor="@Color.Default"
 					   StartIcon="@Icons.Material.Filled.ViewDay"
 					   Size="Size.Large"
 					   FullWidth="true"
@@ -80,7 +81,7 @@
 				<MudText Style="">Next 7 days</MudText>
 			</MudButton>
 			<MudButton Class=" justify-start"
-					   IconColor="Color.Dark"
+					   IconColor="@Color.Default"
 					   StartIcon="@Icons.Material.Filled.ViewTimeline"
 					   Size="Size.Large"
 					   FullWidth="true"
@@ -89,7 +90,7 @@
 				<MudText Style="">All my tasks</MudText>
 			</MudButton>
 			@*custom views*@
-			<MudListItem Class=""
+@* 			<MudListItem Class=""
 						 Dense="true"
 						 DisableGutters="true"
 						 InitiallyExpanded="true">
@@ -131,7 +132,7 @@
 					</Virtualize>
 				</NestedList>
 			</MudListItem>
-			@*workspace*@
+ *@			@*workspace*@
 			<MudListItem Class=""
 						 Dense="true"
 						 DisableGutters="true"
@@ -178,13 +179,6 @@
 		</MudList>
 	</MudPaper>
 </MudPaper>
-@* <MudOverlay Class="border-2"
-            Visible="InviteVisible"
-            DarkBackground="true"
-            AutoClose="true"
-            OnClick="ToggleInvite">
-    <Invite @onclick:stopPropagation />
-</MudOverlay> *@
 <MudOverlay Class="border-0"
 			Visible="PopupMenuCreateBoard_____Visible"
 			DarkBackground="true"
@@ -199,12 +193,14 @@
 			OnClick="TogglePopupMenuCreateCustomViewVisible">
 	<PopupMenuCreateCustomView @onclick:stopPropagation />
 </MudOverlay>
-<MudOverlay Class="border-2"
+<MudOverlay Class="border-0"
             Visible="SettingVisible"
             DarkBackground="true"
             AutoClose="true"
             OnClick="ToggleSetting">
-    <SettingList @onclick:stopPropagation />
+    <SettingList @onclick:stopPropagation
+                 CurrentThemeIdChanged=
+                "CurrentThemeIdChanged" />
 </MudOverlay>
 
 @code
@@ -246,6 +242,10 @@
 	public EventCallback<Models.CustomView> ActiveCustomViewChanged { get; set; }
 	[CascadingParameter(Name = nameof(CurrentUserProfile))]
 	public Models.Profile CurrentUserProfile { get; set; } = null!;
+    [Parameter]
+    public               byte  CurrentThemeId        { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
 
 	public RealtimeChannel RealtimeChannelDeletesMembers     { get; set; } = null!;
 	public RealtimeChannel RealtimeChannelDeletesBoards      { get; set; } = null!;

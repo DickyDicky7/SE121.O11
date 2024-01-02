@@ -297,6 +297,9 @@
 
 			});
 		}
+
+		await System.Threading.Tasks.Task
+		.CompletedTask;
 	}
 
 	public record class SectionTask : Common.SectionTask
@@ -360,20 +363,19 @@
 						ProfileId = null,
 						Attachments = "[]",
 					};
-					newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask,
-										new Postgrest.QueryOptions()
+					newTask = (await SupabaseClient.From<Models.Task>().Insert(newTask, new Postgrest.QueryOptions()
 					    { Returning = Postgrest.QueryOptions.ReturnType.Representation, })).Model!;
 					// // section.NewTask = string.Empty;
 
 					Models
 					.SectioningByBoard newSectioningByBoard = new()
 					{
-						SectionByBoardId =section.SectionByBoard.Id,
+						SectionByBoardId =section   .SectionByBoard.Id,
 						TaskId = newTask.Id,
 					};
 					await SupabaseClient.From<Models.SectioningByBoard>()
 					.Insert(newSectioningByBoard,
-										new Postgrest.QueryOptions()
+					              new Postgrest.QueryOptions()
 					    { Returning = Postgrest.QueryOptions.ReturnType.Minimal, });
 				}
 				else

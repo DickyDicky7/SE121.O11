@@ -34,5 +34,10 @@ namespace WorkScheduleReminder.SharedBusinessLogic.Models.Implementations
 		        ignoreOnInsert: false,
 		        ignoreOnUpdate: false)]
 		public string MyDayTasks{ get; set; } = default!;
-	}
+
+		[Column(columnName: "personal_settings",
+		        ignoreOnInsert: false,
+		        ignoreOnUpdate: false)]
+        public string PersonalSettings { get; set; } = default!;
+    }
 }
