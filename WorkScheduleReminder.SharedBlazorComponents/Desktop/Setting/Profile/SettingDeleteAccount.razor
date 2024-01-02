@@ -1,38 +1,39 @@
 ﻿<MudPaper Class="d-flex flex-column gap-2 align-center"
-		  Elevation="0"
-		  Width="100%">
-	<MudIcon Icon="@Icons.Material.Filled.Warning"
-			 Color="Color.Error" />
-	<MudText Align="Align.Center">
-		Delete account will delete all of your tasks and history. You won't be able to recover them
-	</MudText>
-	@if (ConfirmStep == true)
-	{
-		<MudText Color="Color.Error"
-				 Align="Align.Center">
-			Are you sure ? (Click again to confirm)
-		</MudText>
-	}
-	<MudButton Class="rounded-pill mud-theme-error"
-			   FullWidth="true"
-			   OnClick="DeleteAccount">
-		<MudText>
-			Delete account
-		</MudText>
-	</MudButton>
+          Elevation="0"
+          Width="100%">
+    <MudIcon Icon="@Icons.Material.Filled.Warning"
+             Color="Color.Error" />
+    <MudText Align="Align.Center">
+        Delete account will delete all of your tasks and history. You won't be able to recover them
+    </MudText>
+    @if (ConfirmStep == true)
+    {
+        <MudText Color="Color.Error"
+                 Align="Align.Center">
+            Are you sure ? (Click again to confirm)
+        </MudText>
+    }
+    <MudButton Class="rounded-pill mud-theme-error"
+               FullWidth="true"
+               OnClick="DeleteAccount">
+        <MudText>
+            Delete account
+        </MudText>
+    </MudButton>
 </MudPaper>
 
-@code {
-	public bool ConfirmStep { get; set; } = false;
-	public void DeleteAccount()
-	{
-		if (ConfirmStep == false)
-		{
-			ConfirmStep = true;
-		}
-		else
-		{
-			//Delete
-		}
-	}
+@code
+{
+    public bool ConfirmStep { get; set; } = false;
+    public void DeleteAccount()
+    {
+        if (ConfirmStep == false)
+        {
+            ConfirmStep = true;
+        }
+        else
+        {
+            //Delete
+        }
+    }
 }

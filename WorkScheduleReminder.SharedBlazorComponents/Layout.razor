@@ -8,7 +8,7 @@
 @inject     Supabase.Client SupabaseClient
 @inject     Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 
-<MudThemeProvider Theme="Helper.CustomThemes[1]" IsDarkMode="IsDarkMode" /><MudDialogProvider /><MudSnackbarProvider />
+<MudThemeProvider Theme="Helper.CustomThemes[CurrentThemeId]" IsDarkMode="IsDarkMode" /><MudDialogProvider /><MudSnackbarProvider />
 
 <CascadingAuthenticationState>
 	<Connection OnConnectionStatusBeingOn_line="OnConnectionStatusBeingOn_line"
@@ -19,11 +19,11 @@
 					@switch (DeviceType)
 					{
 						case Helper.DeviceType.Mobile:
-							<MobileParentAuthorized  MainChildContent="@ChildContent" @bind-IsDarkMode=@(IsDarkMode) />
+							<MobileParentAuthorized  MainChildContent="@ChildContent" @bind-IsDarkMode=@(IsDarkMode) @bind-CurrentThemeId=@(CurrentThemeId) />
 							 break;
 
 						case Helper.DeviceType.Desktop:
-							<DesktopParentAuthorized MainChildContent="@ChildContent" @bind-IsDarkMode=@(IsDarkMode) />
+							<DesktopParentAuthorized MainChildContent="@ChildContent" @bind-IsDarkMode=@(IsDarkMode) @bind-CurrentThemeId=@(CurrentThemeId) />
 							 break;
 
 						case Helper.DeviceType.Unknown:
@@ -79,6 +79,7 @@
 	[Parameter]
 	public Helper.DeviceType DeviceType { get; set; }
 	public   bool            IsDarkMode { get; set; }
+    public   byte        CurrentThemeId { get; set; } =     1;
 
 	protected override async Task OnInitializedAsync()
 	{

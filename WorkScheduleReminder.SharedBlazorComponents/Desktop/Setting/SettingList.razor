@@ -105,6 +105,11 @@
     [CascadingParameter(Name = nameof(CurrentUserProfile))]
     public Models.Profile CurrentUserProfile { get; set; } = null!;
 
+    [Parameter]
+    public byte CurrentThemeId { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
+
     public record ChildContent
     {
         public bool DirectChild { get; set; } = false;
@@ -130,7 +135,7 @@
                     Name = "My Profile",
                     Content = @<SettingMyProfile @bind-ParentState=State />
             }
-    );
+        );
         ChildContentList.Add(new ChildContent()
                 {
                     State = 1.1,
@@ -138,7 +143,7 @@
                     Name = "Reset Password",
                     Content = @<SettingResetPassword />
             }
-    );
+        );
         ChildContentList.Add(new ChildContent()
                 {
                     State = 1.2,
@@ -146,14 +151,14 @@
                     Name = "Delete Account",
                     Content = @<SettingDeleteAccount />
             }
-        );
+    );
         ChildContentList.Add(new ChildContent()
                 {
                     DirectChild = true,
                     State = 2,
                     PreviousState = 0,
                     Name = "Change Background Color",
-                    Content = @<SettingChangeBackground />
+                    Content = @<SettingChangeBackground CurrentThemeIdChanged="CurrentThemeIdChanged" />
         });
     }
 }

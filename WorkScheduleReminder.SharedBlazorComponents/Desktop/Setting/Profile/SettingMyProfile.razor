@@ -13,29 +13,24 @@
                        T="IBrowserFile"
                        Accept=".png, .jpg">
             <ButtonTemplate>
-                <MudButton Class="rounded-circle"
+                <MudButton Style="padding:0;"
                            HtmlTag="label"
                            for="@context">
-                    <MudPaper Class=""
-                              Elevation="0">
-                        @if (CurrentUserProfile != null)
-                        {
+                    @if (CurrentUserProfile != null)
+                    {
+                        <MudAvatar Size="Size.Large" Color="Color.Primary" Variant="Variant.Filled">
+
                             @if (string.IsNullOrWhiteSpace(CurrentUserProfile.AvatarURL))
                             {
-                                <MudAvatar Color="Color.Primary" Variant="Variant.Filled">
-                                    @(CurrentUserProfile.Email[0].ToString().ToUpper())
-                                </MudAvatar>
+                                @(CurrentUserProfile.Email[0].ToString().ToUpper())
 
                             }
                             else
                             {
-                                <MudImage Src=@(CurrentUserProfile.AvatarURL)
-                                          Class="rounded-circle"
-                                          Width="50"
-                                          Height="50" />
+                                <MudImage Src=@(CurrentUserProfile.AvatarURL) />
                             }
-                        }
-                    </MudPaper>
+                        </MudAvatar>
+                    }
                 </MudButton>
             </ButtonTemplate>
         </MudFileUpload>
@@ -143,7 +138,7 @@
 
                     }
             );
-            string newAvatarUrl = await SupabaseClient.Storage.From("avatars").CreateSignedUrl(filePath, 86400*365*68);
+            string newAvatarUrl = await SupabaseClient.Storage.From("avatars").CreateSignedUrl(filePath, 86400 * 365 * 68);
             await SupabaseClient.From<Models.Profile>()
             .Where(profile => profile.Id == CurrentUserId)
             .Set(profile => profile.AvatarURL, newAvatarUrl)

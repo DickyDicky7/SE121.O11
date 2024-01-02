@@ -1,40 +1,68 @@
 ﻿@inject Supabase.Client SupabaseClient
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
 <MudPaper Class="d-flex flex-column gap-2 pa-2 align-center"
           Elevation="0"
           Width="100%">
-    <MudChipSet @bind-SelectedChip=SelectedChip @bind-SelectedChip:after=OnSelectedChipChanged
-                Class="d-flex flex-row gap-2"
-                Filter=true
-                Mandatory=true>
-        @foreach(Color color in Colors)
+    <MudChipSet Class="d-flex flex-row flex-wrap gap-2"
+                Filter="true"
+                Mandatory="true">
+        @foreach ((byte themeId, MudTheme theme) in Themes)
         {
-            <MudChip Default="@(color==DefaultColor)"
+            <MudChip Default="@(personalSettings.ThemeId == themeId)"
+                     Style=@($"background-color:{theme.Palette.Info};")
                      Size="Size.Large"
-                     Color="color"
-                     SelectedColor="color"
-                     Variant="Variant.Filled" />
+                     OnClick=@(ChipOnClick(themeId))
+                     SelectedColor="Color.Success" Variant="Variant.Filled" />
         }
     </MudChipSet>
 </MudPaper>
 
-@code {
+@code
+{
     [CascadingParameter(Name = nameof(CurrentUserProfile))]
     public Models.Profile CurrentUserProfile { get; set; } = null!;
     [CascadingParameter(Name = nameof(CurrentUserId))]
     public Guid CurrentUserId { get; set; }
 
-    public Color DefaultColor = Color.Info;
-    public List<Color> Colors { get; set; } = new();
-    public MudChip SelectedChip = null!;
-    public void OnSelectedChipChanged()
-    {
+    public List<(byte themeId, MudTheme theme)> Themes { get; set; } = new();
+    public Common.PersonalSettings personalSettings    { get; set; } = null!;
 
-    }
-    protected override void OnInitialized()
+    [Parameter]
+    public               byte  CurrentThemeId        { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
+
+    public Func<Task> ChipOnClick(byte themeId)
     {
-        base.OnInitialized();
-        Colors.Add(Color.Info);
-        Colors.Add(Color.Primary);
-        Colors.Add(Color.Warning);
+        return async () =>
+        {
+            try
+            {
+                personalSettings.ThemeId = themeId;
+                      CurrentUserProfile.PersonalSettings = JsonConvert.SerializeObject(personalSettings);
+                await CurrentUserProfile.Update<Models.Profile>();
+                      CurrentThemeId     = themeId;
+                await CurrentThemeIdChanged
+                .InvokeAsync(CurrentThemeId);
+            }
+            catch (Exception exception)
+            {
+                System.Diagnostics.Debug.WriteLine(exception.Message);
+            }
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        foreach (( byte themeId, MudTheme theme) in Helper.CustomThemes)
+        {
+            Themes.Add((themeId, theme));
+        }
+               personalSettings =       JsonConvert.DeserializeObject<
+        Common.PersonalSettings>(CurrentUserProfile.PersonalSettings)!;
     }
 }

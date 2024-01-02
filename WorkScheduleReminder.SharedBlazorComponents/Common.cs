@@ -20,6 +20,12 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			=> new string[7] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 		}
 
+		public record class PersonalSettings
+		{
+			public bool IsDarkMode { get; set; } = false;
+			public byte ThemeId    { get; set; } = 1;
+		}
+
 		public record class Task__AndPinOrNot
 		{
 			public Models.Task Task { get; set; } = null!;

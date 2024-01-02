@@ -1,5 +1,8 @@
 ﻿@using WorkScheduleReminder.SharedBlazorComponents.Desktop.PopupAndSubMenus
 
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
 @implements IDisposable
 @inject Services.Implementations.SupabaseImplementModelStateProviderService SupabaseImplementModelStateProviderService
 
@@ -105,46 +108,49 @@
 
 @code
 {
-		[CascadingParameter(Name = nameof(ActiveViewType))]
-		public Helper.ViewType ActiveViewType { get; set; }
+	[CascadingParameter(Name = nameof(ActiveViewType))]
+	public Helper.ViewType ActiveViewType{ get; set; }
+	[CascadingParameter(Name = nameof(CurrentUserProfile))]
+	public Models.Profile  CurrentUserProfile { get; set; } = null!;
 
-		// [Parameter]
-		// public bool IsDarkMode = 
+	// [Parameter]
+	// public bool IsDarkMode = 
 
-		[Parameter]
-		public bool                IsIndividualToWorkspace        { get; set; }
-		[Parameter]
-		public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
+	[Parameter]
+	public bool                IsIndividualToWorkspace        { get; set; }
+	[Parameter]
+	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
 
-		[Parameter]
-		public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
-		[Parameter]
-		public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
+	[Parameter]
+	public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
+	[Parameter]
+	public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
 
-		[Parameter]
-		public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
-		[Parameter]
-		public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
-		[Parameter]
-		public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
-		[Parameter]
-		public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
+	[Parameter]
+	public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
+	[Parameter]
+	public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
 
-		[Parameter]
-		public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
-		[Parameter]
-		public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
+	[Parameter]
+	public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
 
-		[Parameter]
-		public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
-		[Parameter]
-		public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
+	[Parameter]
+	public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
+	[Parameter]
+	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
 
 	public string OnSyncStyle { get; set; } = "margin:0 0 0 5px;";
 	public bool NotifiVisible { get; set; } = false;
 	public bool SearchVisible { get; set; } = false;
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public bool OnSync { get; set; } = false;
+	public Common.PersonalSettings personalSettings { get; set; } = null!;
 
 	[Parameter]
 	public               bool  IsDarkMode        { get; set; } = false;
@@ -155,6 +161,16 @@
 	{
 		IsDarkMode = isDarkMode;
 		await IsDarkModeChanged.InvokeAsync(IsDarkMode);
+		try
+		{
+			personalSettings  .IsDarkMode = isDarkMode;
+			CurrentUserProfile.PersonalSettings = JsonConvert.SerializeObject(personalSettings);
+			await CurrentUserProfile.Update<Models.Profile>();
+		}
+		catch (Exception exception)
+		{
+			System.Diagnostics.Debug.WriteLine(exception.Message);
+		}
 	}
 
 	public void ToggleNotifiVisible()
@@ -175,6 +191,26 @@
 		Timer.Enabled   = true;
 		Timer.Elapsed += Timer_OnElapsed;
 		Timer.Start();
+
+		await System.Threading.Tasks.Task.Run(async()=>
+		{
+			while (CurrentUserProfile == null)
+			{
+				await
+			  System.Threading.Tasks.Task.Delay(TimeSpan.FromMilliseconds(100));
+			}
+            await InvokeAsync(async () =>
+            {
+                personalSettings =JsonConvert.DeserializeObject<
+				Common.PersonalSettings>(CurrentUserProfile
+				      .PersonalSettings)!;
+                IsDarkMode = personalSettings.IsDarkMode;
+                await IsDarkModeChanged
+				.InvokeAsync(IsDarkMode) ;
+                StateHasChanged();
+            });
+            return;
+		});
 	}
 
 	public void Timer_OnElapsed(object? sender, System.Timers.ElapsedEventArgs elapsedEventArgs)

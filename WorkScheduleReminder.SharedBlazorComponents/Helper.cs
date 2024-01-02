@@ -48,6 +48,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		public       CustomMudTheme_1() : base()
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Blue.Darken4;
+				this.PaletteDark.Info = Colors.Blue.Darken4;
 			}
 		}
 
@@ -57,6 +59,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		public       CustomMudTheme_2() : base()
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Indigo.Darken4;
+				this.PaletteDark.Info = Colors.Indigo.Darken4;
 			}
 		}
 
@@ -66,6 +70,184 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 		public       CustomMudTheme_3() : base()
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.DeepPurple.Darken4;
+				this.PaletteDark.Info = Colors.DeepPurple.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_4
+		                 : MudTheme
+		{
+		public       CustomMudTheme_4() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Red.Darken4;
+				this.PaletteDark.Info = Colors.Red.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_5
+		                 : MudTheme
+		{
+		public       CustomMudTheme_5() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Pink.Darken4;
+				this.PaletteDark.Info = Colors.Pink.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_6
+		                 : MudTheme
+		{
+		public       CustomMudTheme_6() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Purple.Darken4;
+				this.PaletteDark.Info = Colors.Purple.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_7
+		                 : MudTheme
+		{
+		public       CustomMudTheme_7() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.LightBlue.Darken4;
+				this.PaletteDark.Info = Colors.LightBlue.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_8
+		                 : MudTheme
+		{
+		public       CustomMudTheme_8() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Cyan.Darken4;
+				this.PaletteDark.Info = Colors.Cyan.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_9
+		                 : MudTheme
+		{
+		public       CustomMudTheme_9() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Teal.Darken4;
+				this.PaletteDark.Info = Colors.Teal.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_10
+		                 : MudTheme
+		{
+		public       CustomMudTheme_10() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Green.Darken4;
+				this.PaletteDark.Info = Colors.Green.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_11
+		                 : MudTheme
+		{
+		public       CustomMudTheme_11() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.LightGreen.Darken4;
+				this.PaletteDark.Info = Colors.LightGreen.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_12
+		                 : MudTheme
+		{
+		public       CustomMudTheme_12() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Lime.Darken4;
+				this.PaletteDark.Info = Colors.Lime.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_13
+		                 : MudTheme
+		{
+		public       CustomMudTheme_13() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Yellow.Darken4;
+				this.PaletteDark.Info = Colors.Yellow.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_14
+		                 : MudTheme
+		{
+		public       CustomMudTheme_14() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Amber.Darken4;
+				this.PaletteDark.Info = Colors.Amber.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_15
+		                 : MudTheme
+		{
+		public       CustomMudTheme_15() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Orange.Darken4;
+				this.PaletteDark.Info = Colors.Orange.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_16
+		                 : MudTheme
+		{
+		public       CustomMudTheme_16() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.DeepOrange.Darken4;
+				this.PaletteDark.Info = Colors.DeepOrange.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_17
+		                 : MudTheme
+		{
+		public       CustomMudTheme_17() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Brown.Darken4;
+				this.PaletteDark.Info = Colors.Brown.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_18
+		                 : MudTheme
+		{
+		public       CustomMudTheme_18() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.BlueGrey.Darken4;
+				this.PaletteDark.Info = Colors.BlueGrey.Darken4;
+			}
+		}
+
+		public class CustomMudTheme_19
+		                 : MudTheme
+		{
+		public       CustomMudTheme_19() : base()
+			{
+				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
+				this.Palette    .Info = Colors.Grey.Darken4;
+				this.PaletteDark.Info = Colors.Grey.Darken4;
 			}
 		}
 
@@ -88,7 +270,87 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 				new CustomMudTheme_3()
 			}
 			,
-		};
+			{
+				4,
+				new CustomMudTheme_4()
+			}
+			,
+            {
+                5,
+                new CustomMudTheme_5()
+            }
+            ,
+            {
+                6,
+                new CustomMudTheme_6()
+            }
+            ,
+            {
+                7,
+                new CustomMudTheme_7()
+            }
+            ,
+            {
+                8,
+                new CustomMudTheme_8()
+            }
+            ,
+            {
+                9,
+                new CustomMudTheme_9()
+            }
+            ,
+            {
+                10,
+                new CustomMudTheme_10()
+            }
+            ,
+            {
+                11,
+                new CustomMudTheme_11()
+            }
+            ,
+            {
+                12,
+                new CustomMudTheme_12()
+            }
+            ,
+            {
+                13,
+                new CustomMudTheme_13()
+            }
+            ,
+            {
+                14,
+                new CustomMudTheme_14()
+            }
+            ,
+            {
+                15,
+                new CustomMudTheme_15()
+            }
+            ,
+            {
+                16,
+                new CustomMudTheme_16()
+            }
+            ,
+            {
+                17,
+                new CustomMudTheme_17()
+            }
+            ,
+            {
+                18,
+                new CustomMudTheme_18()
+            }
+            ,
+            {
+                19,
+                new CustomMudTheme_19()
+            }
+            ,
+        };
 
 		public static (bool ok, string reason) CheckEmailFormat(this string email)
 		{

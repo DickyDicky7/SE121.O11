@@ -2,6 +2,9 @@
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.MainContent
 @using WorkScheduleReminder.SharedBlazorComponents.Desktop.StaticComponents
 
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+
 @inject Supabase.Client SupabaseClient
 
 <CascadingValue Name=@(nameof(CurrentUserProfile)) Value="CurrentUserProfile" TValue="Models.Profile" IsFixed="true">
@@ -26,7 +29,9 @@
 		                @bind-ActiveViewIcon="ActiveViewIcon"
 		                @bind-ActiveViewType="ActiveViewType"
 		                @bind-ActiveBoard_____="ActiveBoard_____"
-		                @bind-ActiveCustomView="ActiveCustomView" />
+		                @bind-ActiveCustomView="ActiveCustomView"
+		                CurrentThemeIdChanged=
+		               "CurrentThemeIdChanged" />
 		@*Top bar & mainscreen*@
 		<MudPaper Class="d-flex flex-column"
 				  Style="background-color:transparent;overflow:hidden;"
@@ -92,9 +97,13 @@
 	public static Guid LastActiveBoardId { get; set; }
 
 	[Parameter]
-	public               bool  IsDarkMode        { get; set; } = false;
+	public               bool      IsDarkMode        { get; set; } = false;
 	[Parameter]
-	public EventCallback<bool> IsDarkModeChanged { get; set; }
+	public EventCallback<bool>     IsDarkModeChanged { get; set; }
+    [Parameter]
+    public               byte  CurrentThemeId        { get; set; }
+    [Parameter]
+    public EventCallback<byte> CurrentThemeIdChanged { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -140,6 +149,13 @@
 		await base.OnAfterRenderAsync(firstRender);
 		CurrentUserProfile =(await SupabaseClient.From<Models.Profile>().Where(profile => profile.Id == CurrentUserId)
 		.Single())!;
+		if (firstRender)
+		{
+			Common.PersonalSettings personalSettings = JsonConvert.DeserializeObject<
+			Common.PersonalSettings>(CurrentUserProfile.PersonalSettings)!;
+			      CurrentThemeId  = personalSettings   .   ThemeId ;
+			await CurrentThemeIdChanged.InvokeAsync(CurrentThemeId);
+		}
 	}
 
 }
