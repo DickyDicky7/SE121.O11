@@ -33,6 +33,7 @@ namespace WorkScheduleReminder.MAUIBlazor
 							{
 							appWindow_ClosingEventArgs.Cancel = true;
 							appWindow.Hide();
+								await System.Threading.Tasks.Task.CompletedTask;
 							};
 						});   
 					});

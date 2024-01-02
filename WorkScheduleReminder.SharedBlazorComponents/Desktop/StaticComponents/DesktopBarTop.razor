@@ -50,13 +50,26 @@
 						   Size="Size.Small"
 						   Icon="@Icons.Material.Filled.Sync" />
 		</MudTooltip>
-		<MudTooltip Placement="Placement.Left"
+		@* <MudTooltip Placement="Placement.Left"
 					Arrow="true"
 					Color="Color.Dark" Text="Notifications">
 			<MudIconButton Class="rounded-cycle"
 						   Size="Size.Small"
 						   Icon="@Icons.Material.Filled.Notifications"
 						   OnClick="ToggleNotifiVisible" />
+		</MudTooltip> *@
+		<MudTooltip Placement="Placement.Left"
+					Arrow="true"
+					Color="Color.Dark" Text="Toggle light/dark mode">
+			<MudToggleIconButton Toggled=@(IsDarkMode)
+								 ToggledChanged=@(ToggleDarkMode)
+								 Icon="@Icons.Material.Filled.LightMode"
+								 ToggledIcon="@Icons.Material.Filled.DarkMode"
+								 Color="Color.Warning"
+								 ToggledColor="Color.Primary"
+								 Size="Size.Small"
+								 ToggledSize="Size.Small" />
+			@* <MudSwitch @bind-Checked=IsDarkMode/> *@
 		</MudTooltip>
 		<MudTooltip Placement="Placement.Left"
 					Arrow="true"
@@ -92,46 +105,57 @@
 
 @code
 {
-	[CascadingParameter(Name = nameof(ActiveViewType))]
-	public Helper.ViewType ActiveViewType { get; set; }
+		[CascadingParameter(Name = nameof(ActiveViewType))]
+		public Helper.ViewType ActiveViewType { get; set; }
 
-	// [Parameter]
-	// public bool IsDarkMode = 
+		// [Parameter]
+		// public bool IsDarkMode = 
 
-	[Parameter]
-	public bool                IsIndividualToWorkspace        { get; set; }
-	[Parameter]
-	public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
+		[Parameter]
+		public bool                IsIndividualToWorkspace        { get; set; }
+		[Parameter]
+		public EventCallback<bool> IsIndividualToWorkspaceChanged { get; set; }
 
-	[Parameter]
-	public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
-	[Parameter]
-	public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
+		[Parameter]
+		public               Helper.ViewTypeBoard  ActiveViewTypeBoard        { get; set; }
+		[Parameter]
+		public EventCallback<Helper.ViewTypeBoard> ActiveViewTypeBoardChanged { get; set; }
 
-	[Parameter]
-	public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
-	[Parameter]
-	public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  TagByBoard__IdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> TagByBoard__IdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  TagByProfileIdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> TagByProfileIdsToFilterChanged { get; set; }
 
-	[Parameter]
-	public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
+		[Parameter]
+		public               List<Guid>  AssigneeIdsToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<List<Guid>> AssigneeIdsToFilterChanged { get; set; }
 
-	[Parameter]
-	public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
-	[Parameter]
-	public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
+		[Parameter]
+		public               DateRange  DueDateRangeToFilter        { get; set; } = null!;
+		[Parameter]
+		public EventCallback<DateRange> DueDateRangeToFilterChanged { get; set; }
 
 	public string OnSyncStyle { get; set; } = "margin:0 0 0 5px;";
 	public bool NotifiVisible { get; set; } = false;
 	public bool SearchVisible { get; set; } = false;
 	public System.Timers.Timer Timer { get; set; } = null!;
 	public bool OnSync { get; set; } = false;
+
+	[Parameter]
+	public               bool  IsDarkMode        { get; set; } = false;
+	[Parameter]
+	public EventCallback<bool> IsDarkModeChanged { get; set; }
+
+	public async Task ToggleDarkMode(  bool isDarkMode)
+	{
+		IsDarkMode = isDarkMode;
+		await IsDarkModeChanged.InvokeAsync(IsDarkMode);
+	}
 
 	public void ToggleNotifiVisible()
 	{
@@ -153,7 +177,7 @@
 		Timer.Start();
 	}
 
-	public void Timer_OnElapsed(object sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
+	public void Timer_OnElapsed(object? sender, System.Timers.ElapsedEventArgs elapsedEventArgs)
 	{
 		SyncOnClick();
 	}

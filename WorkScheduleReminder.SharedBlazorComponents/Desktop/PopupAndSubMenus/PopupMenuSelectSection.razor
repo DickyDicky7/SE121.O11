@@ -56,8 +56,10 @@
 {
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IDictionary<string, object>? AdditionalAttributes { get; set; }
-	[CascadingParameter(Name = nameof(ActiveBoard_____))]
-	public Models.Board ActiveBoard_____ { get; set; } = null!;
+	/* REDUNDANT CODE */
+	// [CascadingParameter(Name = nameof(ActiveBoard_____))]
+	// public Models.Board ActiveBoard_____ { get; set; } = null!;
+	/* REDUNDANT CODE */
 	[Parameter]
 	public Models.Task  Task { get; set; } =  null!;
 
@@ -73,7 +75,7 @@
 	{
 		Sections.Clear();
 		foreach (Models.SectionByBoard sectionByBoard in SupabaseImplementModelStateProviderService.Section___ByBoards
-		.Where(sectionByBoard => sectionByBoard.BoardId == ActiveBoard_____.Id))
+		.Where(sectionByBoard => sectionByBoard.BoardId == /* ActiveBoard_____.Id */  Task.BoardId!.Value))
 		{
 			Sections.Add(new()
 			{
@@ -87,6 +89,10 @@
 		      .SectioningByBoards.First(sectioningByBoard => sectioningByBoard.TaskId == Task.Id);
 		PreviousSelectedSection = Sections.First(section => section.Name == sectioningByBoard.SectionByBoard.Name);
 		PreviousSelectedSection . Selected = true;
+		
+		await System
+		.Threading
+		.Tasks.Task.CompletedTask;
 	}
 
 	public Action SectionOnClick(Section selectedSection)
