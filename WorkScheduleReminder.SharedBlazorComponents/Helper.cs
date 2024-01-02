@@ -49,7 +49,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Blue.Darken4;
-				this.PaletteDark.Info = Colors.Blue.Darken4;
+				this.PaletteDark.Info = Colors.Blue.Accent4;				
 			}
 		}
 
@@ -60,8 +60,8 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Indigo.Darken4;
-				this.PaletteDark.Info = Colors.Indigo.Darken4;
-			}
+				this.PaletteDark.Info = Colors.Indigo.Accent4;
+            }
 		}
 
 		public class CustomMudTheme_3
@@ -71,7 +71,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.DeepPurple.Darken4;
-				this.PaletteDark.Info = Colors.DeepPurple.Darken4;
+				this.PaletteDark.Info = Colors.DeepPurple.Accent4;
 			}
 		}
 
@@ -82,7 +82,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Red.Darken4;
-				this.PaletteDark.Info = Colors.Red.Darken4;
+				this.PaletteDark.Info = Colors.Red.Accent4;
 			}
 		}
 
@@ -93,7 +93,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Pink.Darken4;
-				this.PaletteDark.Info = Colors.Pink.Darken4;
+				this.PaletteDark.Info = Colors.Pink.Accent4;
 			}
 		}
 
@@ -104,7 +104,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Purple.Darken4;
-				this.PaletteDark.Info = Colors.Purple.Darken4;
+				this.PaletteDark.Info = Colors.Purple.Accent4;
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.LightBlue.Darken4;
-				this.PaletteDark.Info = Colors.LightBlue.Darken4;
+				this.PaletteDark.Info = Colors.LightBlue.Accent4;
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Cyan.Darken4;
-				this.PaletteDark.Info = Colors.Cyan.Darken4;
+				this.PaletteDark.Info = Colors.Cyan.Accent4;
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Teal.Darken4;
-				this.PaletteDark.Info = Colors.Teal.Darken4;
+				this.PaletteDark.Info = Colors.Teal.Accent4;
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Green.Darken4;
-				this.PaletteDark.Info = Colors.Green.Darken4;
+				this.PaletteDark.Info = Colors.Green.Accent4;
 			}
 		}
 
@@ -159,7 +159,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.LightGreen.Darken4;
-				this.PaletteDark.Info = Colors.LightGreen.Darken4;
+				this.PaletteDark.Info = Colors.LightGreen.Accent4;
 			}
 		}
 
@@ -170,7 +170,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Lime.Darken4;
-				this.PaletteDark.Info = Colors.Lime.Darken4;
+				this.PaletteDark.Info = Colors.Lime.Accent4;
 			}
 		}
 
@@ -181,7 +181,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Yellow.Darken4;
-				this.PaletteDark.Info = Colors.Yellow.Darken4;
+				this.PaletteDark.Info = Colors.Yellow.Accent4;
 			}
 		}
 
@@ -192,7 +192,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Amber.Darken4;
-				this.PaletteDark.Info = Colors.Amber.Darken4;
+				this.PaletteDark.Info = Colors.Amber.Accent4;
 			}
 		}
 
@@ -203,7 +203,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.Orange.Darken4;
-				this.PaletteDark.Info = Colors.Orange.Darken4;
+				this.PaletteDark.Info = Colors.Orange.Accent4;
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace WorkScheduleReminder.SharedBlazorComponents
 			{
 				this.Typography.Default.FontFamily = new string[1] { "Montserrat-Regular" };
 				this.Palette    .Info = Colors.DeepOrange.Darken4;
-				this.PaletteDark.Info = Colors.DeepOrange.Darken4;
+				this.PaletteDark.Info = Colors.DeepOrange.Accent4;
 			}
 		}
 

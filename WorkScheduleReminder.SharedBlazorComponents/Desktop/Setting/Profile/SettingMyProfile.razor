@@ -18,23 +18,28 @@
                            for="@context">
                     @if (CurrentUserProfile != null)
                     {
-                        <MudAvatar Size="Size.Large" Color="Color.Primary" Variant="Variant.Filled">
+                        <MudTooltip Color="Color.Info"
+                                    Arrow="true"
+                                    Text="Upload new avatar">
+                            <MudAvatar Size="Size.Large" Color="Color.Primary"
+                                       Variant="Variant.Filled">
 
-                            @if (string.IsNullOrWhiteSpace(CurrentUserProfile.AvatarURL))
-                            {
-                                @(CurrentUserProfile.Email[0].ToString().ToUpper())
+                                @if (string.IsNullOrWhiteSpace(CurrentUserProfile.AvatarURL))
+                                {
+                                    @(CurrentUserProfile.Email[0].ToString().ToUpper())
 
-                            }
-                            else
-                            {
-                                <MudImage Src=@(CurrentUserProfile.AvatarURL) />
-                            }
-                        </MudAvatar>
+                                }
+                                else
+                                {
+                                    <MudImage Src=@(CurrentUserProfile.AvatarURL) />
+                                }
+                            </MudAvatar>
+                        </MudTooltip>
                     }
                 </MudButton>
             </ButtonTemplate>
         </MudFileUpload>
-        <MudText Style="font-size:larger;font-weight:bold">
+        <MudText Style="font-size:larger;font-weight:bold;">
             @if (CurrentUserProfile != null)
             {
                 @(CurrentUserProfile.Email.Split('@').First())
@@ -44,7 +49,7 @@
                 @("User")
             }
         </MudText>
-        <MudText Style="font-size:medium;font-weight:100">
+        <MudText Style="font-size:medium;font-weight:100;">
             @if (CurrentUserProfile != null)
             {
                 @(CurrentUserProfile.Email)
@@ -62,6 +67,7 @@
         @foreach (ChildContent Content in ChildContentList)
         {
             <MudButton FullWidth="true"
+                       Style="padding:0;margin:5px;"
                        OnClick="()=>UpdateParentState(Content.State)">
                 <MudPaper Class="d-flex flex-row align-cneter justify-space-between"
                           Elevation="0"
@@ -75,6 +81,7 @@
             </MudButton>
         }
         <MudButton FullWidth="true"
+                   Style="padding:0;margin:5px 5px;margin-bottom:10px;"
                    OnClick=@(async () => await SupabaseAuthenticationStateProviderService.LogOut(Snackbar))>
             <MudPaper Class="d-flex flex-row align-cneter justify-space-between"
                       Elevation="0"
@@ -90,9 +97,10 @@
     </MudPaper>
 </MudPaper>
 
-@code {
+@code 
+{
     [Parameter]
-    public double ParentState { get; set; }
+    public               double  ParentState        { get; set; }
     [Parameter]
     public EventCallback<double> ParentStateChanged { get; set; }
     [CascadingParameter(Name = nameof(CurrentUserProfile))]
@@ -100,65 +108,74 @@
     [CascadingParameter(Name = nameof(CurrentUserId))]
     public Guid CurrentUserId { get; set; }
 
-    public string Name { get; set; } = "Master";
+    public string Name  { get; set; } = "Master";
     public string Email { get; set; } = "ExampleEmail@gmail.com";
     public IBrowserFile AvatarFile { get; set; } = null!;
 
-    public record ChildContent
+    public record class ChildContent
     {
         public double State { get; set; } = default!;
-        public string Name { get; set; } = default!;
+        public string Name  { get; set; } = default!;
     }
+
     public List<ChildContent> ChildContentList { get; set; } = new();
 
-    public async Task UpdateParentState(double _NewParentState)
+    public async Task UpdateParentState(double newParentState)
     {
-        ParentState = _NewParentState;
-        await ParentStateChanged.InvokeAsync(ParentState);
+        ParentState = newParentState;
+        await ParentStateChanged
+        .InvokeAsync(ParentState)   ;
     }
+
     public async Task FileChanged(IBrowserFile file)
     {
-        using (Stream upstream = file.OpenReadStream())
+        try
         {
-            byte[] buffers = new byte[file.Size];
-            await upstream.ReadAsync(buffers);
-            string filePath = @$"{CurrentUserId}/avatar.{file.Name.Split('.').Last()}";
-            await SupabaseClient.Storage.From("avatars")
-            .Upload(
-                buffers,
-                filePath,
-                new Supabase.Storage.FileOptions()
+            using (Stream upstream = file.OpenReadStream())
+            {
+                byte[]  buffers = new byte[file.Size];
+                await upstream.ReadAsync(buffers);
+                string filePath = @$"{CurrentUserId}/avatar.{file.Name.Split('.').Last()}";
+                await SupabaseClient.Storage.From("avatars")
+                .Upload(
+                     buffers,
+                    filePath,
+                    new Supabase.Storage.FileOptions()
                     {
                         ContentType = file.ContentType,
                         Upsert = true
                     },
-                inferContentType: true,
-                onProgress: (sender, progress) =>
+                    inferContentType: true,
+                    onProgress: (sender, progress) =>
                     {
 
                     }
-            );
-            string newAvatarUrl = await SupabaseClient.Storage.From("avatars").CreateSignedUrl(filePath, 86400 * 365 * 68);
-            await SupabaseClient.From<Models.Profile>()
-            .Where(profile => profile.Id == CurrentUserId)
-            .Set(profile => profile.AvatarURL, newAvatarUrl)
-            .Update();
+                );
+                string newAvatarUrl = await SupabaseClient.Storage.From("avatars").CreateSignedUrl(filePath, 86400 * 365 * 68);
+                await SupabaseClient.From<Models.Profile>()
+                .Where(profile => profile.Id ==     CurrentUserId)
+                .Set  (profile => profile.AvatarURL, newAvatarUrl)
+                .Update();
+            }
+        }
+        catch (Exception exception)
+        {
+            System.Diagnostics.Debug.WriteLine(exception.Message);
         }
     }
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
         ChildContentList.Add(new ChildContent()
-            {
-                State = 1.1,
-                Name = "Reset Password",
-            }
-        );
+        {
+            State = 1.1,
+            Name  = "Reset Password",
+        });
         ChildContentList.Add(new ChildContent()
-            {
-                State = 1.2,
-                Name = "Delete Account",
-            }
-        );
+        {
+            State = 1.2,
+            Name  = "Delete Account",
+        });
     }
 }

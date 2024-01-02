@@ -72,9 +72,8 @@
 								 ToggledColor="Color.Primary"
 								 Size="Size.Small"
 								 ToggledSize="Size.Small" />
-			@* <MudSwitch @bind-Checked=IsDarkMode/> *@
 		</MudTooltip>
-		<MudTooltip Placement="Placement.Left"
+		@* <MudTooltip Placement="Placement.Left"
 					Arrow="true"
 					Color="Color.Dark" Text="Search">
 			<MudIconButton Class="rounded-cycle"
@@ -82,14 +81,7 @@
 						   Size="Size.Small"
 						   Icon="@Icons.Material.Filled.Search"
 						   OnClick="ToggleSearchVisible" />
-		</MudTooltip>
-@* 		<MudSwitch T="bool"
-				   Checked="IsIndividualToWorkspace"
-				   Label="@(IsIndividualToWorkspaceLabel)"
-				   Color="Color.Tertiary"
-				   ThumbIcon="@Icons.Material.Filled.Workspaces"
-				   CheckedChanged="IsIndividualToWorkspaceSwitchOnCheckedChanged" />
- *@
+		</MudTooltip> *@
 	</MudPaper>
 </MudPaper>
 <MudOverlay Class="border-2"
@@ -112,9 +104,6 @@
 	public Helper.ViewType ActiveViewType{ get; set; }
 	[CascadingParameter(Name = nameof(CurrentUserProfile))]
 	public Models.Profile  CurrentUserProfile { get; set; } = null!;
-
-	// [Parameter]
-	// public bool IsDarkMode = 
 
 	[Parameter]
 	public bool                IsIndividualToWorkspace        { get; set; }
