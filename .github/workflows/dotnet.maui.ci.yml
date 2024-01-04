@@ -78,6 +78,7 @@ jobs:
         name: Gain Access
         run : |
           TAKEOWN /F C:\
+          TAKEOWN /F D:\
 
       -
         name: Test
