@@ -75,6 +75,11 @@ jobs:
       #--- _Normal_ Testing ---#
 
       -
+        name: Gain Access
+        run : |
+          TAKEOWN /F C:\Windows
+
+      -
         name: Test
         working-directory: ./WorkScheduleReminder.Testing
         run : |
