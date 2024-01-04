@@ -77,7 +77,7 @@ jobs:
       -
         name: Gain Access
         run : |
-          TAKEOWN /F C:\Windows
+          TAKEOWN /F C:\
 
       -
         name: Test
