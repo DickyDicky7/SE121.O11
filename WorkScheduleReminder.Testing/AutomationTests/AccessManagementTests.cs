@@ -21,7 +21,7 @@ namespace WorkScheduleReminder.Testing.AutomationTests
                 await Page.GetByPlaceholder("Enter password").FillAsync("123456");
                 await temp.ClickAsync();
             }
-            await Page.GetByRole(AriaRole.Link, new() { Name = "👨 A" }).ClickAsync();
+            await Page.GetByRole(AriaRole.Button, new() { Name = "👨 A" }).ClickAsync();
             await Page.GetByRole(AriaRole.Button, new() { Name = "Member" }).ClickAsync();
         }
         [TestCase("tuan.pham.21.01.2003")]
